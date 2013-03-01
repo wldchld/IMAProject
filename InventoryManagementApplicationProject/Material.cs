@@ -11,18 +11,43 @@ namespace InventoryManagement
         public enum MeasureType {PCS, WEIGHT, VOLUME, LENGTH}; 
         
         private String name;
-        private bool infinite;
-        private double amount;
-        private MeasureType typeOfMeasure;
-        //private Dictionary<String, Object> extraInfo
+        private String groupName;
+        private String extraInfo;
+        private bool infinite = false;
+        private double amount = 0;
+        private MeasureType typeOfMeasure = MeasureType.PCS;
+        private DateTime dateBought = DateTime.Now;
+        private DateTime bestBefore;
+        
+        public Material()
+        {
+        }
 
-        public Material(String name, double amount = 1)
+        public Material(String name)
+        {
+            this.Name = name;
+        }
+
+        public Material(String name, String groupName, double amount)
+        {
+            this.Name = name;
+            this.Amount = amount;
+            this.GroupName = groupName;
+        }
+
+        public Material(String name, String groupName, bool infinite, double amount, MeasureType typeOfMeasure, 
+            DateTime dateBought, DateTime bestBefore, String extraInfo)
         {
             this.Name = name;
             this.Infinite = false;
             this.Amount = amount;
+            this.GroupName = groupName;
             this.TypeOfMeasure = MeasureType.PCS;
+            this.DateBought = dateBought;
+            this.BestBefore = BestBefore;
+            this.ExtraInfo = extraInfo;
         }
+
 
         override public String ToString()
         {
@@ -45,6 +70,54 @@ namespace InventoryManagement
             set
             {
                 name = value;
+            }
+        }
+
+        public String GroupName
+        {
+            get
+            {
+                return groupName;
+            }
+            set
+            {
+                groupName = value;
+            }
+        }
+
+        public String ExtraInfo
+        {
+            get
+            {
+                return extraInfo;
+            }
+            set
+            {
+                extraInfo = value;
+            }
+        }
+
+        public DateTime DateBought
+        {
+            get
+            {
+                return dateBought;
+            }
+            set
+            {
+                dateBought = value;
+            }
+        }
+
+        public DateTime BestBefore
+        {
+            get
+            {
+                return bestBefore;
+            }
+            set
+            {
+                bestBefore = value;
             }
         }
 

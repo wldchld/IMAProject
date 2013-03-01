@@ -39,10 +39,10 @@ namespace InventoryManagement
             InventoryItemList.ItemsSource = this.inventory;
 
             //Some test data
-            inventory.Add(new Material("testi1", 1));
-            inventory.Add(new Material("asd", 1));
-            inventory.Add(new Material("qwe", 1));
-            inventory.Add(new Material("rty", 1));
+            inventory.Add(new Material("testi1", "peikonpallit", 1));
+            inventory.Add(new Material("asd", "nutturat", 1));
+            inventory.Add(new Material("qwe", null, 1));
+            inventory.Add(new Material("rty", null, 1));
         }
 
         private void SearchFilter_TextChanged(object sender, TextChangedEventArgs e)
@@ -145,7 +145,12 @@ namespace InventoryManagement
 
         private void mikonTestBtn_Click(object sender, RoutedEventArgs e)
         {
-            dbManager.RunConsoleTest();
+            dbManager.AddNewMaterial("Siskonmakkarakeitto", "Keitot", false, 1500, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(4), "Vitun hyvää!");
+            dbManager.RetrieveAllMaterials();
+            //dbManager.UpdateMaterial(new Material("Siskonmakkarakeitto", "Keitot", 1000));
+            dbManager.AddNewMaterial(new Material("Perseensuti", "Siivousväline", 1));
+            dbManager.RetreiveMaterialsInGroup("Ruoka");
+            dbManager.RetreiveMaterialsInGroup("Keitot");
         }
     }
 }
