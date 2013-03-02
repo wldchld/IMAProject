@@ -14,19 +14,22 @@ namespace InventoryManagement
 
     class DatabaseManager
     {
+        public enum ROperator { LT, LE, E, GT, GE };
         readonly static string dbFileName = "inventory.yap";
         IObjectContainer db;
 
-        // OPERATIONS FOR MATERIALS
         public DatabaseManager()
         {
             db = Db4oEmbedded.OpenFile(dbFileName);
         }
 
+        //------------------------------------
+        //----- OPERATIONS FOR MATERIALS -----
+        //------------------------------------
         public IObjectSet RetrieveAllMaterials()
         {
             IObjectSet result = db.QueryByExample(typeof(Material));
-            ListResult(result);
+            PrintObjectSet(result);
             return result;
         }
 
@@ -34,7 +37,7 @@ namespace InventoryManagement
         {
             Material proto = new Material(name);
             IObjectSet result = db.QueryByExample(proto);
-            ListResult(result);
+            PrintObjectSet(result);
             return result;
         }
 
@@ -42,7 +45,7 @@ namespace InventoryManagement
         {
             Material proto = new Material(null, null, amount);
             IObjectSet result = db.QueryByExample(proto);
-            ListResult(result);
+            PrintObjectSet(result);
             return result;
         }
 
@@ -64,17 +67,6 @@ namespace InventoryManagement
             RetrieveAllMaterials();
         }
 
-
-
-        public static void ListResult(IObjectSet result)
-        {
-            Console.WriteLine(result.Count);
-            foreach (object item in result)
-            {
-                Console.WriteLine(item);
-            }
-        }
-
         public void AddNewMaterial(String name, String groupName, bool infinite, double amount, 
             Material.MeasureType typeOfMeasure, DateTime dateBought, DateTime bestBefore, String extraInfo)
         {
@@ -93,19 +85,153 @@ namespace InventoryManagement
             {
                 return mat.GroupName == groupName;
             });
-            printList(mats.ToList());
+            PrintList(mats.ToList());
             return mats;
         }
 
-        public void printList(List<Material> whatever)
+        public IList<Material> RetreiveMaterialsByBestBeforeDate(ROperator ro, DateTime date)
         {
-            foreach (Material o in whatever)
-                Console.WriteLine(o);
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                if (ro == ROperator.LT)
+                    return mat.BestBefore < date;
+                else if (ro == ROperator.LE)
+                    return mat.BestBefore <= date;
+                else if (ro == ROperator.GT)
+                    return mat.BestBefore > date;
+                else if (ro == ROperator.GE)
+                    return mat.BestBefore >= date;
+                return mat.BestBefore == date;
+            });
+            PrintList(mats.ToList());
+            return mats;
         }
 
-        /**
-         * Deletes the database and creates a new empty database."
-         */
+        public IList<Material> RetreiveMaterialsByBestBeforeDateInRange(DateTime min, DateTime max)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                return mat.BestBefore >= min && mat.BestBefore <= max;
+            });
+            PrintList(mats.ToList());
+            return mats;
+        }
+
+        public IList<Material> RetreiveMaterialsByDateBought(ROperator ro, DateTime date)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                if (ro == ROperator.LT)
+                    return mat.DateBought < date;
+                else if (ro == ROperator.LE)
+                    return mat.DateBought <= date;
+                else if (ro == ROperator.GT)
+                    return mat.DateBought > date;
+                else if (ro == ROperator.GE)
+                    return mat.DateBought >= date;
+                return mat.DateBought == date;
+            });
+            PrintList(mats.ToList());
+            return mats;
+        }
+
+        public IList<Material> RetreiveMaterialsByDateBoughtInRange(DateTime min, DateTime max)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                return mat.DateBought >= min && mat.DateBought <= max;
+            });
+            PrintList(mats.ToList());
+            return mats;
+        }
+
+        public IList<Material> RetreiveMaterialsWithExtraInfoContainingWord(string word)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                return mat.ExtraInfo.Contains(word);
+            });
+            PrintList(mats.ToList());
+            return mats;
+        }
+
+        public IList<Material> RetreiveMaterialsGoneBad()
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                return mat.BestBefore < DateTime.Now;
+            });
+            PrintList(mats.ToList());
+            return mats;
+        }
+
+        public IList<Material> RetreiveByInfinity(bool infinite)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                return mat.Infinite == infinite;
+            });
+            PrintList(mats.ToList());
+            return mats;
+        }
+
+        public IList<Material> RetreiveMaterialsByAmount(ROperator ro, double amount)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                if (mat.Infinite)
+                    return true;
+                else if (ro == ROperator.LT)
+                    return mat.Amount < amount;
+                else if (ro == ROperator.LE)
+                    return mat.Amount <= amount;
+                else if (ro == ROperator.GT)
+                    return mat.Amount > amount;
+                else if (ro == ROperator.GE)
+                    return mat.Amount >= amount;
+                else
+                    return mat.Amount == amount;
+            });
+            PrintList(mats.ToList());
+            return mats;
+        }
+
+        public IList<Material> RetreiveMaterialsByAmount(ROperator ro, double amount)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                if (mat.Infinite)
+                    return true;
+                else if (ro == ROperator.LT)
+                    return mat.Amount < amount;
+                else if (ro == ROperator.LE)
+                    return mat.Amount <= amount;
+                else if (ro == ROperator.GT)
+                    return mat.Amount > amount;
+                else if (ro == ROperator.GE)
+                    return mat.Amount >= amount;
+                else
+                    return mat.Amount == amount;
+            });
+            PrintList(mats.ToList());
+            return mats;
+        }
+
+        public IList<Material> RetreiveMaterialsByAmountRange(double min, double max)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                return mat.Amount >= min && mat.Amount <= max;
+            });
+            PrintList(mats.ToList());
+            return mats;
+        }
+
+        //--------------------------------------------
+        //----- WHOLE DATABASE AFFECTING METHODS -----
+        //--------------------------------------------
+        
+        // Deletes the database and creates a new empty database.
         public void ReCreateDB()
         {
             db.Close();
@@ -134,6 +260,24 @@ namespace InventoryManagement
             AddNewMaterial("Kaiutinkaapeli", "Kaapelit", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Väri: ruskea");
             AddNewMaterial("ES", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(720), "PÄRISEE!!!");
             AddNewMaterial("2x4 Lauta", "Rakennustarvike", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Sijainti: olohuone");
+        }
+
+        //-----------------------------------------
+        //----- DEBUGGING CONVINIENCE METHODS -----
+        //-----------------------------------------
+        public void PrintList(List<Material> whatever)
+        {
+            foreach (Material o in whatever)
+                Console.WriteLine(o);
+        }
+
+        public static void PrintObjectSet(IObjectSet result)
+        {
+            Console.WriteLine(result.Count);
+            foreach (object item in result)
+            {
+                Console.WriteLine(item);
+            }
         }
     }
 }

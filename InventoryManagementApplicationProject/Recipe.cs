@@ -8,7 +8,8 @@ namespace InventoryManagement
 {
     class Recipe
     {
+        private string name;
         private List<Material> content;
-        private String instructions;
+        private string instructions;
     }
 }

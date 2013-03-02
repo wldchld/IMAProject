@@ -97,6 +97,18 @@ namespace InventoryManagement
             }
         }
 
+        public bool Infinite
+        {
+            get
+            {
+                return infinite;
+            }
+            set
+            {
+                infinite = value;
+            }
+        }
+
         public DateTime DateBought
         {
             get
@@ -118,18 +130,6 @@ namespace InventoryManagement
             set
             {
                 bestBefore = value;
-            }
-        }
-
-        private bool Infinite
-        {
-            get
-            {
-                return infinite;
-            }
-            set
-            {
-                infinite = value;
             }
         }
 

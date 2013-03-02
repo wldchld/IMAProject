@@ -8,6 +8,7 @@ namespace InventoryManagement
 {
     class ShoppingList
     {
+        private String name;
         private List<Material> content;
 
         public ShoppingList()
