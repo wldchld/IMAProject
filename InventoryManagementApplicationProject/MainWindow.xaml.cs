@@ -145,12 +145,9 @@ namespace InventoryManagement
 
         private void mikonTestBtn_Click(object sender, RoutedEventArgs e)
         {
-            dbManager.AddNewMaterial("Siskonmakkarakeitto", "Keitot", false, 1500, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(4), "Vitun hyvää!");
-            dbManager.RetrieveAllMaterials();
-            //dbManager.UpdateMaterial(new Material("Siskonmakkarakeitto", "Keitot", 1000));
-            dbManager.AddNewMaterial(new Material("Perseensuti", "Siivousväline", 1));
+            dbManager.ReCreateDB();
+            dbManager.CreateSampleData();
             dbManager.RetreiveMaterialsInGroup("Ruoka");
-            dbManager.RetreiveMaterialsInGroup("Keitot");
         }
     }
 }
