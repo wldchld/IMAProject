@@ -6,37 +6,38 @@ using System.Threading.Tasks;
 
 namespace InventoryManagement
 {
-    class Material
+    public class Material
     {
         public enum MeasureType {PCS, WEIGHT, VOLUME, LENGTH}; 
         
-        private String name;
-        private String groupName;
-        private String extraInfo;
+        private string name;
+        private string groupName;
+        private string extraInfo;
         private bool infinite = false;
         private double amount = 0;
         private MeasureType typeOfMeasure = MeasureType.PCS;
         private DateTime dateBought = DateTime.Now;
         private DateTime bestBefore;
+        private Unit displayUnit;
         
         public Material()
         {
         }
 
-        public Material(String name)
+        public Material(string name)
         {
             this.Name = name;
         }
 
-        public Material(String name, String groupName, double amount)
+        public Material(string name, string groupName, double amount)
         {
             this.Name = name;
             this.Amount = amount;
             this.GroupName = groupName;
         }
 
-        public Material(String name, String groupName, bool infinite, double amount, MeasureType typeOfMeasure, 
-            DateTime dateBought, DateTime bestBefore, String extraInfo)
+        public Material(string name, string groupName, bool infinite, double amount, MeasureType typeOfMeasure, 
+            DateTime dateBought, DateTime bestBefore, string extraInfo, Unit displayUnit)
         {
             this.Name = name;
             this.Infinite = false;
@@ -46,10 +47,11 @@ namespace InventoryManagement
             this.DateBought = dateBought;
             this.BestBefore = BestBefore;
             this.ExtraInfo = extraInfo;
+            this.DisplayUnit = displayUnit;
         }
 
 
-        override public String ToString()
+        override public string ToString()
         {
             return name + ", " + amount;
         }
@@ -61,7 +63,7 @@ namespace InventoryManagement
 
         // ACCESSORS
 
-        public String Name
+        public string Name
         {
             get
             {
@@ -73,7 +75,7 @@ namespace InventoryManagement
             }
         }
 
-        public String GroupName
+        public string GroupName
         {
             get
             {
@@ -85,7 +87,7 @@ namespace InventoryManagement
             }
         }
 
-        public String ExtraInfo
+        public string ExtraInfo
         {
             get
             {
@@ -154,6 +156,18 @@ namespace InventoryManagement
             set
             {
                 typeOfMeasure = value;
+            }
+        }
+
+        public Unit DisplayUnit
+        {
+            get
+            {
+                return displayUnit;
+            }
+            set
+            {
+                displayUnit = value;
             }
         }
     }

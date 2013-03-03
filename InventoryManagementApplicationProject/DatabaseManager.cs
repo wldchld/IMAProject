@@ -11,8 +11,7 @@ using Db4objects.Db4o.Query;
 
 namespace InventoryManagement
 {
-
-    class DatabaseManager
+    public class DatabaseManager
     {
         public enum ROperator { LT, LE, E, GT, GE };
         readonly static string dbFileName = "inventory.yap";
@@ -68,10 +67,10 @@ namespace InventoryManagement
         }
 
         public void AddNewMaterial(String name, String groupName, bool infinite, double amount, 
-            Material.MeasureType typeOfMeasure, DateTime dateBought, DateTime bestBefore, String extraInfo)
+            Material.MeasureType typeOfMeasure, DateTime dateBought, DateTime bestBefore, String extraInfo, Unit unit)
         {
             Material mat = new Material(name, groupName, infinite, amount, typeOfMeasure, 
-                dateBought, bestBefore, extraInfo);
+                dateBought, bestBefore, extraInfo, unit);
             db.Store(mat);
         }
 
@@ -85,7 +84,7 @@ namespace InventoryManagement
             {
                 return mat.GroupName == groupName;
             });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
         }
 
@@ -103,7 +102,7 @@ namespace InventoryManagement
                     return mat.BestBefore >= date;
                 return mat.BestBefore == date;
             });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
         }
 
@@ -113,7 +112,7 @@ namespace InventoryManagement
             {
                 return mat.BestBefore >= min && mat.BestBefore <= max;
             });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
         }
 
@@ -131,7 +130,7 @@ namespace InventoryManagement
                     return mat.DateBought >= date;
                 return mat.DateBought == date;
             });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
         }
 
@@ -141,7 +140,7 @@ namespace InventoryManagement
             {
                 return mat.DateBought >= min && mat.DateBought <= max;
             });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
         }
 
@@ -151,7 +150,7 @@ namespace InventoryManagement
             {
                 return mat.ExtraInfo.Contains(word);
             });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
         }
 
@@ -161,7 +160,7 @@ namespace InventoryManagement
             {
                 return mat.BestBefore < DateTime.Now;
             });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
         }
 
@@ -171,7 +170,7 @@ namespace InventoryManagement
             {
                 return mat.Infinite == infinite;
             });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
         }
 
@@ -192,28 +191,7 @@ namespace InventoryManagement
                 else
                     return mat.Amount == amount;
             });
-            PrintList(mats.ToList());
-            return mats;
-        }
-
-        public IList<Material> RetreiveMaterialsByAmount(ROperator ro, double amount)
-        {
-            IList<Material> mats = db.Query<Material>(delegate(Material mat)
-            {
-                if (mat.Infinite)
-                    return true;
-                else if (ro == ROperator.LT)
-                    return mat.Amount < amount;
-                else if (ro == ROperator.LE)
-                    return mat.Amount <= amount;
-                else if (ro == ROperator.GT)
-                    return mat.Amount > amount;
-                else if (ro == ROperator.GE)
-                    return mat.Amount >= amount;
-                else
-                    return mat.Amount == amount;
-            });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
         }
 
@@ -223,8 +201,20 @@ namespace InventoryManagement
             {
                 return mat.Amount >= min && mat.Amount <= max;
             });
-            PrintList(mats.ToList());
+            PrintMaterialList(mats.ToList());
             return mats;
+        }
+
+        //------------------------------------
+        //----- SHOPPING LIST OPERATIONS -----
+        //------------------------------------
+        public IList<ShoppingList> RetreiveShoppingListByName(string name)
+        {
+            IList<ShoppingList> lists = db.Query<ShoppingList>(delegate(ShoppingList sl)
+            {
+                return sl.Name == name ;
+            });
+            return lists;
         }
 
         //--------------------------------------------
@@ -241,31 +231,31 @@ namespace InventoryManagement
 
         public void CreateSampleData()
         {
-            AddNewMaterial("Siskonmakkarakeitto", "Ruoka", false, 1500, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(4), "Hyvää keittoa");
-            AddNewMaterial("USB-hubi", "PC oheislaitteet", false, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "4-porttinen USB-hubi");
-            AddNewMaterial("Ruuvimeisseli +", "Työkalut", true, 5, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Tähti/ristipää");
-            AddNewMaterial("Ruuvimeisseli -", "Työkalut", true, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Talttapää");
-            AddNewMaterial("Kahvikuppi", "Astiat", false, 25, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Pupumuki");
-            AddNewMaterial("Kahvi", "Juoma", false, 250, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(365), "Presidenttiä");
-            AddNewMaterial("Espresso", "Juoma", false, 100, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(365), "Angry Birds espressoa");
-            AddNewMaterial("Läppäri", "Tietokoneet", false, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Macbook ja Lenovo");
-            AddNewMaterial("Tulostin", "PC oheislaitteet", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "HP photosmart B1013");
-            AddNewMaterial("Micro USB-kaapeli", "Kaapelit", false, 10, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Pituus 1m/kpl");
-            AddNewMaterial("Näppäimisto", "PC oheislaitteet", false, 2, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Suomi-layout");
-            AddNewMaterial("Kovalevy", "PC komponentit", false, 7, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Kokoluokka 160-500 gb");
-            AddNewMaterial("Galaxy S2", "Puhelimet", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, null);
-            AddNewMaterial("Voi", "Ruoka", false, 650, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(180), null);
-            AddNewMaterial("Ruisleipä", "Ruoka", false, 240, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(7), null);
-            AddNewMaterial("Kalja", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(1), "Parasta ennen huomista");
-            AddNewMaterial("Kaiutinkaapeli", "Kaapelit", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Väri: ruskea");
-            AddNewMaterial("ES", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(720), "PÄRISEE!!!");
-            AddNewMaterial("2x4 Lauta", "Rakennustarvike", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Sijainti: olohuone");
+            AddNewMaterial("Siskonmakkarakeitto", "Ruoka", false, 1500, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(4), "Hyvää keittoa", Unit.G);
+            AddNewMaterial("USB-hubi", "PC oheislaitteet", false, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "4-porttinen USB-hubi", Unit.PCS);
+            AddNewMaterial("Ruuvimeisseli +", "Työkalut", true, 5, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Tähti/ristipää", Unit.PCS);
+            AddNewMaterial("Ruuvimeisseli -", "Työkalut", true, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Talttapää", Unit.PCS);
+            AddNewMaterial("Kahvikuppi", "Astiat", false, 25, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Pupumuki", Unit.PCS);
+            AddNewMaterial("Kahvi", "Juoma", false, 250, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(365), "Presidenttiä", Unit.G);
+            AddNewMaterial("Espresso", "Juoma", false, 100, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(365), "Angry Birds espressoa", Unit.G);
+            AddNewMaterial("Läppäri", "Tietokoneet", false, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Macbook ja Lenovo", Unit.PCS);
+            AddNewMaterial("Tulostin", "PC oheislaitteet", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "HP photosmart B1013", Unit.PCS);
+            AddNewMaterial("Micro USB-kaapeli", "Kaapelit", false, 10, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Pituus 1m/kpl", Unit.PCS);
+            AddNewMaterial("Näppäimisto", "PC oheislaitteet", false, 2, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Suomi-layout", Unit.PCS);
+            AddNewMaterial("Kovalevy", "PC komponentit", false, 7, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Kokoluokka 160-500 gb", Unit.PCS);
+            AddNewMaterial("Galaxy S2", "Puhelimet", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, null, Unit.PCS);
+            AddNewMaterial("Voi", "Ruoka", false, 650, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(180), null, Unit.G);
+            AddNewMaterial("Ruisleipä", "Ruoka", false, 240, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(7), null, Unit.G);
+            AddNewMaterial("Kalja", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(1), "Parasta ennen huomista", Unit.L);
+            AddNewMaterial("Kaiutinkaapeli", "Kaapelit", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Väri: ruskea", Unit.M);
+            AddNewMaterial("ES", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(720), "PÄRISEE!!!", Unit.L);
+            AddNewMaterial("2x4 Lauta", "Rakennustarvike", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Sijainti: olohuone", Unit.M);
         }
 
         //-----------------------------------------
         //----- DEBUGGING CONVINIENCE METHODS -----
         //-----------------------------------------
-        public void PrintList(List<Material> whatever)
+        public void PrintMaterialList(List<Material> whatever)
         {
             foreach (Material o in whatever)
                 Console.WriteLine(o);

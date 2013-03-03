@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace InventoryManagement
 {
-    class ShoppingList
+    public class ShoppingList
     {
-        private String name;
+        private string name;
         private List<Material> content;
 
         public ShoppingList()
@@ -39,7 +39,7 @@ namespace InventoryManagement
             content.Remove(material);
         }
 
-        public void ClearList()
+        public void ClearContent()
         {
             content.Clear();
         }
@@ -49,6 +49,18 @@ namespace InventoryManagement
             get
             {
                 return content;
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                name = value;
             }
         }
     }

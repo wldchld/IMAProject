@@ -8,7 +8,7 @@ using System.Data;
 
 namespace InventoryManagement
 {
-    class Search
+    public class Search
     {
        private List<string> searchContent;
 
