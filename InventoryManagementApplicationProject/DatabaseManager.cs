@@ -208,6 +208,14 @@ namespace InventoryManagement
         //------------------------------------
         //----- SHOPPING LIST OPERATIONS -----
         //------------------------------------
+
+        public IObjectSet RetrieveAllShoppingLists()
+        {
+            IObjectSet result = db.QueryByExample(typeof(ShoppingList));
+            PrintObjectSet(result);
+            return result;
+        }
+
         public IList<ShoppingList> RetreiveShoppingListByName(string name)
         {
             IList<ShoppingList> lists = db.Query<ShoppingList>(delegate(ShoppingList sl)
@@ -215,6 +223,103 @@ namespace InventoryManagement
                 return sl.Name == name ;
             });
             return lists;
+        }
+
+        //-----------------------------
+        //----- RECIPE OPERATIONS -----
+        //-----------------------------
+
+        public void AddNewRecipe(Recipe recipe) 
+        {
+            db.Store(recipe);
+        }
+
+        public void AddNewRecipe(String name, IList<Material> content, String instructions)
+        {
+            Recipe recipe = new Recipe();
+            recipe.Content = new List<Material>(content);
+            recipe.Name = name;
+            recipe.Instructions = instructions;
+        }
+
+        public void AddMaterialToRecipe(String RecipeName, Material material)
+        {
+            IList<Recipe> recipes = RetrieveRecipeByName(RecipeName);
+            for (int i = 0; i < recipes.Count; i++) 
+            {
+                recipes[i].Content.Add(material);
+            }
+        }
+
+        public IList<Recipe> RetrieveAllRecipes()
+        {
+            IList<Recipe> recipes = db.Query<Recipe>();
+
+            PrintRecipeList(recipes.ToList());
+            return recipes;
+        }
+
+        public IList<Recipe> RetrieveRecipeByName(string name)
+        {
+            IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
+            {
+                return recipe.Name == name;
+            });
+            PrintRecipeList(recipes.ToList());
+            return recipes;
+        }
+
+        public IList<Recipe> RetrieveRecipeByMaterial(Material material)
+        {
+            IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
+            {
+                for (int i = 0; i < recipe.Content.Count; i++)
+                {
+                    if (recipe.Content[i].Equals(material))
+                        return true;
+                }
+                return false;
+            });
+            PrintRecipeList(recipes.ToList());
+            return recipes;
+        }
+
+        public IList<Recipe> RetrieveRecipeByMaterialName(string materialName)
+        {
+            IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
+            {
+                for (int i = 0; i < recipe.Content.Count; i++)
+                {
+                    if (recipe.Content[i].Name == materialName)
+                        return true;
+                }
+                return false;
+            });
+            PrintRecipeList(recipes.ToList());
+            return recipes;
+        }
+
+        // Retrieves recipes which can be crafted from th materials in the list
+        public IList<Recipe> RetrieveRecipeByMaterialList(IList<Material> materials)
+        {
+            IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
+            {
+                int materialsFound = 0;
+                for (int i = 0; i < materials.Count; i++)
+                {
+                    for (int a = 0; a < recipe.Content.Count; a++)
+                    {
+                        if (recipe.Content[a].Equals(materials[i]))
+                        {
+                            materialsFound++;
+                            a = recipe.Content.Count;
+                        }
+                    }
+                }
+                return materialsFound >= recipe.Content.Count;
+            });
+            PrintRecipeList(recipes.ToList());
+            return recipes;
         }
 
         //--------------------------------------------
@@ -268,6 +373,18 @@ namespace InventoryManagement
             {
                 Console.WriteLine(item);
             }
+        }
+
+        public void PrintShoppingListList(List<ShoppingList> whatever)
+        {
+            foreach (ShoppingList o in whatever)
+                Console.WriteLine(o);
+        }
+
+        public void PrintRecipeList(List<Recipe> whatever)
+        {
+            foreach (Recipe o in whatever)
+                Console.WriteLine(o);
         }
     }
 }
