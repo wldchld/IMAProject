@@ -255,9 +255,9 @@ namespace InventoryManagement
             db.Store(recipe);
         }
 
-        public void AddMaterialToRecipe(String RecipeName, Material material)
+        public void AddMaterialToRecipe(String recipeName, Material material)
         {
-            IList<Recipe> recipes = RetrieveRecipeByName(RecipeName);
+            IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
             for (int i = 0; i < recipes.Count; i++) 
             {
                 recipes[i].Content.Add(material);
@@ -265,14 +265,19 @@ namespace InventoryManagement
             }
         }
 
-        public void AddMaterialToRecipe(String RecipeName, String MaterialName)
+        public void AddMaterialToRecipe(String recipeName, String materialName)
         {
-            IList<Recipe> recipes = RetrieveRecipeByName(RecipeName);
-            Material material;
-            for (int i = 0; i < recipes.Count; i++)
+            IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
+            IObjectSet materials = RetrieveMaterialByName(materialName);
+            if (materials.HasNext())
             {
-                recipes[i].Content.Add(material);
-                db.Store(recipes[i]);
+                Material material;
+                material = (Material)materials.Next();
+                for (int i = 0; i < recipes.Count; i++)
+                {
+                    recipes[i].Content.Add(material);
+                    db.Store(recipes[i]);
+                }
             }
         }
 
@@ -417,17 +422,12 @@ namespace InventoryManagement
 
 
         /// Search
+        /// Queryn sisällä oli for silmukka, ei näin, T. Mikko
         public IList<Material> SearchMaterials(String input)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
-            {  
-                    for (int i = 0; i < input.Length; i++)
-                    {
-                        return mat.Name.ToUpper().Contains(input.ToUpper());
-                    }
-
-                return mat.Name == input;
-
+            {
+                return mat.Name.ToUpper().Contains(input.ToUpper());
             });
             PrintMaterialList(mats.ToList());
             return mats;
