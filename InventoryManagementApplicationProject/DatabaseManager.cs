@@ -234,12 +234,23 @@ namespace InventoryManagement
             db.Store(recipe);
         }
 
+        public void AddNewRecipe(string name, string instructions)
+        {
+            Recipe recipe = new Recipe();
+            recipe.Name = name;
+            recipe.Instructions = instructions;
+
+            db.Store(recipe);
+        }
+
         public void AddNewRecipe(String name, IList<Material> content, String instructions)
         {
             Recipe recipe = new Recipe();
             recipe.Content = new List<Material>(content);
             recipe.Name = name;
             recipe.Instructions = instructions;
+
+            db.Store(recipe);
         }
 
         public void AddMaterialToRecipe(String RecipeName, Material material)
@@ -248,6 +259,18 @@ namespace InventoryManagement
             for (int i = 0; i < recipes.Count; i++) 
             {
                 recipes[i].Content.Add(material);
+                db.Store(recipes[i]);
+            }
+        }
+
+        public void AddMaterialToRecipe(String RecipeName, String MaterialName)
+        {
+            IList<Recipe> recipes = RetrieveRecipeByName(RecipeName);
+            Material material;
+            for (int i = 0; i < recipes.Count; i++)
+            {
+                recipes[i].Content.Add(material);
+                db.Store(recipes[i]);
             }
         }
 
@@ -355,6 +378,9 @@ namespace InventoryManagement
             AddNewMaterial("Kaiutinkaapeli", "Kaapelit", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Väri: ruskea", Unit.M);
             AddNewMaterial("ES", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(720), "PÄRISEE!!!", Unit.L);
             AddNewMaterial("2x4 Lauta", "Rakennustarvike", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Sijainti: olohuone", Unit.M);
+
+            AddNewRecipe("Resepti", "Käytä tätä reseptiä");
+            //AddMaterialToRecipe("Resepti", RetrieveMaterialByName("Kalja"));
         }
 
         //-----------------------------------------
