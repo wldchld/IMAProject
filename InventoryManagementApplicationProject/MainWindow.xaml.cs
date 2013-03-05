@@ -26,6 +26,7 @@ namespace InventoryManagement
         private Material selectedItem = null;
         private List<Material> selectedItems = null;
         private DatabaseManager dbManager = new DatabaseManager();
+        private Search search = new Search();
 
         public MainWindow()
         {
@@ -50,6 +51,7 @@ namespace InventoryManagement
             if (SearchFilter.Text != "Search.." && SearchFilter.Text != String.Empty)
             {
                 //Search here
+                dbManager.SearchMaterials(SearchFilter.Text);
             }
         }
 

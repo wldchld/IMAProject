@@ -205,6 +205,8 @@ namespace InventoryManagement
             return mats;
         }
 
+  
+
         //------------------------------------
         //----- SHOPPING LIST OPERATIONS -----
         //------------------------------------
@@ -269,5 +271,24 @@ namespace InventoryManagement
                 Console.WriteLine(item);
             }
         }
+
+
+        /// Search
+        public IList<Material> SearchMaterials(String input)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {  
+                    for (int i = 0; i < input.Length; i++)
+                    {
+                        return mat.Name.ToUpper().Contains(input.ToUpper());
+                    }
+
+                return mat.Name == input;
+
+            });
+            PrintMaterialList(mats.ToList());
+            return mats;
+        }
+
     }
 }
