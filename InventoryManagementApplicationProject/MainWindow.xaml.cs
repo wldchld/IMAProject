@@ -149,7 +149,53 @@ namespace InventoryManagement
         {
             dbManager.ReCreateDB();
             dbManager.CreateSampleData();
-            dbManager.RetreiveMaterialsInGroup("Ruoka");
+            Console.WriteLine("Testing method RetreiveAllMaterials()");
+            dbManager.RetrieveAllMaterials();
+            Console.WriteLine("Testing method AddNewMaterial(hehkulamppu)");
+            dbManager.AddNewMaterial(new Material("Hehkulamppu", "Varaosat", false, 100, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.MaxValue, null, Unit.G));
+            Console.WriteLine("Testing method RetreiveAllMaterialsInGroup(Ruoka)");
+            dbManager.RetrieveMaterialsInGroup("Ruoka");
+            Console.WriteLine("Testing method RetreiveAllMaterials()");
+            dbManager.RetrieveAllMaterials();
+            Console.WriteLine("Testing method RetrieveMaterialsByAmount(E, 1)");
+            dbManager.RetrieveMaterialsByAmount(DatabaseManager.ROperator.E, 1);
+            Console.WriteLine("Testing method RetrieveMaterialByName(Hehkulamppu)");
+            Material hehkulamppu = dbManager.RetrieveMaterialByName("Hehkulamppu");
+            Console.WriteLine("Testing method UpdateMaterial(hehkulamppu)");
+            dbManager.UpdateMaterial(hehkulamppu, new Material("Hehkulamppu", "Varaosat", false, 2, Material.MeasureType.PCS, DateTime.Now, DateTime.MaxValue, null, Unit.PCS));
+            Console.WriteLine("Testing method RetrieveMaterialByName(Hehkulamppu)");
+            dbManager.RetrieveMaterialByName("Hehkulamppu");
+            Console.WriteLine("Testing method DeleteMaterialByName(Kovalevy)");
+            dbManager.DeleteMaterialByName("Kovalevy");
+            Console.WriteLine("Testing method RetreiveAllMaterials()");
+            dbManager.RetrieveAllMaterials();
+            Console.WriteLine("Testing method ");
+            Console.WriteLine("Testing method ");
+            Console.WriteLine("Testing method ");
+            Console.WriteLine("Testing method ");
+            Console.WriteLine("Testing method ");
+            Console.WriteLine("Testing method ");
+            Console.WriteLine("Testing method ");
+        }
+
+        // Method that can be used to initialize a tab when it's selected.
+        private void OnTabChanged(Object sender, SelectionChangedEventArgs args)
+        {
+            if (MainWindowTabShoppingList.IsSelected)
+                InitShoppingListTab();
+            
+            /*
+            else if (MainWindowTabAdvancedSearch.IsSelected) ;
+            else if (MainWindowTabInventory.IsSelected) ;
+            else if (MainWindowTabRecipies.IsSelected) ;
+            else if (MainWindowTabManageInventory.IsSelected) ;
+            */
+        }
+
+        private void InitShoppingListTab()
+        {
+            //IObjectSet shopLists = dbManager.RetrieveAllShoppingLists();
+            
         }
     }
 }

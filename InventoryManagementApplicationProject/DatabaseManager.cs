@@ -25,45 +25,51 @@ namespace InventoryManagement
         //------------------------------------
         //----- OPERATIONS FOR MATERIALS -----
         //------------------------------------
-        public IObjectSet RetrieveAllMaterials()
+        public List<Material> RetrieveAllMaterials()
         {
             IObjectSet result = db.QueryByExample(typeof(Material));
-            PrintObjectSet(result);
+            List<Material> materials = new List<Material>();
+            while(result.HasNext())
+                materials.Add((Material) result.Next());
+            PrintMaterialList(materials);
+            return materials;
+        }
+
+        public Material RetrieveMaterialByName(String name)
+        {
+            Material result = null;
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                return mat.Name == name;
+            });
+            if (mats.Count == 1)
+                result = mats[0];
+            Console.WriteLine(result);
             return result;
         }
 
-        public IObjectSet RetrieveMaterialByName(String name)
+        public void UpdateMaterial(Material oldMaterial, Material newMaterial)
         {
-            Material proto = new Material(name);
-            IObjectSet result = db.QueryByExample(proto);
-            PrintObjectSet(result);
-            return result;
-        }
-
-        public IObjectSet RetrieveMaterialByExactAmount(double amount)
-        {
-            Material proto = new Material(null, null, amount);
-            IObjectSet result = db.QueryByExample(proto);
-            PrintObjectSet(result);
-            return result;
-        }
-
-        public void UpdateMaterial(Material mat)
-        {
-            IObjectSet result = db.QueryByExample(mat);
-            Material found = (Material) result.Next();
-            found = mat;
-            db.Store(mat);
-            RetrieveAllMaterials();
+            IObjectSet result = db.QueryByExample(oldMaterial);
+            if (result.HasNext())
+            {
+                Material found = (Material)result.Next();
+                found.Amount = newMaterial.Amount;
+                found.BestBefore = newMaterial.BestBefore;
+                found.DateBought = newMaterial.DateBought;
+                found.DisplayUnit = newMaterial.DisplayUnit;
+                found.ExtraInfo = newMaterial.ExtraInfo;
+                found.GroupName = newMaterial.GroupName;
+                found.Infinite = newMaterial.Infinite;
+                found.Name = newMaterial.Name;
+                found.TypeOfMeasure = newMaterial.TypeOfMeasure;
+                db.Store(found);
+            }
         }
 
         public void DeleteMaterialByName(String name)
         {
-            IObjectSet result = db.QueryByExample(new Material(name));
-            Material found = (Material)result.Next();
-            db.Delete(found);
-            Console.WriteLine("Deleted {0}", found);
-            RetrieveAllMaterials();
+            db.Delete(RetrieveMaterialByName(name));
         }
 
         public void AddNewMaterial(String name, String groupName, bool infinite, double amount, 
@@ -79,7 +85,8 @@ namespace InventoryManagement
             db.Store(mat);
         }
 
-        public IList<Material> RetreiveMaterialsInGroup(String groupName) {
+        public IList<Material> RetrieveMaterialsInGroup(String groupName)
+        {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.GroupName == groupName;
@@ -88,7 +95,7 @@ namespace InventoryManagement
             return mats;
         }
 
-        public IList<Material> RetreiveMaterialsByBestBeforeDate(ROperator ro, DateTime date)
+        public IList<Material> RetrieveMaterialsByBestBeforeDate(ROperator ro, DateTime date)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -106,7 +113,7 @@ namespace InventoryManagement
             return mats;
         }
 
-        public IList<Material> RetreiveMaterialsByBestBeforeDateInRange(DateTime min, DateTime max)
+        public IList<Material> RetrieveMaterialsByBestBeforeDateInRange(DateTime min, DateTime max)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -116,7 +123,7 @@ namespace InventoryManagement
             return mats;
         }
 
-        public IList<Material> RetreiveMaterialsByDateBought(ROperator ro, DateTime date)
+        public IList<Material> RetrieveMaterialsByDateBought(ROperator ro, DateTime date)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -134,7 +141,7 @@ namespace InventoryManagement
             return mats;
         }
 
-        public IList<Material> RetreiveMaterialsByDateBoughtInRange(DateTime min, DateTime max)
+        public IList<Material> RetrieveMaterialsByDateBoughtInRange(DateTime min, DateTime max)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -144,7 +151,7 @@ namespace InventoryManagement
             return mats;
         }
 
-        public IList<Material> RetreiveMaterialsWithExtraInfoContainingWord(string word)
+        public IList<Material> RetrieveMaterialsWithExtraInfoContainingWord(string word)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -154,7 +161,7 @@ namespace InventoryManagement
             return mats;
         }
 
-        public IList<Material> RetreiveMaterialsGoneBad()
+        public IList<Material> RetrieveMaterialsGoneBad()
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -164,7 +171,7 @@ namespace InventoryManagement
             return mats;
         }
 
-        public IList<Material> RetreiveByInfinity(bool infinite)
+        public IList<Material> RetrieveMaterialsByInfinity(bool infinite)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -174,7 +181,7 @@ namespace InventoryManagement
             return mats;
         }
 
-        public IList<Material> RetreiveMaterialsByAmount(ROperator ro, double amount)
+        public IList<Material> RetrieveMaterialsByAmount(ROperator ro, double amount)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -195,7 +202,7 @@ namespace InventoryManagement
             return mats;
         }
 
-        public IList<Material> RetreiveMaterialsByAmountRange(double min, double max)
+        public IList<Material> RetrieveMaterialsByAmountRange(double min, double max)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -218,7 +225,7 @@ namespace InventoryManagement
             return result;
         }
 
-        public IList<ShoppingList> RetreiveShoppingListByName(string name)
+        public IList<ShoppingList> RetrieveShoppingListByName(string name)
         {
             IList<ShoppingList> lists = db.Query<ShoppingList>(delegate(ShoppingList sl)
             {
@@ -268,16 +275,11 @@ namespace InventoryManagement
         public void AddMaterialToRecipe(String recipeName, String materialName)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
-            IObjectSet materials = RetrieveMaterialByName(materialName);
-            if (materials.HasNext())
+            Material material = RetrieveMaterialByName(materialName);
+            for (int i = 0; i < recipes.Count; i++)
             {
-                Material material;
-                material = (Material)materials.Next();
-                for (int i = 0; i < recipes.Count; i++)
-                {
-                    recipes[i].Content.Add(material);
-                    db.Store(recipes[i]);
-                }
+                recipes[i].Content.Add(material);
+                db.Store(recipes[i]);
             }
         }
 
