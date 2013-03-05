@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
+using Db4objects.Db4o;
+using Db4objects.Db4o.Query;
 
 namespace InventoryManagement
 {
@@ -17,10 +19,9 @@ namespace InventoryManagement
             searchContent = new List<string>();
         }
 
-
         public List<string> SearchRecipes(string input)
         {
-            
+            /*
             SqlConnection connection = new SqlConnection("...");
             connection.Open(); searchContent.Clear();
 
@@ -45,15 +46,16 @@ namespace InventoryManagement
             }
 
             connection.Close();
-            
+            */
             return searchContent;
         }
 
-        public List<string> SearchInventory(string input)
+        public string SearchInventory(string input)
         {
-        
-            return searchContent;
+            string result = "result";
+            return result;
         }
+
 
         public List<string> SearchContent
         {
