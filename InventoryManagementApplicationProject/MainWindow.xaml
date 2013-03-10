@@ -20,7 +20,9 @@
                     </ComboBox>
                     <TextBox x:Name="SearchFilter" TextAlignment="Right" Text="Search.." Foreground="Gray" LostFocus="SearchFilter_LostFocus" GotFocus="SearchFilter_GotFocus" TextChanged="SearchFilter_TextChanged">
                     </TextBox>
-                    <ListView x:Name="InventoryItemList" MinHeight="200" SelectionChanged="InventoryItemList_SelectionChanged"/>
+                    <ListView x:Name="InventoryItemList" MinHeight="200" SelectionChanged="InventoryItemList_SelectionChanged">
+                    </ListView>
+                    <Button x:Name="jukanTestNabbula" Content="Update view" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Width="134" Click="jukanNabbula_Click" RenderTransformOrigin="3.438,-0.087"/>
                 </StackPanel>
                 <StackPanel x:Name="InventoryItemPanel" Grid.Column="3">
                     <StackPanel x:Name="ItemName" Orientation="Horizontal">
@@ -90,6 +92,7 @@
                     </StackPanel>
                 </StackPanel>
                 <Button x:Name="mikonTestBtn" Content="Mikon testinappi" HorizontalAlignment="Left" Margin="5,331,0,0" VerticalAlignment="Top" Width="134" Click="mikonTestBtn_Click" RenderTransformOrigin="3.438,-0.087" Grid.Column="3"/>
+                
 
             </Grid>
         </TabItem>

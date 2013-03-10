@@ -38,7 +38,11 @@ namespace InventoryManagement
             //When Inventory Management window is loaded 
             //(application is started)
             InventoryItemList.ItemsSource = this.inventory;
-
+            
+            /*
+            dbManager.ReCreateDB();
+            dbManager.CreateSampleData();
+            */
             /*
             //Some test data
             inventory.Add(new Material("testi1", "peikonpallit", 1));
@@ -46,16 +50,27 @@ namespace InventoryManagement
             inventory.Add(new Material("qwe", null, 1));
             inventory.Add(new Material("rty", null, 1));
             */
-         
+
+            AddAllMaterialToInventoryList();
+            //List<Material> allItems = dbManager.RetrieveAllMaterials();
+            ////dbManager.PrintMaterialList(allItems);
+
+            //foreach (Material item in allItems)
+            //{
+            //    inventory.Add(new Material(item.Name, item.GroupName, item.Infinite, item.Amount, item.TypeOfMeasure, item.DateBought, item.BestBefore, item.ExtraInfo, item.DisplayUnit));
+            //}
+        }
+
+        private void AddAllMaterialToInventoryList()
+        {
             List<Material> allItems = dbManager.RetrieveAllMaterials();
-            dbManager.PrintMaterialList(allItems);
+            //dbManager.PrintMaterialList(allItems);
 
             foreach (Material item in allItems)
             {
                 inventory.Add(new Material(item.Name, item.GroupName, item.Infinite, item.Amount, item.TypeOfMeasure, item.DateBought, item.BestBefore, item.ExtraInfo, item.DisplayUnit));
             }
         }
-
         private void SearchFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (SearchFilter.Text != "Search.." && SearchFilter.Text != String.Empty)
@@ -68,9 +83,11 @@ namespace InventoryManagement
         private void DecreaseQuantity_Click(object sender, RoutedEventArgs e)
         {
             //Decrease selected item quantity
-            if (selectedItem.Amount >= 1)
+            if (this.selectedItem != null && selectedItem.Amount >= 1)
             {
+                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
                 selectedItem.AddAmount(-1);
+                dbManager.UpdateMaterial(tempItem, selectedItem);
                 UpdateInventoryItemPanel();
             }
         }
@@ -78,14 +95,23 @@ namespace InventoryManagement
         private void IncreaseQuantity_Click(object sender, RoutedEventArgs e)
         {
             //Increase selected item quantity
-            selectedItem.AddAmount(1);
-            UpdateInventoryItemPanel();
+            if (this.selectedItem != null)
+            {
+                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
+                selectedItem.AddAmount(1);
+                dbManager.UpdateMaterial(tempItem, selectedItem);
+                UpdateInventoryItemPanel();
+            }
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             //Go to manage inventory tab and select selected item
-            tabControl.SelectedIndex = 4;
+            if (this.selectedItem != null)
+            {
+                tabControl.SelectedIndex = 4;
+                InitManageInventoryTab(selectedItem);
+            }
         }
 
         //These functions handle placeholder text "Search.."
@@ -108,8 +134,11 @@ namespace InventoryManagement
         //If one item is selected, it is placed to "selectedItem" variable and "selectedItems" is null.
         //If multiple items are selected, those are placed to "selectedItems" variable as List<Material> and "selectedItem" is null.
         //If all items are deselected both variables are null.
-        private void InventoryItemList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void InventoryItemList_SelectionChanged(object sender, SelectionChangedEventArgs e = null)
         {
+            Console.WriteLine(sender);
+            Console.WriteLine(e);
+
             if ((sender as ListView).SelectedItems.Count > 1)
             {
                 this.selectedItem = null;
@@ -142,10 +171,14 @@ namespace InventoryManagement
             {
                 this.ItemNameContent.Content = selectedItem.Name;
                 this.ItemQuantityContent.Content = selectedItem.Amount;
-                this.ItemUnitContent.Content = selectedItem.TypeOfMeasure;
+                this.ItemUnitContent.Content = selectedItem.TypeOfMeasure + " (" + selectedItem.DisplayUnit.Name + ")";
                 this.ItemGroupContent.Content = selectedItem.GroupName;
                 this.ItemDescriptionContent.Content = selectedItem.ExtraInfo;
                 this.ItemBestBeforeContent.Content = selectedItem.BestBefore;
+                Console.WriteLine(selectedItem.BestBefore);
+
+                this.ItemLastModifiedContent.Content = selectedItem.DateBought;
+
                 if (selectedItem.Infinite)
                 {
                     this.ItemIsInfiniteContent.Content = "Yes";
@@ -170,7 +203,7 @@ namespace InventoryManagement
                 this.ItemPriceContent.Content = "";
                 this.ItemPriceUnit.Content = "";
                 this.ItemIsInfiniteContent.Content = "";
-                this.ItemIsInfiniteContent.Content = "";
+                this.ItemLastModifiedContent.Content = "";
                 this.ItemBestBeforeContent.Content = "";
             }
         }
@@ -213,12 +246,13 @@ namespace InventoryManagement
         {
             if (MainWindowTabShoppingList.IsSelected)
                 InitShoppingListTab();
+            else if (MainWindowTabManageInventory.IsSelected)
+                InitManageInventoryTab();
             
             /*
             else if (MainWindowTabAdvancedSearch.IsSelected) ;
             else if (MainWindowTabInventory.IsSelected) ;
             else if (MainWindowTabRecipies.IsSelected) ;
-            else if (MainWindowTabManageInventory.IsSelected) ;
             */
         }
 
@@ -227,5 +261,22 @@ namespace InventoryManagement
             //IObjectSet shopLists = dbManager.RetrieveAllShoppingLists();
             
         }
+
+        private void InitManageInventoryTab(Material editMaterial = null)
+        {
+            Console.WriteLine(editMaterial);
+            Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name);
+
+            //Some logic
+            
+            dbManager.UpdateMaterial(tempItem, editMaterial);
+        }
+
+        private void jukanNabbula_Click(object sender, RoutedEventArgs e)
+        {
+            inventory.Clear(); 
+            AddAllMaterialToInventoryList();
+        }
+
     }
 }

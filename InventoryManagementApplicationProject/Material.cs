@@ -40,7 +40,8 @@ namespace InventoryManagement
             DateTime dateBought, DateTime bestBefore, string extraInfo, Unit displayUnit)
         {
             this.Name = name;
-            this.Infinite = false;
+            //this.Infinite = false;
+            this.Infinite = infinite;
             this.Amount = amount;
             this.GroupName = groupName;
             this.TypeOfMeasure = MeasureType.PCS;
