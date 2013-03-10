@@ -39,11 +39,21 @@ namespace InventoryManagement
             //(application is started)
             InventoryItemList.ItemsSource = this.inventory;
 
+            /*
             //Some test data
             inventory.Add(new Material("testi1", "peikonpallit", 1));
             inventory.Add(new Material("asd", "nutturat", 1));
             inventory.Add(new Material("qwe", null, 1));
             inventory.Add(new Material("rty", null, 1));
+            */
+         
+            List<Material> allItems = dbManager.RetrieveAllMaterials();
+            dbManager.PrintMaterialList(allItems);
+
+            foreach (Material item in allItems)
+            {
+                inventory.Add(new Material(item.Name, item.GroupName, item.Infinite, item.Amount, item.TypeOfMeasure, item.DateBought, item.BestBefore, item.ExtraInfo, item.DisplayUnit));
+            }
         }
 
         private void SearchFilter_TextChanged(object sender, TextChangedEventArgs e)
@@ -58,16 +68,24 @@ namespace InventoryManagement
         private void DecreaseQuantity_Click(object sender, RoutedEventArgs e)
         {
             //Decrease selected item quantity
+            if (selectedItem.Amount >= 1)
+            {
+                selectedItem.AddAmount(-1);
+                UpdateInventoryItemPanel();
+            }
         }
 
         private void IncreaseQuantity_Click(object sender, RoutedEventArgs e)
         {
             //Increase selected item quantity
+            selectedItem.AddAmount(1);
+            UpdateInventoryItemPanel();
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             //Go to manage inventory tab and select selected item
+            tabControl.SelectedIndex = 4;
         }
 
         //These functions handle placeholder text "Search.."
@@ -125,6 +143,18 @@ namespace InventoryManagement
                 this.ItemNameContent.Content = selectedItem.Name;
                 this.ItemQuantityContent.Content = selectedItem.Amount;
                 this.ItemUnitContent.Content = selectedItem.TypeOfMeasure;
+                this.ItemGroupContent.Content = selectedItem.GroupName;
+                this.ItemDescriptionContent.Content = selectedItem.ExtraInfo;
+                this.ItemBestBeforeContent.Content = selectedItem.BestBefore;
+                if (selectedItem.Infinite)
+                {
+                    this.ItemIsInfiniteContent.Content = "Yes";
+                }
+                else
+                {
+                    this.ItemIsInfiniteContent.Content = "No";
+                }
+                
             }
             else if (selectedItems != null)
             {

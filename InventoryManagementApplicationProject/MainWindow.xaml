@@ -6,7 +6,7 @@
         Loaded="InventoryManagement_Loaded" 
         MinHeight="350" 
         MinWidth="400">
-    <TabControl SelectionChanged="OnTabChanged">
+    <TabControl SelectionChanged="OnTabChanged" Name="tabControl">
         <TabItem x:Name="MainWindowTabInventory" Header="Inventory">
             <Grid Background="#FFFFFFFF">
                 <Grid.ColumnDefinitions>
@@ -89,7 +89,7 @@
                         </Button>
                     </StackPanel>
                 </StackPanel>
-                <Button x:Name="mikonTestBtn" Content="Mikon testinappi" HorizontalAlignment="Left" Margin="20,331,0,0" VerticalAlignment="Top" Width="114" Click="mikonTestBtn_Click"/>
+                <Button x:Name="mikonTestBtn" Content="Mikon testinappi" HorizontalAlignment="Left" Margin="5,331,0,0" VerticalAlignment="Top" Width="134" Click="mikonTestBtn_Click" RenderTransformOrigin="3.438,-0.087" Grid.Column="3"/>
 
             </Grid>
         </TabItem>
