@@ -429,7 +429,10 @@ namespace InventoryManagement
             AddNewMaterial("2x4 Lauta", "Rakennustarvike", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Sijainti: olohuone", Unit.M);
 
             AddNewRecipe("Resepti", "Käytä tätä reseptiä");
-            //AddMaterialToRecipe("Resepti", RetrieveMaterialByName("Kalja"));
+            AddMaterialToRecipe("Resepti", RetrieveMaterialByName("Kalja"));
+            AddMaterialToRecipe("Resepti", "ES");
+            AddNewRecipe("Ruokaa", RetrieveMaterialsInGroup("Ruoka"), "Tähän reseptiin tulee paljon ruokaa");
+            AddNewRecipe("Juomia", RetrieveMaterialsInGroup("Juoma"), "Juomapuoli hoidossa");
 
             AddNewShoppingList("Ruokakauppa");
             AddNewShoppingList("Verkkokauppa.com");
@@ -468,7 +471,12 @@ namespace InventoryManagement
         public void PrintRecipeList(List<Recipe> whatever)
         {
             foreach (Recipe o in whatever)
-                Console.WriteLine(o);
+            {
+                Console.WriteLine("Nimi: " + o.Name + ", Ohje: " + o.Instructions + ", Materiaalit: ");
+                for (int i = 0; i < o.Content.Count; i++)
+                    Console.WriteLine(o.Content[i].Name);
+            }
+                
         }
 
 

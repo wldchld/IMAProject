@@ -242,6 +242,18 @@ namespace InventoryManagement
             Console.WriteLine("Testing method ");
             Console.WriteLine("Testing method ");
             Console.WriteLine("Testing method ");
+
+            //Robbed your button Mikko ;) t. Ville
+            Console.WriteLine("Testing method RetrieveAllRecipes()");
+            dbManager.RetrieveAllRecipes();
+            Console.WriteLine("Testing method RetrieveRecipeByMaterialList()");
+            dbManager.RetrieveRecipeByMaterialList(dbManager.RetrieveMaterialsByAmount(DatabaseManager.ROperator.E,240));
+            Console.WriteLine("Testing method RetrieveRecipeByName()");
+            dbManager.RetrieveRecipeByName("Resepti");
+            Console.WriteLine("Testing method RetrieveRecipeByName(string)");
+            dbManager.RetrieveRecipeByMaterialName("ES");
+            Console.WriteLine("Testing method RetrieveRecipeByName(<Material>)");
+            dbManager.RetrieveRecipeByMaterial(dbManager.RetrieveMaterialByName("Ruisleipä"));
         }
 
         // Method that can be used to initialize a tab when it's selected.
