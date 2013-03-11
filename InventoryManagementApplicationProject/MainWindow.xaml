@@ -98,27 +98,37 @@
         </TabItem>
         <TabItem x:Name="MainWindowTabRecipies" Header="Recipies">
             <Grid Background="#FFFFFFFF">
-                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="161*"/>
+                    <ColumnDefinition Width="589*"/>
+                </Grid.ColumnDefinitions>
+
             </Grid>
         </TabItem>
         <TabItem x:Name="MainWindowTabShoppingList" Header="Shopping list">
             <Grid Background="#FFFFFFFF">
                 <Label Content="Lists" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="54"/>
-                <ListView x:Name="shoppingListsLW" HorizontalAlignment="Left" Height="308" Margin="10,41,0,0" VerticalAlignment="Top" Width="100">
+                <ListView x:Name="shoppingListsLW" HorizontalAlignment="Left" Height="308" Margin="10,41,0,0" VerticalAlignment="Top" Width="190" SelectionChanged="shoppingListsLW_SelectionChanged">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn/>
+                            <GridViewColumn Header="Name"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <ListView x:Name="shoppingListContentLW" HorizontalAlignment="Left" Height="308" Margin="115,41,0,0" VerticalAlignment="Top" Width="340" RenderTransformOrigin="-0.56,-0.13">
+                <ListView x:Name="shoppingListContentLW" HorizontalAlignment="Left" Height="308" Margin="205,41,0,0" VerticalAlignment="Top" Width="273" RenderTransformOrigin="-0.56,-0.13" SelectedIndex="0" ContextMenuOpening="shoppingListContentLW_ContextMenuOpening">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Remove" Click="ShopListItem_Click_Remove" />
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn/>
+                            <GridViewColumn Header="Name"  DisplayMemberBinding="{Binding Path=Name, Mode=TwoWay}" Width="200"/>
+                            <GridViewColumn Header="Amount"  DisplayMemberBinding="{Binding Path=Amount, Mode=TwoWay}" Width="Auto"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <Label Content="Content" HorizontalAlignment="Left" Margin="115,10,0,0" VerticalAlignment="Top" Height="26" Width="66"/>
+                <Label Content="Content" HorizontalAlignment="Left" Margin="205,10,0,0" VerticalAlignment="Top" Height="26" Width="69"/>
             </Grid>
         </TabItem>
         <TabItem x:Name="MainWindowTabAdvancedSearch" Header="Advanced search">

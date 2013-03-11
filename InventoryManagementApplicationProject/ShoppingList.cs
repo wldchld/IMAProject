@@ -16,7 +16,13 @@ namespace InventoryManagement
             content = new List<Material>();
         }
 
-        public void AddToList(Material material)
+        public ShoppingList(string name)
+        {
+            this.Name = name;
+            content = new List<Material>();
+        }
+
+        public void AddToContent(Material material)
         {
             if (material != null)
             {
@@ -34,7 +40,7 @@ namespace InventoryManagement
             }
         }
 
-        public void RemoveFromList(Material material)
+        public void RemoveFromContent(Material material)
         {
             content.Remove(material);
         }
@@ -62,6 +68,11 @@ namespace InventoryManagement
             {
                 name = value;
             }
+        }
+
+        public override string ToString()
+        {
+            return name.ToString();
         }
     }
 }

@@ -22,6 +22,8 @@ namespace InventoryManagement
     public partial class MainWindow : Window
     {        
         private ObservableCollection<Material> inventory = new ObservableCollection<Material>();
+        private List<ShoppingList> shopLists;
+        private List<Material> selectedShopListContent;
 
         private Material selectedItem = null;
         private List<Material> selectedItems = null;
@@ -232,7 +234,8 @@ namespace InventoryManagement
             dbManager.DeleteMaterialByName("Kovalevy");
             Console.WriteLine("Testing method RetreiveAllMaterials()");
             dbManager.RetrieveAllMaterials();
-            Console.WriteLine("Testing method ");
+            Console.WriteLine("Testing method RetreiveAllShoppingLists()");
+            dbManager.RetrieveAllShoppingLists();
             Console.WriteLine("Testing method ");
             Console.WriteLine("Testing method ");
             Console.WriteLine("Testing method ");
@@ -258,18 +261,21 @@ namespace InventoryManagement
 
         private void InitShoppingListTab()
         {
-            //IObjectSet shopLists = dbManager.RetrieveAllShoppingLists();
-            
+            shopLists = dbManager.RetrieveAllShoppingLists();
+            shoppingListsLW.ItemsSource = shopLists;
         }
 
         private void InitManageInventoryTab(Material editMaterial = null)
         {
             Console.WriteLine(editMaterial);
-            Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name);
+            // Lisäsin null tarkistuksen, ettei ohjelma kaadu jos vaihtaa tähän välilehteen.
+            if (editMaterial != null)
+            {
+                Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name);
 
-            //Some logic
-            
-            dbManager.UpdateMaterial(tempItem, editMaterial);
+                //Some logic
+                dbManager.UpdateMaterial(tempItem, editMaterial);
+            }
         }
 
         private void jukanNabbula_Click(object sender, RoutedEventArgs e)
@@ -278,5 +284,35 @@ namespace InventoryManagement
             AddAllMaterialToInventoryList();
         }
 
+        private void shoppingListsLW_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int idx = shoppingListsLW.SelectedIndex;
+            if (idx >= 0 && idx < shopLists.Count)
+            {
+                ShoppingList sl = dbManager.RetrieveShoppingListByName(shoppingListsLW.SelectedItem.ToString());
+                selectedShopListContent = sl.Content;
+                shoppingListContentLW.ItemsSource = selectedShopListContent;
+            }
+        }
+
+        private void shoppingListContentLW_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            // If there are no items selected, cancel viewing the context menu
+            if (shoppingListContentLW.SelectedItems.Count <= 0)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void ShopListItem_Click_Remove(object sender, RoutedEventArgs e)
+        {
+            ShoppingList sl = (ShoppingList) shoppingListsLW.SelectedItem;
+            Material item = (Material) shoppingListContentLW.SelectedItem;
+            // remove it from the ShoppingList object's content, update view and database
+            sl.RemoveFromContent(item);
+            dbManager.UpdateShoppingList(sl);
+            selectedShopListContent.Remove(item);
+            shoppingListContentLW.Items.Refresh();
+        }
     }
 }

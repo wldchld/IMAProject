@@ -85,17 +85,17 @@ namespace InventoryManagement
             db.Store(mat);
         }
 
-        public IList<Material> RetrieveMaterialsInGroup(String groupName)
+        public List<Material> RetrieveMaterialsInGroup(String groupName)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.GroupName == groupName;
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
-        public IList<Material> RetrieveMaterialsByBestBeforeDate(ROperator ro, DateTime date)
+        public List<Material> RetrieveMaterialsByBestBeforeDate(ROperator ro, DateTime date)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -110,20 +110,20 @@ namespace InventoryManagement
                 return mat.BestBefore == date;
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
-        public IList<Material> RetrieveMaterialsByBestBeforeDateInRange(DateTime min, DateTime max)
+        public List<Material> RetrieveMaterialsByBestBeforeDateInRange(DateTime min, DateTime max)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.BestBefore >= min && mat.BestBefore <= max;
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
-        public IList<Material> RetrieveMaterialsByDateBought(ROperator ro, DateTime date)
+        public List<Material> RetrieveMaterialsByDateBought(ROperator ro, DateTime date)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -138,50 +138,50 @@ namespace InventoryManagement
                 return mat.DateBought == date;
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
-        public IList<Material> RetrieveMaterialsByDateBoughtInRange(DateTime min, DateTime max)
+        public List<Material> RetrieveMaterialsByDateBoughtInRange(DateTime min, DateTime max)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.DateBought >= min && mat.DateBought <= max;
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
-        public IList<Material> RetrieveMaterialsWithExtraInfoContainingWord(string word)
+        public List<Material> RetrieveMaterialsWithExtraInfoContainingWord(string word)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.ExtraInfo.Contains(word);
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
-        public IList<Material> RetrieveMaterialsGoneBad()
+        public List<Material> RetrieveMaterialsGoneBad()
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.BestBefore < DateTime.Now;
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
-        public IList<Material> RetrieveMaterialsByInfinity(bool infinite)
+        public List<Material> RetrieveMaterialsByInfinity(bool infinite)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.Infinite == infinite;
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
-        public IList<Material> RetrieveMaterialsByAmount(ROperator ro, double amount)
+        public List<Material> RetrieveMaterialsByAmount(ROperator ro, double amount)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
@@ -199,17 +199,17 @@ namespace InventoryManagement
                     return mat.Amount == amount;
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
-        public IList<Material> RetrieveMaterialsByAmountRange(double min, double max)
+        public List<Material> RetrieveMaterialsByAmountRange(double min, double max)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.Amount >= min && mat.Amount <= max;
             });
             PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
   
@@ -218,20 +218,56 @@ namespace InventoryManagement
         //----- SHOPPING LIST OPERATIONS -----
         //------------------------------------
 
-        public IObjectSet RetrieveAllShoppingLists()
+        public void AddNewShoppingList(string name)
         {
-            IObjectSet result = db.QueryByExample(typeof(ShoppingList));
-            PrintObjectSet(result);
-            return result;
+            db.Store(new ShoppingList(name));
         }
 
-        public IList<ShoppingList> RetrieveShoppingListByName(string name)
+        public void AddToShoppingList(string listName, Material mat)
         {
+            IObjectSet sls = db.QueryByExample(new ShoppingList(listName));
+            ShoppingList list = null;
+            if (sls.HasNext())
+                list = (ShoppingList) sls.Next();
+            if (list != null)
+                list.AddToContent(mat);
+            db.Store(list);
+        }
+
+        public void UpdateShoppingList(ShoppingList list)
+        {
+            IObjectSet sls = db.QueryByExample(list);
+            ShoppingList oldList = null;
+            if (sls.HasNext())
+                oldList = (ShoppingList)sls.Next();
+            if (oldList != null)
+            {
+                oldList = list;
+                db.Store(oldList);
+            }
+        }
+
+        public List<ShoppingList> RetrieveAllShoppingLists()
+        {
+            IObjectSet result = db.QueryByExample(typeof(ShoppingList));
+            List<ShoppingList> sls = new List<ShoppingList>();
+            while (result.HasNext())
+                sls.Add((ShoppingList) result.Next());
+
+            //PrintShoppingListList(sls);
+            return sls;
+        }
+
+        public ShoppingList RetrieveShoppingListByName(string name)
+        {
+            ShoppingList ret = null;
             IList<ShoppingList> lists = db.Query<ShoppingList>(delegate(ShoppingList sl)
             {
                 return sl.Name == name ;
             });
-            return lists;
+            if(lists.Count > 0)
+                ret = lists[0];
+            return ret;
         }
 
         //-----------------------------
@@ -390,6 +426,15 @@ namespace InventoryManagement
 
             AddNewRecipe("Resepti", "Käytä tätä reseptiä");
             //AddMaterialToRecipe("Resepti", RetrieveMaterialByName("Kalja"));
+
+            AddNewShoppingList("Ruokakauppa");
+            AddNewShoppingList("Verkkokauppa.com");
+            AddNewShoppingList("Rautakauppa");
+
+            AddToShoppingList("Ruokakauppa", new Material("Maito", "Ruoka", false, 3, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now, null, Unit.L));
+            AddToShoppingList("Ruokakauppa", new Material("Kerma", "Ruoka", false, 4, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now, null, Unit.DL));
+            AddToShoppingList("Verkkokauppa.com", new Material("G27", "PS3", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.Now, null, Unit.PCS));
+            AddToShoppingList("Verkkokauppa.com", new Material("G27 teline", "PS3", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.Now, "Vitun painava", Unit.PCS));
         }
 
         //-----------------------------------------
