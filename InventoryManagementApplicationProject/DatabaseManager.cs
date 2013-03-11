@@ -253,7 +253,6 @@ namespace InventoryManagement
             List<ShoppingList> sls = new List<ShoppingList>();
             while (result.HasNext())
                 sls.Add((ShoppingList) result.Next());
-
             //PrintShoppingListList(sls);
             return sls;
         }
@@ -268,6 +267,11 @@ namespace InventoryManagement
             if(lists.Count > 0)
                 ret = lists[0];
             return ret;
+        }
+
+        public void DeleteShoppingListByName(string name)
+        {
+            db.Delete(RetrieveShoppingListByName(name));
         }
 
         //-----------------------------

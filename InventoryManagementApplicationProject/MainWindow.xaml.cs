@@ -299,9 +299,7 @@ namespace InventoryManagement
         {
             // If there are no items selected, cancel viewing the context menu
             if (shoppingListContentLW.SelectedItems.Count <= 0)
-            {
                 e.Handled = true;
-            }
         }
 
         private void ShopListItem_Click_Remove(object sender, RoutedEventArgs e)
@@ -312,6 +310,16 @@ namespace InventoryManagement
             sl.RemoveFromContent(item);
             dbManager.UpdateShoppingList(sl);
             selectedShopListContent.Remove(item);
+            shoppingListContentLW.Items.Refresh();
+        }
+
+        private void Remove_Whole_Shoplist(object sender, RoutedEventArgs e)
+        {
+            ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
+            dbManager.DeleteShoppingListByName(sl.Name);
+            shopLists.Remove(sl);
+            shoppingListsLW.Items.Refresh();
+            shoppingListContentLW.ItemsSource = null;
             shoppingListContentLW.Items.Refresh();
         }
     }

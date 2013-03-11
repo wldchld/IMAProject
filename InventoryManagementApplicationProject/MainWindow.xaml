@@ -109,6 +109,11 @@
             <Grid Background="#FFFFFFFF">
                 <Label Content="Lists" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="54"/>
                 <ListView x:Name="shoppingListsLW" HorizontalAlignment="Left" Height="308" Margin="10,41,0,0" VerticalAlignment="Top" Width="190" SelectionChanged="shoppingListsLW_SelectionChanged">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Remove" Click="Remove_Whole_Shoplist" />
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Name"/>
