@@ -336,5 +336,22 @@ namespace InventoryManagement
             shoppingListContentLW.ItemsSource = null;
             shoppingListContentLW.Items.Refresh();
         }
+
+        private void QuantityEqualsButton_Click(object sender, RoutedEventArgs e)
+        {
+            String Qeb = this.QuantityEqualsButton.Content.ToString();
+            if (Qeb == ">")
+            {
+                this.QuantityEqualsButton.Content = "<";
+            }
+            else if (Qeb == "<")
+            {
+                this.QuantityEqualsButton.Content = "=";
+            }
+            else if (Qeb == "=")
+            {
+                this.QuantityEqualsButton.Content = ">";
+            }
+        }
     }
 }
