@@ -20,102 +20,54 @@ namespace InventoryManagement
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {        
+    {
+
+        #region Private variables
         private ObservableCollection<Material> inventory = new ObservableCollection<Material>();
+        private Material selectedItem = null;
+        private List<Material> selectedItems = null;
+
+        private DatabaseManager dbManager = new DatabaseManager();
+
         private List<ShoppingList> shopLists;
         private List<Material> selectedShopListContent;
 
-        private Material selectedItem = null;
-        private List<Material> selectedItems = null;
-        private DatabaseManager dbManager = new DatabaseManager();
         private Search search = new Search();
+        #endregion
 
+        #region Initialize first time
         public MainWindow()
         {
             InitializeComponent();
         }
 
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
-        {
-            //When Inventory Management window is loaded 
-            //(application is started)
-            InventoryItemList.ItemsSource = this.inventory;
-            
-            /*
-            dbManager.ReCreateDB();
-            dbManager.CreateSampleData();
-            */
-            /*
-            //Some test data
-            inventory.Add(new Material("testi1", "peikonpallit", 1));
-            inventory.Add(new Material("asd", "nutturat", 1));
-            inventory.Add(new Material("qwe", null, 1));
-            inventory.Add(new Material("rty", null, 1));
-            */
-
-            AddAllMaterialToInventoryList();
-            //List<Material> allItems = dbManager.RetrieveAllMaterials();
-            ////dbManager.PrintMaterialList(allItems);
-
-            //foreach (Material item in allItems)
-            //{
-            //    inventory.Add(new Material(item.Name, item.GroupName, item.Infinite, item.Amount, item.TypeOfMeasure, item.DateBought, item.BestBefore, item.ExtraInfo, item.DisplayUnit));
-            //}
+        {            
+            AddAllMaterialToInventoryList();            
         }
 
         private void AddAllMaterialToInventoryList()
         {
             List<Material> allItems = dbManager.RetrieveAllMaterials();
-            //dbManager.PrintMaterialList(allItems);
 
             foreach (Material item in allItems)
             {
-                inventory.Add(new Material(item.Name, item.GroupName, item.Infinite, item.Amount, item.TypeOfMeasure, item.DateBought, item.BestBefore, item.ExtraInfo, item.DisplayUnit));
+                inventory.Add(
+                    new Material(
+                    item.Name, 
+                    item.GroupName, 
+                    item.Infinite, 
+                    item.Amount, 
+                    item.TypeOfMeasure, 
+                    item.DateBought, 
+                    item.BestBefore, 
+                    item.ExtraInfo, 
+                    item.DisplayUnit));
             }
         }
-        private void SearchFilter_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (SearchFilter.Text != "Search.." && SearchFilter.Text != String.Empty)
-            {
-                //Search here
-                dbManager.SearchMaterials(SearchFilter.Text);
-            }
-        }
+        #endregion
 
-        private void DecreaseQuantity_Click(object sender, RoutedEventArgs e)
-        {
-            //Decrease selected item quantity
-            if (this.selectedItem != null && selectedItem.Amount >= 1)
-            {
-                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
-                selectedItem.AddAmount(-1);
-                dbManager.UpdateMaterial(tempItem, selectedItem);
-                UpdateInventoryItemPanel();
-            }
-        }
-
-        private void IncreaseQuantity_Click(object sender, RoutedEventArgs e)
-        {
-            //Increase selected item quantity
-            if (this.selectedItem != null)
-            {
-                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
-                selectedItem.AddAmount(1);
-                dbManager.UpdateMaterial(tempItem, selectedItem);
-                UpdateInventoryItemPanel();
-            }
-        }
-
-        private void EditButton_Click(object sender, RoutedEventArgs e)
-        {
-            //Go to manage inventory tab and select selected item
-            if (this.selectedItem != null)
-            {
-                tabControl.SelectedIndex = 4;
-                InitManageInventoryTab(selectedItem);
-            }
-        }
-
+        #region Search functions - Inventory Tab
         //These functions handle placeholder text "Search.."
         private void SearchFilter_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -132,6 +84,54 @@ namespace InventoryManagement
             }
         }
 
+        private void SearchFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (SearchFilter.Text != "Search.." && SearchFilter.Text != String.Empty)
+            {
+                dbManager.SearchMaterials(SearchFilter.Text);
+            }
+        }
+        #endregion
+
+        #region Edit single material - Inventory Tab
+        private void DecreaseQuantity_Click(object sender, RoutedEventArgs e)
+        {
+            //Decrease selected item quantity
+            if (this.selectedItem != null && selectedItem.Amount >= 1)
+            {
+                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
+                selectedItem.Amount--;
+                selectedItem.DateBought = DateTime.Now;
+                dbManager.UpdateMaterial(tempItem, selectedItem);
+                UpdateInventoryItemPanel();
+            }
+        }
+
+        private void IncreaseQuantity_Click(object sender, RoutedEventArgs e)
+        {
+            //Increase selected item quantity
+            if (this.selectedItem != null)
+            {
+                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
+                selectedItem.Amount++;
+                selectedItem.DateBought = DateTime.Now;
+                dbManager.UpdateMaterial(tempItem, selectedItem);
+                UpdateInventoryItemPanel();
+            }
+        }
+
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            //Go to manage inventory tab and select selected item
+            if (this.selectedItem != null)
+            {
+                tabControl.SelectedIndex = 4;
+                InitManageInventoryTab(selectedItem);
+            }
+        }
+        #endregion
+
+        #region Selection handling - Inventory Tab
         //Handle selections. 
         //If one item is selected, it is placed to "selectedItem" variable and "selectedItems" is null.
         //If multiple items are selected, those are placed to "selectedItems" variable as List<Material> and "selectedItem" is null.
@@ -209,7 +209,138 @@ namespace InventoryManagement
                 this.ItemBestBeforeContent.Content = "";
             }
         }
+        #endregion
 
+        #region Initialize different main window tabs
+        // Method that can be used to initialize a tab when it's selected.
+        private void OnTabChanged(Object sender, SelectionChangedEventArgs args)
+        {
+            if (MainWindowTabInventory.IsSelected)
+            {
+                InitInventoryTab();
+            }
+            else if (MainWindowTabRecipies.IsSelected)
+            {
+                InitRecipiesTab();
+            }
+            else if (MainWindowTabShoppingList.IsSelected)
+            {
+                InitShoppingListTab();
+            }
+            else if (MainWindowTabAdvancedSearch.IsSelected)
+            {
+                InitAdvancedSearchTab();
+            }
+            else if (MainWindowTabManageInventory.IsSelected)
+            {
+                InitManageInventoryTab();
+            }
+        }
+
+        private void InitInventoryTab()
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void InitRecipiesTab()
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void InitShoppingListTab()
+        {
+            shopLists = dbManager.RetrieveAllShoppingLists();
+            shoppingListsLW.ItemsSource = shopLists;
+        }
+
+        private void InitAdvancedSearchTab()
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void InitManageInventoryTab(Material editMaterial = null)
+        {
+            if (editMaterial != null)
+            {
+                Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name);
+
+                //Some logic
+
+                dbManager.UpdateMaterial(tempItem, editMaterial);
+            }
+        }
+        #endregion        
+
+        #region Selection handling - Shoppinglist Tab
+        private void shoppingListsLW_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int idx = shoppingListsLW.SelectedIndex;
+            if (idx >= 0 && idx < shopLists.Count)
+            {
+                ShoppingList sl = dbManager.RetrieveShoppingListByName(shoppingListsLW.SelectedItem.ToString());
+                selectedShopListContent = sl.Content;
+                shoppingListContentLW.ItemsSource = selectedShopListContent;
+            }
+        }
+        #endregion
+
+        #region Some functions - Shoppinglist Tab
+
+        private void shoppingListContentLW_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            // If there are no items selected, cancel viewing the context menu
+            if (shoppingListContentLW.SelectedItems.Count <= 0)
+                e.Handled = true;
+        }
+
+        private void ShopListItem_Click_Remove(object sender, RoutedEventArgs e)
+        {
+            ShoppingList sl = (ShoppingList) shoppingListsLW.SelectedItem;
+            Material item = (Material) shoppingListContentLW.SelectedItem;
+            // remove it from the ShoppingList object's content, update view and database
+            sl.RemoveFromContent(item);
+            dbManager.UpdateShoppingList(sl);
+            selectedShopListContent.Remove(item);
+            shoppingListContentLW.Items.Refresh();
+        }
+
+        private void Remove_Whole_Shoplist(object sender, RoutedEventArgs e)
+        {
+            ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
+            dbManager.DeleteShoppingListByName(sl.Name);
+            shopLists.Remove(sl);
+            shoppingListsLW.Items.Refresh();
+            shoppingListContentLW.ItemsSource = null;
+            shoppingListContentLW.Items.Refresh();
+        }
+
+        #endregion
+        
+        #region Public Properties
+        public ObservableCollection<Material> Inventory { get { return this.inventory; } }
+        #endregion
+
+        #region Some functions - Advanced Search Tab
+        private void QuantityEqualsButton_Click(object sender, RoutedEventArgs e)
+        {
+            String Qeb = this.QuantityEqualsButton.Content.ToString();
+            if (Qeb == ">")
+            {
+                this.QuantityEqualsButton.Content = "<";
+            }
+            else if (Qeb == "<")
+            {
+                this.QuantityEqualsButton.Content = "=";
+            }
+            else if (Qeb == "=")
+            {
+                this.QuantityEqualsButton.Content = ">";
+            }
+        }
+
+        #endregion
+
+        #region TEST FUNCTIONS
         private void mikonTestBtn_Click(object sender, RoutedEventArgs e)
         {
             dbManager.ReCreateDB();
@@ -247,7 +378,7 @@ namespace InventoryManagement
             Console.WriteLine("Testing method RetrieveAllRecipes()");
             dbManager.RetrieveAllRecipes();
             Console.WriteLine("Testing method RetrieveRecipeByMaterialList()");
-            dbManager.RetrieveRecipeByMaterialList(dbManager.RetrieveMaterialsByAmount(DatabaseManager.ROperator.E,240));
+            dbManager.RetrieveRecipeByMaterialList(dbManager.RetrieveMaterialsByAmount(DatabaseManager.ROperator.E, 240));
             Console.WriteLine("Testing method RetrieveRecipeByName()");
             dbManager.RetrieveRecipeByName("Resepti");
             Console.WriteLine("Testing method RetrieveRecipeByName(string)");
@@ -257,101 +388,6 @@ namespace InventoryManagement
             Console.WriteLine("Testing method RetrieveRecipeByNamePart()");
             dbManager.RetrieveRecipeByNamePart("ept");
         }
-
-        // Method that can be used to initialize a tab when it's selected.
-        private void OnTabChanged(Object sender, SelectionChangedEventArgs args)
-        {
-            if (MainWindowTabShoppingList.IsSelected)
-                InitShoppingListTab();
-            else if (MainWindowTabManageInventory.IsSelected)
-                InitManageInventoryTab();
-            
-            /*
-            else if (MainWindowTabAdvancedSearch.IsSelected) ;
-            else if (MainWindowTabInventory.IsSelected) ;
-            else if (MainWindowTabRecipies.IsSelected) ;
-            */
-        }
-
-        private void InitShoppingListTab()
-        {
-            shopLists = dbManager.RetrieveAllShoppingLists();
-            shoppingListsLW.ItemsSource = shopLists;
-        }
-
-        private void InitManageInventoryTab(Material editMaterial = null)
-        {
-            Console.WriteLine(editMaterial);
-            // Lisäsin null tarkistuksen, ettei ohjelma kaadu jos vaihtaa tähän välilehteen.
-            if (editMaterial != null)
-            {
-                Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name);
-
-                //Some logic
-                dbManager.UpdateMaterial(tempItem, editMaterial);
-            }
-        }
-
-        private void jukanNabbula_Click(object sender, RoutedEventArgs e)
-        {
-            inventory.Clear(); 
-            AddAllMaterialToInventoryList();
-        }
-
-        private void shoppingListsLW_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            int idx = shoppingListsLW.SelectedIndex;
-            if (idx >= 0 && idx < shopLists.Count)
-            {
-                ShoppingList sl = dbManager.RetrieveShoppingListByName(shoppingListsLW.SelectedItem.ToString());
-                selectedShopListContent = sl.Content;
-                shoppingListContentLW.ItemsSource = selectedShopListContent;
-            }
-        }
-
-        private void shoppingListContentLW_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            // If there are no items selected, cancel viewing the context menu
-            if (shoppingListContentLW.SelectedItems.Count <= 0)
-                e.Handled = true;
-        }
-
-        private void ShopListItem_Click_Remove(object sender, RoutedEventArgs e)
-        {
-            ShoppingList sl = (ShoppingList) shoppingListsLW.SelectedItem;
-            Material item = (Material) shoppingListContentLW.SelectedItem;
-            // remove it from the ShoppingList object's content, update view and database
-            sl.RemoveFromContent(item);
-            dbManager.UpdateShoppingList(sl);
-            selectedShopListContent.Remove(item);
-            shoppingListContentLW.Items.Refresh();
-        }
-
-        private void Remove_Whole_Shoplist(object sender, RoutedEventArgs e)
-        {
-            ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
-            dbManager.DeleteShoppingListByName(sl.Name);
-            shopLists.Remove(sl);
-            shoppingListsLW.Items.Refresh();
-            shoppingListContentLW.ItemsSource = null;
-            shoppingListContentLW.Items.Refresh();
-        }
-
-        private void QuantityEqualsButton_Click(object sender, RoutedEventArgs e)
-        {
-            String Qeb = this.QuantityEqualsButton.Content.ToString();
-            if (Qeb == ">")
-            {
-                this.QuantityEqualsButton.Content = "<";
-            }
-            else if (Qeb == "<")
-            {
-                this.QuantityEqualsButton.Content = "=";
-            }
-            else if (Qeb == "=")
-            {
-                this.QuantityEqualsButton.Content = ">";
-            }
-        }
+        #endregion
     }
 }

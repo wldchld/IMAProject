@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace InventoryManagement
 {
-    public class Material
+    public class Material : INotifyPropertyChanged
     {
         public enum MeasureType {PCS, WEIGHT, VOLUME, LENGTH}; 
         
@@ -40,26 +42,19 @@ namespace InventoryManagement
             DateTime dateBought, DateTime bestBefore, string extraInfo, Unit displayUnit)
         {
             this.Name = name;
-            //this.Infinite = false;
             this.Infinite = infinite;
             this.Amount = amount;
             this.GroupName = groupName;
-            this.TypeOfMeasure = MeasureType.PCS;
+            this.TypeOfMeasure = typeOfMeasure;
             this.DateBought = dateBought;
-            this.BestBefore = BestBefore;
+            this.BestBefore = bestBefore;
             this.ExtraInfo = extraInfo;
             this.DisplayUnit = displayUnit;
         }
 
-
         override public string ToString()
         {
-            return name + ", " + amount;
-        }
-
-        public void AddAmount(double amount)
-        {
-            this.Amount += amount;
+            return this.Name + ", " + this.amount;
         }
 
         // ACCESSORS
@@ -72,7 +67,11 @@ namespace InventoryManagement
             }
             set
             {
-                name = value;
+                if (value != this.name)
+                {
+                    this.name = value;
+                    NotifyPropertyChanged();
+                }                
             }
         }
 
@@ -84,7 +83,11 @@ namespace InventoryManagement
             }
             set
             {
-                groupName = value;
+                if (value != this.groupName)
+                {
+                    this.groupName = value;
+                    NotifyPropertyChanged();
+                }
             }
         }
 
@@ -96,7 +99,11 @@ namespace InventoryManagement
             }
             set
             {
-                extraInfo = value;
+                if (value != this.extraInfo)
+                {
+                    this.extraInfo = value;
+                    NotifyPropertyChanged();
+                }
             }
         }
 
@@ -108,31 +115,11 @@ namespace InventoryManagement
             }
             set
             {
-                infinite = value;
-            }
-        }
-
-        public DateTime DateBought
-        {
-            get
-            {
-                return dateBought;
-            }
-            set
-            {
-                dateBought = value;
-            }
-        }
-
-        public DateTime BestBefore
-        {
-            get
-            {
-                return bestBefore;
-            }
-            set
-            {
-                bestBefore = value;
+                if (value != this.infinite)
+                {
+                    this.infinite = value;
+                    NotifyPropertyChanged();
+                }
             }
         }
 
@@ -144,7 +131,11 @@ namespace InventoryManagement
             }
             set
             {
-                amount = value;
+                if (value != this.amount)
+                {
+                    this.amount = value;
+                    NotifyPropertyChanged();
+                }
             }
         }
 
@@ -156,7 +147,43 @@ namespace InventoryManagement
             }
             set
             {
-                typeOfMeasure = value;
+                if (value != this.typeOfMeasure)
+                {
+                    this.typeOfMeasure = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public DateTime DateBought
+        {
+            get
+            {
+                return dateBought;
+            }
+            set
+            {
+                if (value != this.dateBought)
+                {
+                    this.dateBought = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public DateTime BestBefore
+        {
+            get
+            {
+                return bestBefore;
+            }
+            set
+            {
+                if (value != this.bestBefore)
+                {
+                    this.bestBefore = value;
+                    NotifyPropertyChanged();
+                }
             }
         }
 
@@ -168,7 +195,21 @@ namespace InventoryManagement
             }
             set
             {
-                displayUnit = value;
+                if (value != this.displayUnit)
+                {
+                    this.displayUnit = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }
