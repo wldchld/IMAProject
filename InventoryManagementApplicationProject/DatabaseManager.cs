@@ -335,7 +335,7 @@ namespace InventoryManagement
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
             {
-                return recipe.Name == name;
+                return recipe.Name.ToUpper() == name.ToUpper();
             });
             PrintRecipeList(recipes.ToList());
             return recipes;
@@ -362,7 +362,7 @@ namespace InventoryManagement
             {
                 for (int i = 0; i < recipe.Content.Count; i++)
                 {
-                    if (recipe.Content[i].Name == materialName)
+                    if (recipe.Content[i].Name.ToUpper() == materialName.ToUpper())
                         return true;
                 }
                 return false;
