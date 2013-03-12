@@ -18,8 +18,8 @@ namespace InventoryManagement
         private bool infinite = false;
         private double amount = 0;
         private MeasureType typeOfMeasure = MeasureType.PCS;
-        private DateTime dateBought = DateTime.Now;
-        private DateTime bestBefore;
+        private DateTime lastModified = DateTime.Now;
+        private DateTime bestBefore = new DateTime(0);
         private Unit displayUnit;
         
         public Material()
@@ -35,18 +35,18 @@ namespace InventoryManagement
         {
             this.Name = name;
             this.Amount = amount;
-            this.GroupName = groupName;
+            this.GroupName = groupName;           
         }
 
         public Material(string name, string groupName, bool infinite, double amount, MeasureType typeOfMeasure, 
-            DateTime dateBought, DateTime bestBefore, string extraInfo, Unit displayUnit)
+            DateTime lastModified, DateTime bestBefore, string extraInfo, Unit displayUnit)
         {
             this.Name = name;
             this.Infinite = infinite;
             this.Amount = amount;
             this.GroupName = groupName;
             this.TypeOfMeasure = typeOfMeasure;
-            this.DateBought = dateBought;
+            this.LastModified = lastModified;
             this.BestBefore = bestBefore;
             this.ExtraInfo = extraInfo;
             this.DisplayUnit = displayUnit;
@@ -155,17 +155,17 @@ namespace InventoryManagement
             }
         }
 
-        public DateTime DateBought
+        public DateTime LastModified
         {
             get
             {
-                return dateBought;
+                return lastModified;
             }
             set
             {
-                if (value != this.dateBought)
+                if (value != this.lastModified)
                 {
-                    this.dateBought = value;
+                    this.lastModified = value;
                     NotifyPropertyChanged();
                 }
             }
@@ -201,6 +201,16 @@ namespace InventoryManagement
                     NotifyPropertyChanged();
                 }
             }
+        }
+
+        public String GetBestBeforeString()
+        {
+            return this.bestBefore.ToString("dd.MM.yyyy");
+        }
+
+        public String GetLastModifiedString()
+        {
+            return this.lastModified.ToString("dd.MM.yy - HH:mm");
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

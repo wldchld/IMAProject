@@ -24,7 +24,7 @@
                 <StackPanel x:Name="InventoryListPanel" Grid.Column="0" Grid.ColumnSpan="8">
                     <ComboBox x:Name="GroupFilter">
                     </ComboBox>
-                    <TextBox x:Name="SearchFilter" TextAlignment="Right" Text="Search.." Foreground="Gray" LostFocus="SearchFilter_LostFocus" GotFocus="SearchFilter_GotFocus" TextChanged="SearchFilter_TextChanged">
+                    <TextBox x:Name="SearchFilter" TextAlignment="Right" Text="Search.." Foreground="Black" LostFocus="SearchFilter_LostFocus" GotFocus="SearchFilter_GotFocus" TextChanged="SearchFilter_TextChanged">
                     </TextBox>
                     <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="300" MaxHeight="300" SelectionChanged="InventoryItemList_SelectionChanged">
                         <ListView.View>

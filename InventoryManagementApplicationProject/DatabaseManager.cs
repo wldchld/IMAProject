@@ -32,6 +32,10 @@ namespace InventoryManagement
             while(result.HasNext())
                 materials.Add((Material) result.Next());
             PrintMaterialList(materials);
+            if (materials.Any() == false)
+            {
+                throw new Exception("Nothing found from database!");
+            }
             return materials;
         }
 
@@ -56,7 +60,7 @@ namespace InventoryManagement
                 Material found = (Material)result.Next();
                 found.Amount = newMaterial.Amount;
                 found.BestBefore = newMaterial.BestBefore;
-                found.DateBought = newMaterial.DateBought;
+                found.LastModified = newMaterial.LastModified;
                 found.DisplayUnit = newMaterial.DisplayUnit;
                 found.ExtraInfo = newMaterial.ExtraInfo;
                 found.GroupName = newMaterial.GroupName;
@@ -128,14 +132,14 @@ namespace InventoryManagement
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 if (ro == ROperator.LT)
-                    return mat.DateBought < date;
+                    return mat.LastModified < date;
                 else if (ro == ROperator.LE)
-                    return mat.DateBought <= date;
+                    return mat.LastModified <= date;
                 else if (ro == ROperator.GT)
-                    return mat.DateBought > date;
+                    return mat.LastModified > date;
                 else if (ro == ROperator.GE)
-                    return mat.DateBought >= date;
-                return mat.DateBought == date;
+                    return mat.LastModified >= date;
+                return mat.LastModified == date;
             });
             PrintMaterialList(mats.ToList());
             return mats.ToList();
@@ -145,7 +149,7 @@ namespace InventoryManagement
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
-                return mat.DateBought >= min && mat.DateBought <= max;
+                return mat.LastModified >= min && mat.LastModified <= max;
             });
             PrintMaterialList(mats.ToList());
             return mats.ToList();

@@ -58,8 +58,8 @@ namespace InventoryManagement
                     item.GroupName, 
                     item.Infinite, 
                     item.Amount, 
-                    item.TypeOfMeasure, 
-                    item.DateBought, 
+                    item.TypeOfMeasure,
+                    item.LastModified, 
                     item.BestBefore, 
                     item.ExtraInfo, 
                     item.DisplayUnit));
@@ -101,7 +101,7 @@ namespace InventoryManagement
             {
                 Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
                 selectedItem.Amount--;
-                selectedItem.DateBought = DateTime.Now;
+                selectedItem.LastModified = DateTime.Now;
                 dbManager.UpdateMaterial(tempItem, selectedItem);
                 UpdateInventoryItemPanel();
             }
@@ -114,7 +114,7 @@ namespace InventoryManagement
             {
                 Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
                 selectedItem.Amount++;
-                selectedItem.DateBought = DateTime.Now;
+                selectedItem.LastModified = DateTime.Now;
                 dbManager.UpdateMaterial(tempItem, selectedItem);
                 UpdateInventoryItemPanel();
             }
@@ -175,11 +175,16 @@ namespace InventoryManagement
                 this.ItemQuantityContent.Content = selectedItem.Amount;
                 this.ItemUnitContent.Content = selectedItem.TypeOfMeasure + " (" + selectedItem.DisplayUnit.Name + ")";
                 this.ItemGroupContent.Content = selectedItem.GroupName;
-                this.ItemDescriptionContent.Content = selectedItem.ExtraInfo;
-                this.ItemBestBeforeContent.Content = selectedItem.BestBefore;
-                Console.WriteLine(selectedItem.BestBefore);
-
-                this.ItemLastModifiedContent.Content = selectedItem.DateBought;
+                this.ItemDescriptionContent.Content = selectedItem.ExtraInfo;                
+                this.ItemLastModifiedContent.Content = selectedItem.GetLastModifiedString();
+                if (selectedItem.BestBefore != new DateTime(0))
+                {
+                    this.ItemBestBeforeContent.Content = selectedItem.GetBestBeforeString();
+                }
+                else
+                {
+                    this.ItemBestBeforeContent.Content = "";
+                }
 
                 if (selectedItem.Infinite)
                 {
