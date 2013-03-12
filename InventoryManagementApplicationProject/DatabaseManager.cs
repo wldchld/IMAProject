@@ -341,6 +341,16 @@ namespace InventoryManagement
             return recipes;
         }
 
+        public IList<Recipe> RetrieveRecipeByNamePart(string name)
+        {
+            IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
+            {
+                return recipe.Name.ToUpper().Contains(name.ToUpper());
+            });
+            PrintRecipeList(recipes.ToList());
+            return recipes;
+        }
+
         public IList<Recipe> RetrieveRecipeByMaterial(Material material)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)

@@ -254,6 +254,8 @@ namespace InventoryManagement
             dbManager.RetrieveRecipeByMaterialName("ES");
             Console.WriteLine("Testing method RetrieveRecipeByName(<Material>)");
             dbManager.RetrieveRecipeByMaterial(dbManager.RetrieveMaterialByName("Ruisleipä"));
+            Console.WriteLine("Testing method RetrieveRecipeByNamePart()");
+            dbManager.RetrieveRecipeByNamePart("ept");
         }
 
         // Method that can be used to initialize a tab when it's selected.
