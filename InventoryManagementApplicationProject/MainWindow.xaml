@@ -7,6 +7,7 @@
         MinHeight="350" 
         MinWidth="400"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
     <TabControl SelectionChanged="OnTabChanged" Name="tabControl">
         <TabItem x:Name="MainWindowTabInventory" Header="Inventory">
             <Grid Background="#FFFFFFFF">
@@ -26,7 +27,20 @@
                     </ComboBox>
                     <TextBox x:Name="SearchFilter" TextAlignment="Right" Text="Search.." Foreground="Black" LostFocus="SearchFilter_LostFocus" GotFocus="SearchFilter_GotFocus" TextChanged="SearchFilter_TextChanged">
                     </TextBox>
+
                     <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="300" MaxHeight="300" SelectionChanged="InventoryItemList_SelectionChanged">
+                        
+                        <ListView.ContextMenu>
+                            <ContextMenu Name="LeftClickedMenu">
+                                <MenuItem Header="Add to shopping list" Click="Add_Shopping_List" />
+                                <MenuItem Header="Add to recipe" Click="Add_Recipe" />
+                                <MenuItem Header="Edit" Click="Edit_Selected_Item" />
+                                <MenuItem Header="Remove" Click="Remove_Selected_Item" />
+                                <Separator/>
+                                <MenuItem Header="Cancel" />
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
@@ -35,6 +49,7 @@
                         </ListView.View>
                     </ListView>
                 </StackPanel>
+                
                 <StackPanel x:Name="InventoryItemPanel" Grid.Column="8">
                     <StackPanel x:Name="ItemName" Orientation="Horizontal">
                         <Label x:Name="ItemNameHeader" Content="Name:">
@@ -102,7 +117,7 @@
                         </Button>
                     </StackPanel>
                 </StackPanel>
-                <Button x:Name="mikonTestBtn" Content="Mikon testinappi" HorizontalAlignment="Left" Margin="5,331,0,0" VerticalAlignment="Top" Width="134" Click="mikonTestBtn_Click" RenderTransformOrigin="3.438,-0.087" Grid.Column="8"/>
+                <Button x:Name="mikonTestBtn" Content="Tietokannan alustus (Mikon testinappi)" HorizontalAlignment="Left" Margin="5,331,0,0" VerticalAlignment="Top" Width="234" Click="mikonTestBtn_Click" RenderTransformOrigin="3.438,-0.087" Grid.Column="8"/>
                 <CheckBox Content="CheckBox" Grid.Column="8" HorizontalAlignment="Left" Margin="92,-115,0,0" VerticalAlignment="Top"/>
 
 

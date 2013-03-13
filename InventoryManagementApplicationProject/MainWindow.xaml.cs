@@ -138,8 +138,6 @@ namespace InventoryManagement
         //If all items are deselected both variables are null.
         private void InventoryItemList_SelectionChanged(object sender, SelectionChangedEventArgs e = null)
         {
-            Console.WriteLine(sender);
-            Console.WriteLine(e);
 
             if ((sender as ListView).SelectedItems.Count > 1)
             {
@@ -214,6 +212,57 @@ namespace InventoryManagement
                 this.ItemBestBeforeContent.Content = "";
             }
         }
+        #endregion
+
+        #region Context menu functions - Inventory Tab
+        private void Add_Recipe(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem != null)
+            {
+            }
+        }
+
+        private void Add_Shopping_List(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem != null)
+            {
+            }
+        }
+
+        private void Edit_Selected_Item(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem != null)
+            {
+                this.EditButton_Click(sender, e);
+            }
+        }
+
+        private void Remove_Selected_Item(object sender, RoutedEventArgs e)
+        {
+            if (selectedItem != null)
+            {
+            }
+        }
+
+        //private void menuItem_CopyUsername_Click(object sender, RoutedEventArgs e)
+        //{
+        //    //Clipboard.SetText(mySelectedItem.Username);
+        //    Console.WriteLine("Tama tuli tanne");
+        //}
+        //private void ListBox_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        //{
+        //    // a better version would turn the sender into the ListBoxItem
+        //    // find the list box, then find the ContextMenu that way
+        //    this.LeftClickMenu.PlacementTarget = sender as UIElement;
+        //    this.LeftClickMenu.IsOpen = true;
+        //}
+
+        //private void ListBox_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    // disables the SelectedIndex code
+        //    e.Handled = true;
+        //}
+
         #endregion
 
         #region Initialize different main window tabs
@@ -394,5 +443,8 @@ namespace InventoryManagement
             dbManager.RetrieveRecipeByNamePart("ept");
         }
         #endregion
+
+ 
+
     }
 }
