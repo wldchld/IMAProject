@@ -29,10 +29,9 @@
                     </TextBox>
 
                     <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="300" MaxHeight="300" SelectionChanged="InventoryItemList_SelectionChanged">
-                        
                         <ListView.ContextMenu>
                             <ContextMenu Name="LeftClickedMenu">
-                                <MenuItem Header="Add to shopping list" Click="Add_Shopping_List" />
+                                <MenuItem Name="addToShopListMenuItem" Header="Add to shopping list" ItemsSource="{Binding ShopLists}" Click="Add_Shopping_List"/>
                                 <MenuItem Header="Add to recipe" Click="Add_Recipe" />
                                 <MenuItem Header="Edit" Click="Edit_Selected_Item" />
                                 <MenuItem Header="Remove" Click="Remove_Selected_Item" />
@@ -161,6 +160,7 @@
                     </ListView.View>
                 </ListView>
                 <Label Content="Content" HorizontalAlignment="Left" Margin="205,10,0,0" VerticalAlignment="Top" Height="26" Width="69"/>
+                <Button Content="Button" HorizontalAlignment="Left" Margin="76,377,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
             </Grid>
         </TabItem>
         <TabItem x:Name="MainWindowTabAdvancedSearch" Header="Advanced search" Height="23" VerticalAlignment="Bottom">

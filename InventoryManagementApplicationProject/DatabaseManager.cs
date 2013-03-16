@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using Db4objects.Db4o;
+using Db4objects.Db4o.Config;
 using Db4objects.Db4o.Query;
 
 
@@ -19,6 +20,8 @@ namespace InventoryManagement
 
         public DatabaseManager()
         {
+            IEmbeddedConfiguration config = Db4oEmbedded.NewConfiguration();
+            config.Common.UpdateDepth = 2;
             db = Db4oEmbedded.OpenFile(dbFileName);
         }
 
@@ -235,7 +238,7 @@ namespace InventoryManagement
                 list = (ShoppingList) sls.Next();
             if (list != null)
                 list.AddToContent(mat);
-            db.Store(list);
+            db.Ext().Store(list, Int32.MaxValue);
         }
 
         public void UpdateShoppingList(ShoppingList list)
@@ -247,7 +250,7 @@ namespace InventoryManagement
             if (oldList != null)
             {
                 oldList = list;
-                db.Store(oldList);
+                db.Ext().Store(list, Int32.MaxValue);
             }
         }
 
@@ -293,7 +296,7 @@ namespace InventoryManagement
             recipe.Name = name;
             recipe.Instructions = instructions;
 
-            db.Store(recipe);
+            db.Ext().Store(recipe, Int32.MaxValue);
         }
 
         public void AddNewRecipe(String name, IList<Material> content, String instructions)
@@ -303,7 +306,7 @@ namespace InventoryManagement
             recipe.Name = name;
             recipe.Instructions = instructions;
 
-            db.Store(recipe);
+            db.Ext().Store(recipe, Int32.MaxValue);
         }
 
         public void AddMaterialToRecipe(String recipeName, Material material)
@@ -312,7 +315,7 @@ namespace InventoryManagement
             for (int i = 0; i < recipes.Count; i++) 
             {
                 recipes[i].Content.Add(material);
-                db.Store(recipes[i]);
+                db.Ext().Store(recipes[i], Int32.MaxValue);
             }
         }
 
@@ -323,7 +326,7 @@ namespace InventoryManagement
             for (int i = 0; i < recipes.Count; i++)
             {
                 recipes[i].Content.Add(material);
-                db.Store(recipes[i]);
+                db.Ext().Store(recipes[i], Int32.MaxValue);
             }
         }
 

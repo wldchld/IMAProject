@@ -42,8 +42,9 @@ namespace InventoryManagement
         }
 
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
-        {            
-            AddAllMaterialToInventoryList();            
+        {
+            AddAllMaterialToInventoryList();
+            shopLists = dbManager.RetrieveAllShoppingLists();
         }
 
         private void AddAllMaterialToInventoryList()
@@ -226,6 +227,10 @@ namespace InventoryManagement
         {
             if (selectedItem != null)
             {
+                MenuItem item = e.OriginalSource as MenuItem;
+                Console.WriteLine(item.Header.ToString());
+                dbManager.AddToShoppingList(item.Header.ToString(), selectedItem);
+                //dbManager.AddToShoppingList("Verkkokauppa.com", selectedItem);
             }
         }
 
@@ -372,6 +377,7 @@ namespace InventoryManagement
         
         #region Public Properties
         public ObservableCollection<Material> Inventory { get { return this.inventory; } }
+        public List<ShoppingList> ShopLists { get { return this.shopLists; } }
         #endregion
 
         #region Some functions - Advanced Search Tab
@@ -444,7 +450,13 @@ namespace InventoryManagement
         }
         #endregion
 
- 
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            dbManager.AddToShoppingList("Ruokakauppa", new Material("Märkäsimo", "Muut", 15));
+            dbManager.AddToShoppingList("Ruokakauppa", new Material("Kakka", "Muut", 5));
+            dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", 10));
+            dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", 2));
+        }
 
     }
 }
