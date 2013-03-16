@@ -32,8 +32,12 @@ namespace InventoryManagement
         {
             IObjectSet result = db.QueryByExample(typeof(Material));
             List<Material> materials = new List<Material>();
-            while(result.HasNext())
-                materials.Add((Material) result.Next());
+            while (result.HasNext())
+            {
+                Material temp = (Material)result.Next();
+                if(temp.BelongsTo == Material.Connection.INVENTORY)
+                    materials.Add(temp);
+            }
             PrintMaterialList(materials);
             if (materials.Any() == false)
             {
@@ -79,11 +83,11 @@ namespace InventoryManagement
             db.Delete(RetrieveMaterialByName(name));
         }
 
-        public void AddNewMaterial(String name, String groupName, bool infinite, double amount, 
-            Material.MeasureType typeOfMeasure, DateTime dateBought, DateTime bestBefore, String extraInfo, Unit unit)
+        public void AddNewMaterial(String name, String groupName, bool infinite, double amount, Material.MeasureType typeOfMeasure, 
+            DateTime dateBought, DateTime bestBefore, String extraInfo, Unit unit, Material.Connection belongsTo)
         {
             Material mat = new Material(name, groupName, infinite, amount, typeOfMeasure, 
-                dateBought, bestBefore, extraInfo, unit);
+                dateBought, bestBefore, extraInfo, unit, belongsTo);
             db.Store(mat);
         }
 
@@ -425,25 +429,25 @@ namespace InventoryManagement
 
         public void CreateSampleData()
         {
-            AddNewMaterial("Siskonmakkarakeitto", "Ruoka", false, 1500, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(4), "Hyvää keittoa. Olispa edes", Unit.G);
-            AddNewMaterial("USB-hubi", "PC oheislaitteet", false, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "4-porttinen USB-hubi", Unit.PCS);
-            AddNewMaterial("Ruuvimeisseli +", "Työkalut", true, 5, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Tähti/ristipää", Unit.PCS);
-            AddNewMaterial("Ruuvimeisseli -", "Työkalut", true, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Talttapää", Unit.PCS);
-            AddNewMaterial("Kahvikuppi", "Astiat", false, 25, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Pupumuki", Unit.PCS);
-            AddNewMaterial("Kahvi", "Juoma", false, 250, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(365), "Presidenttiä", Unit.G);
-            AddNewMaterial("Espresso", "Juoma", false, 100, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(365), "Angry Birds espressoa", Unit.G);
-            AddNewMaterial("Läppäri", "Tietokoneet", false, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Macbook ja Lenovo", Unit.PCS);
-            AddNewMaterial("Tulostin", "PC oheislaitteet", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "HP photosmart B1013", Unit.PCS);
-            AddNewMaterial("Micro USB-kaapeli", "Kaapelit", false, 10, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Pituus 1m/kpl", Unit.PCS);
-            AddNewMaterial("Näppäimisto", "PC oheislaitteet", false, 2, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Suomi-layout", Unit.PCS);
-            AddNewMaterial("Kovalevy", "PC komponentit", false, 7, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Kokoluokka 160-500 gb", Unit.PCS);
-            AddNewMaterial("Galaxy S2", "Puhelimet", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, null, Unit.PCS);
-            AddNewMaterial("Voi", "Ruoka", false, 650, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(180), null, Unit.G);
-            AddNewMaterial("Ruisleipä", "Ruoka", false, 240, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(7), null, Unit.G);
-            AddNewMaterial("Kalja", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(1), "Parasta ennen huomista", Unit.L);
-            AddNewMaterial("Kaiutinkaapeli", "Kaapelit", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Väri: ruskea", Unit.M);
-            AddNewMaterial("ES", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(720), "PÄRISEE!!!", Unit.L);
-            AddNewMaterial("2x4 Lauta", "Rakennustarvike", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Sijainti: olohuone", Unit.M);
+            AddNewMaterial("Siskonmakkarakeitto", "Ruoka", false, 1500, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(4), "Hyvää keittoa. Olispa edes", Unit.G, Material.Connection.INVENTORY);
+            AddNewMaterial("USB-hubi", "PC oheislaitteet", false, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "4-porttinen USB-hubi", Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Ruuvimeisseli +", "Työkalut", true, 5, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Tähti/ristipää", Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Ruuvimeisseli -", "Työkalut", true, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Talttapää", Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Kahvikuppi", "Astiat", false, 25, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Pupumuki", Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Kahvi", "Juoma", false, 250, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(365), "Presidenttiä", Unit.G, Material.Connection.INVENTORY);
+            AddNewMaterial("Espresso", "Juoma", false, 100, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(365), "Angry Birds espressoa", Unit.G, Material.Connection.INVENTORY);
+            AddNewMaterial("Läppäri", "Tietokoneet", false, 3, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Macbook ja Lenovo", Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Tulostin", "PC oheislaitteet", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "HP photosmart B1013", Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Micro USB-kaapeli", "Kaapelit", false, 10, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Pituus 1m/kpl", Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Näppäimisto", "PC oheislaitteet", false, 2, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Suomi-layout", Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Kovalevy", "PC komponentit", false, 7, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, "Kokoluokka 160-500 gb", Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Galaxy S2", "Puhelimet", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.MinValue, null, Unit.PCS, Material.Connection.INVENTORY);
+            AddNewMaterial("Voi", "Ruoka", false, 650, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(180), null, Unit.G, Material.Connection.INVENTORY);
+            AddNewMaterial("Ruisleipä", "Ruoka", false, 240, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(7), null, Unit.G, Material.Connection.INVENTORY);
+            AddNewMaterial("Kalja", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(1), "Parasta ennen huomista", Unit.L, Material.Connection.INVENTORY);
+            AddNewMaterial("Kaiutinkaapeli", "Kaapelit", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Väri: ruskea", Unit.M, Material.Connection.INVENTORY);
+            AddNewMaterial("ES", "Juoma", false, 240, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now.AddDays(720), "PÄRISEE!!!", Unit.L, Material.Connection.INVENTORY);
+            AddNewMaterial("2x4 Lauta", "Rakennustarvike", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Sijainti: olohuone", Unit.M, Material.Connection.INVENTORY);
 
             AddNewRecipe("Resepti", "Käytä tätä reseptiä");
             AddMaterialToRecipe("Resepti", RetrieveMaterialByName("Kalja"));
@@ -455,10 +459,10 @@ namespace InventoryManagement
             AddNewShoppingList("Verkkokauppa.com");
             AddNewShoppingList("Rautakauppa");
 
-            AddToShoppingList("Ruokakauppa", new Material("Maito", "Ruoka", false, 3, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now, null, Unit.L));
-            AddToShoppingList("Ruokakauppa", new Material("Kerma", "Ruoka", false, 4, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now, null, Unit.DL));
-            AddToShoppingList("Verkkokauppa.com", new Material("G27", "PS3", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.Now, null, Unit.PCS));
-            AddToShoppingList("Verkkokauppa.com", new Material("G27 teline", "PS3", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.Now, "Vitun painava", Unit.PCS));
+            AddToShoppingList("Ruokakauppa", new Material("Maito", "Ruoka", false, 3, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now, null, Unit.L, Material.Connection.SHOPPING_LIST));
+            AddToShoppingList("Ruokakauppa", new Material("Kerma", "Ruoka", false, 4, Material.MeasureType.VOLUME, DateTime.Now, DateTime.Now, null, Unit.DL, Material.Connection.SHOPPING_LIST));
+            AddToShoppingList("Verkkokauppa.com", new Material("G27", "PS3", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.Now, null, Unit.PCS, Material.Connection.SHOPPING_LIST));
+            AddToShoppingList("Verkkokauppa.com", new Material("G27 teline", "PS3", false, 1, Material.MeasureType.PCS, DateTime.Now, DateTime.Now, "Vitun painava", Unit.PCS, Material.Connection.SHOPPING_LIST));
         }
 
         //-----------------------------------------

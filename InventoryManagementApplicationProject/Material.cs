@@ -10,7 +10,8 @@ namespace InventoryManagement
 {
     public class Material : INotifyPropertyChanged
     {
-        public enum MeasureType {PCS, WEIGHT, VOLUME, LENGTH}; 
+        public enum MeasureType {PCS, WEIGHT, VOLUME, LENGTH};
+        public enum Connection {INVENTORY, SHOPPING_LIST, RECIPE};
         
         private string name;
         private string groupName;
@@ -21,6 +22,7 @@ namespace InventoryManagement
         private DateTime lastModified = DateTime.Now;
         private DateTime bestBefore = new DateTime(0);
         private Unit displayUnit;
+        private Connection belongsTo;
         
         public Material()
         {
@@ -31,15 +33,19 @@ namespace InventoryManagement
             this.Name = name;
         }
 
-        public Material(string name, string groupName, double amount)
+        public Material(string name, string groupName, bool infinite, double amount, MeasureType typeofMeasure, Unit displayInit, Connection belongsTo)
         {
             this.Name = name;
+            this.GroupName = groupName;
+            this.Infinite = infinite;
             this.Amount = amount;
-            this.GroupName = groupName;           
+            this.TypeOfMeasure = typeofMeasure;
+            this.DisplayUnit = displayUnit;
+            this.belongsTo = belongsTo;
         }
 
         public Material(string name, string groupName, bool infinite, double amount, MeasureType typeOfMeasure, 
-            DateTime lastModified, DateTime bestBefore, string extraInfo, Unit displayUnit)
+            DateTime lastModified, DateTime bestBefore, string extraInfo, Unit displayUnit, Connection belongsTo)
         {
             this.Name = name;
             this.Infinite = infinite;
@@ -50,6 +56,21 @@ namespace InventoryManagement
             this.BestBefore = bestBefore;
             this.ExtraInfo = extraInfo;
             this.DisplayUnit = displayUnit;
+            this.belongsTo = belongsTo;
+        }
+
+        public Material(Material mat)
+        {
+            this.Name = mat.Name;
+            this.Infinite = mat.Infinite;
+            this.Amount = mat.Amount;
+            this.GroupName = mat.GroupName;
+            this.TypeOfMeasure = mat.TypeOfMeasure;
+            this.LastModified = mat.LastModified;
+            this.BestBefore = mat.BestBefore;
+            this.ExtraInfo = mat.ExtraInfo;
+            this.DisplayUnit = mat.DisplayUnit;
+            this.belongsTo = mat.BelongsTo;
         }
 
         override public string ToString()
@@ -200,6 +221,18 @@ namespace InventoryManagement
                     this.displayUnit = value;
                     NotifyPropertyChanged();
                 }
+            }
+        }
+
+        public Connection BelongsTo
+        {
+            get 
+            {
+                return belongsTo;
+            }
+            set
+            {
+                this.belongsTo = value;
             }
         }
 

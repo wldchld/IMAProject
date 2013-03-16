@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.VisualBasic;
 
 namespace InventoryManagement
 {
@@ -29,8 +30,8 @@ namespace InventoryManagement
 
         private DatabaseManager dbManager = new DatabaseManager();
 
-        private List<ShoppingList> shopLists;
-        private List<Material> selectedShopListContent;
+        private ObservableCollection<ShoppingList> shopLists;
+        private ObservableCollection<Material> selectedShopListContent;
 
         private Search search = new Search();
         #endregion
@@ -44,7 +45,7 @@ namespace InventoryManagement
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
         {
             AddAllMaterialToInventoryList();
-            shopLists = dbManager.RetrieveAllShoppingLists();
+            shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
         }
 
         private void AddAllMaterialToInventoryList()
@@ -63,7 +64,8 @@ namespace InventoryManagement
                     item.LastModified, 
                     item.BestBefore, 
                     item.ExtraInfo, 
-                    item.DisplayUnit));
+                    item.DisplayUnit,
+                    item.BelongsTo));
             }
         }
         #endregion
@@ -223,15 +225,30 @@ namespace InventoryManagement
             }
         }
 
-        private void Add_Shopping_List(object sender, RoutedEventArgs e)
+        private void Add_To_Existing_Shopping_List(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
             {
                 MenuItem item = e.OriginalSource as MenuItem;
-                Console.WriteLine(item.Header.ToString());
-                dbManager.AddToShoppingList(item.Header.ToString(), selectedItem);
-                //dbManager.AddToShoppingList("Verkkokauppa.com", selectedItem);
+                    string slName = item.Header.ToString();
+                string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, "1", -1, -1);
+                if (text != "" && text != null)
+                {
+                    double amount;
+                    if (Double.TryParse(text, out amount))
+                    {
+                        Material temp = new Material(selectedItem);
+                        temp.Amount = amount;
+                        temp.BelongsTo = Material.Connection.SHOPPING_LIST;
+                        dbManager.AddToShoppingList(slName, temp);
+                    }
+                }
             }
+        }
+
+        private void Add_Shoplist(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Fuq yes!");
         }
 
         private void Edit_Selected_Item(object sender, RoutedEventArgs e)
@@ -308,7 +325,7 @@ namespace InventoryManagement
 
         private void InitShoppingListTab()
         {
-            shopLists = dbManager.RetrieveAllShoppingLists();
+            shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
             shoppingListsLW.ItemsSource = shopLists;
         }
 
@@ -337,7 +354,7 @@ namespace InventoryManagement
             if (idx >= 0 && idx < shopLists.Count)
             {
                 ShoppingList sl = dbManager.RetrieveShoppingListByName(shoppingListsLW.SelectedItem.ToString());
-                selectedShopListContent = sl.Content;
+                selectedShopListContent = new ObservableCollection<Material>(sl.Content);
                 shoppingListContentLW.ItemsSource = selectedShopListContent;
             }
         }
@@ -373,11 +390,16 @@ namespace InventoryManagement
             shoppingListContentLW.Items.Refresh();
         }
 
+        private void Create_ShoppingList_And_Add(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         #endregion
         
         #region Public Properties
         public ObservableCollection<Material> Inventory { get { return this.inventory; } }
-        public List<ShoppingList> ShopLists { get { return this.shopLists; } }
+        public ObservableCollection<ShoppingList> ShopLists { get { return this.shopLists; } }
         #endregion
 
         #region Some functions - Advanced Search Tab
@@ -408,7 +430,7 @@ namespace InventoryManagement
             Console.WriteLine("Testing method RetreiveAllMaterials()");
             dbManager.RetrieveAllMaterials();
             Console.WriteLine("Testing method AddNewMaterial(hehkulamppu)");
-            dbManager.AddNewMaterial(new Material("Hehkulamppu", "Varaosat", false, 100, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.MaxValue, null, Unit.G));
+            dbManager.AddNewMaterial(new Material("Hehkulamppu", "Varaosat", false, 100, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.MaxValue, null, Unit.G, Material.Connection.INVENTORY));
             Console.WriteLine("Testing method RetreiveAllMaterialsInGroup(Ruoka)");
             dbManager.RetrieveMaterialsInGroup("Ruoka");
             Console.WriteLine("Testing method RetreiveAllMaterials()");
@@ -418,7 +440,7 @@ namespace InventoryManagement
             Console.WriteLine("Testing method RetrieveMaterialByName(Hehkulamppu)");
             Material hehkulamppu = dbManager.RetrieveMaterialByName("Hehkulamppu");
             Console.WriteLine("Testing method UpdateMaterial(hehkulamppu)");
-            dbManager.UpdateMaterial(hehkulamppu, new Material("Hehkulamppu", "Varaosat", false, 2, Material.MeasureType.PCS, DateTime.Now, DateTime.MaxValue, null, Unit.PCS));
+            dbManager.UpdateMaterial(hehkulamppu, new Material("Hehkulamppu", "Varaosat", false, 2, Material.MeasureType.PCS, DateTime.Now, DateTime.MaxValue, null, Unit.PCS, Material.Connection.INVENTORY));
             Console.WriteLine("Testing method RetrieveMaterialByName(Hehkulamppu)");
             dbManager.RetrieveMaterialByName("Hehkulamppu");
             Console.WriteLine("Testing method DeleteMaterialByName(Kovalevy)");
@@ -452,10 +474,10 @@ namespace InventoryManagement
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            dbManager.AddToShoppingList("Ruokakauppa", new Material("Märkäsimo", "Muut", 15));
-            dbManager.AddToShoppingList("Ruokakauppa", new Material("Kakka", "Muut", 5));
-            dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", 10));
-            dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", 2));
+            dbManager.AddToShoppingList("Ruokakauppa", new Material("Märkäsimo", "Muut", false, 1, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
+            dbManager.AddToShoppingList("Ruokakauppa", new Material("Kakka", "Muut", false, 2, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
+            dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
+            dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
         }
 
     }
