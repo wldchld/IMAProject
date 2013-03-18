@@ -444,10 +444,6 @@ namespace InventoryManagement
                         item.DisplayUnit,
                         item.BelongsTo));
                 }
-
-                foreach (Material o in search)
-                    Console.WriteLine(o);
-
             }
         }
 
