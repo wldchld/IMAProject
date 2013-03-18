@@ -408,7 +408,11 @@ namespace InventoryManagement
         private void QuantityEqualsButton_Click(object sender, RoutedEventArgs e)
         {
             String Qeb = this.QuantityEqualsButton.Content.ToString();
-            if (Qeb == ">")
+            if (Qeb == " ")
+            {
+                this.QuantityEqualsButton.Content = ">";
+            }
+            else if (Qeb == ">")
             {
                 this.QuantityEqualsButton.Content = "<";
             }
@@ -418,7 +422,7 @@ namespace InventoryManagement
             }
             else if (Qeb == "=")
             {
-                this.QuantityEqualsButton.Content = ">";
+                this.QuantityEqualsButton.Content = " ";
             }
         }
 
