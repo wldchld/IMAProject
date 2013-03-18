@@ -427,7 +427,6 @@ namespace InventoryManagement
             if (AdvancedSearchBox.Text != "Search.." && AdvancedSearchBox.Text != String.Empty)
             {
                 search.Clear();
-               // dbManager.SearchMaterials(AdvancedSearchBox.Text);
                 List<Material> result = dbManager.SearchMaterials(AdvancedSearchBox.Text);
                 foreach (Material item in result)
                 {
