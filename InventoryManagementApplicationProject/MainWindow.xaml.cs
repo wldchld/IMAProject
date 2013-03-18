@@ -33,7 +33,8 @@ namespace InventoryManagement
         private ObservableCollection<ShoppingList> shopLists;
         private ObservableCollection<Material> selectedShopListContent;
 
-        private Search search = new Search();
+        private ObservableCollection<Material> search = new ObservableCollection<Material>();
+
         #endregion
 
         #region Initialize first time
@@ -51,7 +52,7 @@ namespace InventoryManagement
         private void AddAllMaterialToInventoryList()
         {
             List<Material> allItems = dbManager.RetrieveAllMaterials();
-
+           
             foreach (Material item in allItems)
             {
                 inventory.Add(
@@ -67,6 +68,7 @@ namespace InventoryManagement
                     item.DisplayUnit,
                     item.BelongsTo));
             }
+             
         }
         #endregion
 
@@ -149,7 +151,7 @@ namespace InventoryManagement
                 var tempList = new List<Material>();
                 foreach (var item in (sender as ListView).SelectedItems)
                 {
-                    tempList.Add(item as Material);
+                   tempList.Add(item as Material);
                 }
                 this.selectedItems = tempList;
             }
@@ -420,6 +422,43 @@ namespace InventoryManagement
             }
         }
 
+        private void AdvancedSearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (AdvancedSearchBox.Text != "Search.." && AdvancedSearchBox.Text != String.Empty)
+            {
+                search.Clear();
+               // dbManager.SearchMaterials(AdvancedSearchBox.Text);
+                List<Material> result = dbManager.SearchMaterials(AdvancedSearchBox.Text);
+                foreach (Material item in result)
+                {
+                    search.Add(
+                        new Material(
+                        item.Name,
+                        item.GroupName,
+                        item.Infinite,
+                        item.Amount,
+                        item.TypeOfMeasure,
+                        item.LastModified,
+                        item.BestBefore,
+                        item.ExtraInfo,
+                        item.DisplayUnit,
+                        item.BelongsTo));
+                }
+
+                foreach (Material o in search)
+                    Console.WriteLine(o);
+
+            }
+        }
+
+        private void SearchTest_Click(object sender, RoutedEventArgs e)
+        {
+            AdvancedResultList.Items.Clear();
+
+            foreach (Material o in search)
+            AdvancedResultList.Items.Add(o);
+        }
+
         #endregion
 
         #region TEST FUNCTIONS
@@ -479,6 +518,11 @@ namespace InventoryManagement
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
         }
+
+
+   
+
+
 
     }
 }
