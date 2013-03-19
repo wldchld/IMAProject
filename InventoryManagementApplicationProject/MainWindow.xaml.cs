@@ -276,27 +276,12 @@ namespace InventoryManagement
         {
             if (selectedItem != null)
             {
+                Console.WriteLine("poistetaan paskaa");
+                dbManager.DeleteMaterialByName(selectedItem.Name);
+                inventory.Clear();
+                AddAllMaterialToInventoryList();
             }
         }
-
-        //private void menuItem_CopyUsername_Click(object sender, RoutedEventArgs e)
-        //{
-        //    //Clipboard.SetText(mySelectedItem.Username);
-        //    Console.WriteLine("Tama tuli tanne");
-        //}
-        //private void ListBox_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        //{
-        //    // a better version would turn the sender into the ListBoxItem
-        //    // find the list box, then find the ContextMenu that way
-        //    this.LeftClickMenu.PlacementTarget = sender as UIElement;
-        //    this.LeftClickMenu.IsOpen = true;
-        //}
-
-        //private void ListBox_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    // disables the SelectedIndex code
-        //    e.Handled = true;
-        //}
 
         #endregion
 
@@ -557,7 +542,7 @@ namespace InventoryManagement
             Console.WriteLine("Testing method RetrieveRecipeByNamePart()");
             dbManager.RetrieveRecipeByNamePart("ept");
         }
-        #endregion
+        
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
@@ -566,5 +551,6 @@ namespace InventoryManagement
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
         }
+        #endregion
     }
 }
