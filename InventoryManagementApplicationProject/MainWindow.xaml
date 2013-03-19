@@ -33,12 +33,7 @@
                         <ListView.ContextMenu>
                             <ContextMenu Name="LeftClickedMenu">
                                 <MenuItem Name="addToShopListMenuItem" Header="Add to existing shopping list" ItemsSource="{Binding ShopLists}" Click="Add_To_Existing_Shopping_List" />
-                                <MenuItem Header="Add to a new shoppinglist" Click="Create_ShoppingList_And_Add" >
-                                    <TextBox Name="newListNameTextBox" Text="Shoppinglist 1"/>
-                                    <TextBox Name="newListAmounTextBox" Text="1"/>
-                                    <Button Name="AddNewShopList" Content="Add" Click="Add_Shoplist"/>
-                                </MenuItem>
-                                <MenuItem Header="Add to recipe" Click="Add_Recipe" />
+                                <MenuItem Header="Add to a new shoppinglist" Click="Create_ShoppingList_And_Add" />                               <MenuItem Header="Add to recipe" Click="Add_Recipe" />
                                 <MenuItem Header="Edit" Click="Edit_Selected_Item" />
                                 <MenuItem Header="Remove" Click="Remove_Selected_Item" />
                                 <Separator/>
@@ -118,15 +113,98 @@
                         </Label>
                     </StackPanel>
                     <StackPanel x:Name="ItemEdit" Orientation="Horizontal">
-                        <Button x:Name="EditButton" Content="   Edit   " Click="EditButton_Click">
+                        <Button x:Name="EditButton" Content="   Add/Edit   " Click="EditButton_Click">
                         </Button>
                     </StackPanel>
                 </StackPanel>
+
                 <Button x:Name="mikonTestBtn" Content="Tietokannan alustus (Mikon testinappi)" HorizontalAlignment="Left" Margin="5,331,0,0" VerticalAlignment="Top" Width="234" Click="mikonTestBtn_Click" RenderTransformOrigin="3.438,-0.087" Grid.Column="9"/>
                 <CheckBox Content="CheckBox" Grid.Column="9" HorizontalAlignment="Left" Margin="92,-115,0,0" VerticalAlignment="Top"/>
 
+                <!--ADD NEW ITEM DIALOG TEST-->
+                <!-- It's important that this is in the end of the XAML as it needs to be on top of everything else! -->
+                <Grid x:Name="AddEditMaterialInputBox" Visibility="Collapsed" Grid.ColumnSpan="10">
+                    <Grid Background="Black" Opacity="0.5"/>
+                    <Border MinWidth="250"
+                            Background="White" 
+                            BorderBrush="Black" 
+                            BorderThickness="1" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center">
 
-            </Grid>
+                        <StackPanel Margin="25">
+                            <TextBlock Margin="15" Text="Add/edit material:" FontSize="20" FontWeight="Bold" FontFamily="Cambria" HorizontalAlignment="Center" />
+                            <StackPanel x:Name="ItemNameEditDialog" Orientation="Horizontal">
+                                <Label x:Name="ItemNameHeaderEditDialog" Content="Name:" MinWidth="125">
+                                </Label>
+                                <TextBox x:Name="ItemNameContentEditDialog" Text="" MinWidth="200">
+                                </TextBox>
+                            </StackPanel>
+                            <StackPanel x:Name="ItemDescriptionEditDialog" Orientation="Horizontal">
+                                <Label x:Name="ItemDescriptionHeaderEditDialog" Content="Description:" MinWidth="125">
+                                </Label>
+                                <TextBox x:Name="ItemDescriptionContentEditDialog" Text="" MinWidth="200">
+                                </TextBox>
+                            </StackPanel>
+                            <StackPanel x:Name="ItemGroupEditDialog" Orientation="Horizontal">
+                                <Label x:Name="ItemGroupHeaderEditDialog" Content="Group:" MinWidth="125">
+                                </Label>
+                                <TextBox x:Name="ItemGroupContentEditDialog" Text="" MinWidth="200">
+                                </TextBox>
+                            </StackPanel>
+                            <StackPanel x:Name="ItemQuantityEditDialog" Orientation="Horizontal">
+                                <Label x:Name="ItemQuantityHeaderEditDialog" Content="Quantity:" MinWidth="125">
+                                </Label>
+                                <TextBox x:Name="ItemQuantityContentEditDialog" Text="" MinWidth="50">
+                                </TextBox>
+                            </StackPanel>
+                            <StackPanel x:Name="ItemUnitEditDialog" Orientation="Horizontal">
+                                <Label x:Name="ItemUnitHeaderEditDialog" Content="Unit:" MinWidth="125">
+                                </Label>
+                                <TextBox x:Name="ItemUnitContentEditDialog" Text="" MinWidth="200">
+                                </TextBox>
+                            </StackPanel>
+                            <StackPanel x:Name="ItemPriceEditDialog" Orientation="Horizontal">
+                                <Label x:Name="ItemPriceHeaderEditDialog" Content="Price:" MinWidth="125">
+                                </Label>
+                                <Label x:Name="ItemPricePriceAmountEditDialog" Content="Amount:">
+                                </Label>
+                                <TextBox x:Name="ItemPriceContentEditDialog" Text="" MinWidth="50">
+                                </TextBox>
+                                <Label x:Name="ItemPricePriceUnitEditDialog" Content="Unit:">
+                                </Label>
+                                <TextBox x:Name="ItemPriceUnitEditDialog" Text="" MinWidth="50">
+                                </TextBox>
+                            </StackPanel>
+                            <StackPanel x:Name="ItemIsInfiniteEditDialog" Orientation="Horizontal">
+                                <Label x:Name="ItemIsInfiniteHeaderEditDialog" Content="Infinite:" MinWidth="125">
+                                </Label>
+                                <TextBox x:Name="ItemIsInfiniteContentEditDialog" Text="" MinWidth="200">
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel x:Name="ItemLastModifiedEditDialog" Orientation="Horizontal">
+                                <Label x:Name="ItemLastModifiedHeaderEditDialog" Content="Last modified:" MinWidth="125">
+                                </Label>
+                                <TextBox x:Name="ItemLastModifiedContentEditDialog" Text="" MinWidth="200">
+                                </TextBox>
+                            </StackPanel>
+                            <StackPanel x:Name="ItemBestBeforeEditDialog" Orientation="Horizontal">
+                                <Label x:Name="ItemBestBeforeHeaderEditDialog" Content="Best before:" MinWidth="125">
+                                </Label>
+                                <TextBox x:Name="ItemBestBeforeContentEditDialog" Text="" MinWidth="200">
+                                </TextBox>
+                            </StackPanel>
+                            <StackPanel Margin="25" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button x:Name="OkButton" Margin="5" Content="   Ok   " Background="{x:Null}" Click="OkButton_Click"/>
+                                <Button x:Name="CancelButton" Margin="5" Content="   Cancel   " Background="{x:Null}" Click="CancelButton_Click" />
+                            </StackPanel>
+
+                        </StackPanel>
+                    </Border>
+                </Grid>
+                <!--ADD NEW ITEM DIALOG TEST ENDS-->
+            </Grid>           
         </TabItem>
         <TabItem x:Name="MainWindowTabRecipies" Header="Recipies">
             <Grid HorizontalAlignment="Left" Height="473" VerticalAlignment="Top" Width="754">
@@ -209,7 +287,7 @@
                     <ColumnDefinition Width="709*"/>
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="AdvancedSearchBox" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" TextWrapping="Wrap" Text="Search..." VerticalAlignment="Top" Width="330" TextChanged="AdvancedSearchBox_TextChanged" Grid.ColumnSpan="2"/>
-                <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="192" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="2">
+                <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="192" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="2" >
                     <ListView.View>
                         <GridView>
                             <GridViewColumn/>
@@ -233,5 +311,7 @@
 
             </Grid>
         </TabItem>
+        
+
     </TabControl>
 </Window>

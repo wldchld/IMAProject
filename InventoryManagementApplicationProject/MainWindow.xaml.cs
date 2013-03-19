@@ -48,8 +48,8 @@ namespace InventoryManagement
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
         {
             // Added because of unresolved exception, no material found from database, works when there is data in database
-            dbManager.ReCreateDB();
-            dbManager.CreateSampleData();
+            //dbManager.ReCreateDB();
+            //dbManager.CreateSampleData();
 
             AddAllMaterialToInventoryList();
             shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
@@ -133,14 +133,19 @@ namespace InventoryManagement
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
-            //Go to manage inventory tab and select selected item
-            if (this.selectedItem != null)
-            {
-                tabControl.SelectedIndex = 4;
-                InitManageInventoryTab(selectedItem);
-            }
+            AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Visible;
         }
         #endregion
+
+        private void OkButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
+        }
 
         #region Selection handling - Inventory Tab
         //Handle selections. 
@@ -401,7 +406,25 @@ namespace InventoryManagement
 
         private void Create_ShoppingList_And_Add(object sender, RoutedEventArgs e)
         {
-
+            if (selectedItem != null)
+            {
+                string slName = Interaction.InputBox("Enter name", "Add to a new shopping list:", "", -1, -1);
+                if (slName == null && slName == "")
+                    return;
+                string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, "1", -1, -1);
+                if (text != "" && text != null)
+                {
+                    double amount;
+                    if (Double.TryParse(text, out amount))
+                    {
+                        dbManager.AddNewShoppingList(slName);
+                        Material temp = new Material(selectedItem);
+                        temp.Amount = amount;
+                        temp.BelongsTo = Material.Connection.SHOPPING_LIST;
+                        dbManager.AddToShoppingList(slName, temp);
+                    }
+                }
+            }
         }
 
         #endregion
