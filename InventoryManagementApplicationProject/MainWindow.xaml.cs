@@ -48,8 +48,8 @@ namespace InventoryManagement
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
         {
             // Added because of unresolved exception, no material found from database, works when there is data in database
-            dbManager.ReCreateDB();
-            dbManager.CreateSampleData();
+            //dbManager.ReCreateDB();
+            //dbManager.CreateSampleData();
 
             AddAllMaterialToInventoryList();
             shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
@@ -401,7 +401,25 @@ namespace InventoryManagement
 
         private void Create_ShoppingList_And_Add(object sender, RoutedEventArgs e)
         {
-
+            if (selectedItem != null)
+            {
+                string slName = Interaction.InputBox("Enter name", "Add to a new shopping list:", "", -1, -1);
+                if (slName == null && slName == "")
+                    return;
+                string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, "1", -1, -1);
+                if (text != "" && text != null)
+                {
+                    double amount;
+                    if (Double.TryParse(text, out amount))
+                    {
+                        dbManager.AddNewShoppingList(slName);
+                        Material temp = new Material(selectedItem);
+                        temp.Amount = amount;
+                        temp.BelongsTo = Material.Connection.SHOPPING_LIST;
+                        dbManager.AddToShoppingList(slName, temp);
+                    }
+                }
+            }
         }
 
         #endregion
@@ -543,10 +561,5 @@ namespace InventoryManagement
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
         }
-
-
-   
-
-
     }
 }

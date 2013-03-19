@@ -497,8 +497,7 @@ namespace InventoryManagement
                 Console.WriteLine("Nimi: " + o.Name + ", Ohje: " + o.Instructions + ", Materiaalit: ");
                 for (int i = 0; i < o.Content.Count; i++)
                     Console.WriteLine(o.Content[i].Name);
-            }
-                
+            }   
         }
 
 

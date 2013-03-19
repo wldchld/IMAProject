@@ -33,12 +33,7 @@
                         <ListView.ContextMenu>
                             <ContextMenu Name="LeftClickedMenu">
                                 <MenuItem Name="addToShopListMenuItem" Header="Add to existing shopping list" ItemsSource="{Binding ShopLists}" Click="Add_To_Existing_Shopping_List" />
-                                <MenuItem Header="Add to a new shoppinglist" Click="Create_ShoppingList_And_Add" >
-                                    <TextBox Name="newListNameTextBox" Text="Shoppinglist 1"/>
-                                    <TextBox Name="newListAmounTextBox" Text="1"/>
-                                    <Button Name="AddNewShopList" Content="Add" Click="Add_Shoplist"/>
-                                </MenuItem>
-                                <MenuItem Header="Add to recipe" Click="Add_Recipe" />
+                                <MenuItem Header="Add to a new shoppinglist" Click="Create_ShoppingList_And_Add" />                               <MenuItem Header="Add to recipe" Click="Add_Recipe" />
                                 <MenuItem Header="Edit" Click="Edit_Selected_Item" />
                                 <MenuItem Header="Remove" Click="Remove_Selected_Item" />
                                 <Separator/>
@@ -209,7 +204,7 @@
                     <ColumnDefinition Width="709*"/>
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="AdvancedSearchBox" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" TextWrapping="Wrap" Text="Search..." VerticalAlignment="Top" Width="330" TextChanged="AdvancedSearchBox_TextChanged" Grid.ColumnSpan="2"/>
-                <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="192" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="2">
+                <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="192" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="2" >
                     <ListView.View>
                         <GridView>
                             <GridViewColumn/>
