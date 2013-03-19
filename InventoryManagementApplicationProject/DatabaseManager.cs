@@ -503,15 +503,13 @@ namespace InventoryManagement
 
 
         /// Search
-        /// Queryn sisällä oli for silmukka, ei näin, T. Mikko
-        public IList<Material> SearchMaterials(String input)
+        public List<Material> SearchMaterials(String input)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.Name.ToUpper().Contains(input.ToUpper());
             });
-            PrintMaterialList(mats.ToList());
-            return mats;
+            return mats.ToList();
         }
 
     }
