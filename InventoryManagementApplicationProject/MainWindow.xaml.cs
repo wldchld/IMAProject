@@ -32,6 +32,8 @@ namespace InventoryManagement
 
         private ObservableCollection<ShoppingList> shopLists;
         private ObservableCollection<Material> selectedShopListContent;
+        private ObservableCollection<Recipe> recipes { get; set; }
+        private ObservableCollection<Material> recipesMaterials { get; set; }
 
         private Search search = new Search();
         #endregion
@@ -44,6 +46,10 @@ namespace InventoryManagement
 
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
         {
+            // Added because of unresolved exception, no material found from database, works when there is data in database
+            dbManager.ReCreateDB();
+            dbManager.CreateSampleData();
+
             AddAllMaterialToInventoryList();
             shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
         }
@@ -320,7 +326,8 @@ namespace InventoryManagement
 
         private void InitRecipiesTab()
         {
-            //throw new NotImplementedException();
+            recipes = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
+            RecipesView.ItemsSource = recipes;
         }
 
         private void InitShoppingListTab()
@@ -396,7 +403,26 @@ namespace InventoryManagement
         }
 
         #endregion
-        
+
+        #region Recipes Tab
+
+        private void RecipesView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!(RecipesView.SelectedItem).Equals(null))
+            {
+                Recipe a = (Recipe)RecipesView.SelectedItem;
+                RecipeInstructions.Content = a.Instructions;
+                if (a.Content.Count > 0)
+                {
+                    recipesMaterials = new ObservableCollection<Material>(a.Content);
+                    RecipesMaterials.ItemsSource = recipesMaterials;
+                }
+            }
+            
+        }
+
+        #endregion
+
         #region Public Properties
         public ObservableCollection<Material> Inventory { get { return this.inventory; } }
         public ObservableCollection<ShoppingList> ShopLists { get { return this.shopLists; } }
@@ -479,6 +505,5 @@ namespace InventoryManagement
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
         }
-
     }
 }

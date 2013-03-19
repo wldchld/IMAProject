@@ -44,7 +44,7 @@
                                 <MenuItem Header="Cancel" />
                             </ContextMenu>
                         </ListView.ContextMenu>
-                        
+
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
@@ -53,12 +53,12 @@
                         </ListView.View>
                     </ListView>
                 </StackPanel>
-                
+
                 <StackPanel x:Name="InventoryItemPanel" Grid.Column="8">
                     <StackPanel x:Name="ItemName" Orientation="Horizontal">
                         <Label x:Name="ItemNameHeader" Content="Name:">
                         </Label>
-                        <Label x:Name="ItemNameContent" Content="">                            
+                        <Label x:Name="ItemNameContent" Content="">
                         </Label>
                     </StackPanel>
                     <StackPanel x:Name="ItemDescription" Orientation="Horizontal">
@@ -76,7 +76,7 @@
                     <StackPanel x:Name="ItemQuantity" Orientation="Horizontal">
                         <Label x:Name="ItemQuantityHeader" Content="Quantity:">
                         </Label>
-                        <Button x:Name="DecreaseQuantity" Content="   -   " Click="DecreaseQuantity_Click">                            
+                        <Button x:Name="DecreaseQuantity" Content="   -   " Click="DecreaseQuantity_Click">
                         </Button>
                         <Label x:Name="ItemQuantityContent" Content="0">
                         </Label>
@@ -103,7 +103,7 @@
                         <Label x:Name="ItemIsInfiniteContent" Content="">
                         </Label>
                     </StackPanel>
-                    
+
                     <StackPanel x:Name="ItemLastModified" Orientation="Horizontal">
                         <Label x:Name="ItemLastModifiedHeader" Content="Last modified:">
                         </Label>
@@ -117,7 +117,7 @@
                         </Label>
                     </StackPanel>
                     <StackPanel x:Name="ItemEdit" Orientation="Horizontal">
-                        <Button x:Name="EditButton" Content="   Edit   " Click="EditButton_Click">                            
+                        <Button x:Name="EditButton" Content="   Edit   " Click="EditButton_Click">
                         </Button>
                     </StackPanel>
                 </StackPanel>
@@ -128,12 +128,45 @@
             </Grid>
         </TabItem>
         <TabItem x:Name="MainWindowTabRecipies" Header="Recipies">
-            <Grid Background="#FFFFFFFF">
+            <Grid HorizontalAlignment="Left" Height="473" VerticalAlignment="Top" Width="754">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="161*"/>
-                    <ColumnDefinition Width="589*"/>
+                    <ColumnDefinition Width="138*"/>
+                    <ColumnDefinition Width="179*"/>
+                    <ColumnDefinition Width="437*"/>
                 </Grid.ColumnDefinitions>
-
+                <ListView Name="RecipesView" ItemsSource="{Binding recipes}" RenderTransformOrigin="-0.833,0.476" HorizontalAlignment="Left" Width="118" Margin="10,10,0,10" SelectionChanged="RecipesView_SelectionChanged">
+                    <ListView.ContextMenu>
+                        <ContextMenu HasDropShadow="True">
+                            <MenuItem Name="Delete" Header="Delete"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Header="Recipes name"/>
+                        </GridView>
+                    </ListView.View>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Name, Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ListView Name ="RecipesMaterials" Grid.Column="1" ItemsSource="{Binding recipes}" HorizontalAlignment="Left" Height="453" VerticalAlignment="Top" Width="159" Margin="10,10,0,0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Header="Material name"/>
+                            <GridViewColumn DisplayMemberBinding="{Binding Path=Amount}" Header="Amount"/>
+                        </GridView>
+                    </ListView.View>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock  Text="{Binding Path=Material, Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Label Name="RecipeInstructions" Content="" Grid.Column="2" HorizontalAlignment="Left" Height="432" Margin="10,41,0,0" VerticalAlignment="Top" Width="235"/>
+                <GridSplitter Grid.Column="2" HorizontalAlignment="Left" Height="1" Margin="433,31,-73,0" VerticalAlignment="Top" Width="77"/>
+                <Label Content="Instructions:" Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="181"/>
             </Grid>
         </TabItem>
         <TabItem x:Name="MainWindowTabShoppingList" Header="Shopping list">
