@@ -543,10 +543,5 @@ namespace InventoryManagement
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
         }
-
-
-   
-
-
     }
 }

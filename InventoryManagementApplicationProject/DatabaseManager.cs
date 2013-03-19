@@ -306,7 +306,14 @@ namespace InventoryManagement
         public void AddNewRecipe(String name, IList<Material> content, String instructions)
         {
             Recipe recipe = new Recipe();
-            recipe.Content = new List<Material>(content);
+            recipe.Content = new List<Material>();
+            for (int i = 0; i < content.Count; i++)
+            {
+                Material material = new Material(content[i]);
+                material.BelongsTo = Material.Connection.RECIPE;
+                recipe.Content.Add(material);
+                
+            }
             recipe.Name = name;
             recipe.Instructions = instructions;
 
@@ -316,9 +323,12 @@ namespace InventoryManagement
         public void AddMaterialToRecipe(String recipeName, Material material)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
+            
             for (int i = 0; i < recipes.Count; i++) 
             {
-                recipes[i].Content.Add(material);
+                Material material_ = new Material(material);
+                material_.BelongsTo = Material.Connection.RECIPE;
+                recipes[i].Content.Add(material_);
                 db.Ext().Store(recipes[i], Int32.MaxValue);
             }
         }
@@ -326,11 +336,13 @@ namespace InventoryManagement
         public void AddMaterialToRecipe(String recipeName, String materialName, double amount)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
-            Material material = RetrieveMaterialByName(materialName);
+            
             for (int i = 0; i < recipes.Count; i++)
             {
+                Material material = new Material(RetrieveMaterialByName(materialName));
+                material.Amount = amount;
+                material.BelongsTo = Material.Connection.RECIPE;
                 recipes[i].Content.Add(material);
-                recipes[i].Content.Last().Amount = amount;
                 db.Ext().Store(recipes[i], Int32.MaxValue);
             }
         }
@@ -452,7 +464,7 @@ namespace InventoryManagement
 
             AddNewRecipe("Resepti", "Käytä tätä reseptiä");
             AddMaterialToRecipe("Resepti", RetrieveMaterialByName("Kalja"));
-            AddMaterialToRecipe("Resepti", "ES", 240);
+            AddMaterialToRecipe("Resepti", "ES", 80);
             AddNewRecipe("Ruokaa", RetrieveMaterialsInGroup("Ruoka"), "Tähän reseptiin tulee paljon ruokaa");
             AddNewRecipe("Juomia", RetrieveMaterialsInGroup("Juoma"), "Juomapuoli hoidossa");
 
