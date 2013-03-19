@@ -133,14 +133,19 @@ namespace InventoryManagement
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
-            //Go to manage inventory tab and select selected item
-            if (this.selectedItem != null)
-            {
-                tabControl.SelectedIndex = 4;
-                InitManageInventoryTab(selectedItem);
-            }
+            AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Visible;
         }
         #endregion
+
+        private void OkButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
+        }
 
         #region Selection handling - Inventory Tab
         //Handle selections. 
