@@ -46,12 +46,12 @@ namespace InventoryManagement
             return materials;
         }
 
-        public Material RetrieveMaterialByName(String name)
+        public Material RetrieveMaterialByName(String name, Material.Connection belongsTo)
         {
             Material result = null;
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
-                return mat.Name == name;
+                return mat.Name == name && mat.BelongsTo == belongsTo;
             });
             if (mats.Count == 1)
                 result = mats[0];
@@ -78,9 +78,16 @@ namespace InventoryManagement
             }
         }
 
-        public void DeleteMaterialByName(String name)
+        public void AddToInventoryFromShoplist(Material bought)
         {
-            db.Delete(RetrieveMaterialByName(name));
+            Material temp = RetrieveMaterialByName(bought.Name, Material.Connection.INVENTORY);
+            temp.Amount += bought.Amount;
+            db.Store(temp);
+        }
+
+        public void DeleteMaterialByName(String name, Material.Connection belongsTo)
+        {
+            db.Delete(RetrieveMaterialByName(name, belongsTo));
         }
 
         public void AddNewMaterial(String name, String groupName, bool infinite, double amount, Material.MeasureType typeOfMeasure, 
@@ -339,7 +346,7 @@ namespace InventoryManagement
             
             for (int i = 0; i < recipes.Count; i++)
             {
-                Material material = new Material(RetrieveMaterialByName(materialName));
+                Material material = new Material(RetrieveMaterialByName(materialName, Material.Connection.INVENTORY));
                 material.Amount = amount;
                 material.BelongsTo = Material.Connection.RECIPE;
                 recipes[i].Content.Add(material);
@@ -463,7 +470,7 @@ namespace InventoryManagement
             AddNewMaterial("2x4 Lauta", "Rakennustarvike", false, 240, Material.MeasureType.LENGTH, DateTime.Now, DateTime.MinValue, "Sijainti: olohuone", Unit.M, Material.Connection.INVENTORY);
 
             AddNewRecipe("Resepti", "Käytä tätä reseptiä");
-            AddMaterialToRecipe("Resepti", RetrieveMaterialByName("Kalja"));
+            AddMaterialToRecipe("Resepti", RetrieveMaterialByName("Kalja", Material.Connection.INVENTORY));
             AddMaterialToRecipe("Resepti", "ES", 80);
             AddNewRecipe("Ruokaa", RetrieveMaterialsInGroup("Ruoka"), "Tähän reseptiin tulee paljon ruokaa");
             AddNewRecipe("Juomia", RetrieveMaterialsInGroup("Juoma"), "Juomapuoli hoidossa");

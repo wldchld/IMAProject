@@ -47,7 +47,7 @@ namespace InventoryManagement
 
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
         {
-            // Added because of unresolved exception, no material found from database, works when there is data in database
+            //Added because of unresolved exception, no material found from database, works when there is data in database
             //dbManager.ReCreateDB();
             //dbManager.CreateSampleData();
 
@@ -110,7 +110,7 @@ namespace InventoryManagement
             //Decrease selected item quantity
             if (this.selectedItem != null && selectedItem.Amount >= 1)
             {
-                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
+                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
                 selectedItem.Amount--;
                 selectedItem.LastModified = DateTime.Now;
                 dbManager.UpdateMaterial(tempItem, selectedItem);
@@ -123,7 +123,7 @@ namespace InventoryManagement
             //Increase selected item quantity
             if (this.selectedItem != null)
             {
-                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
+                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
                 selectedItem.Amount++;
                 selectedItem.LastModified = DateTime.Now;
                 dbManager.UpdateMaterial(tempItem, selectedItem);
@@ -277,7 +277,7 @@ namespace InventoryManagement
             if (selectedItem != null)
             {
                 Console.WriteLine("poistetaan paskaa");
-                dbManager.DeleteMaterialByName(selectedItem.Name);
+                dbManager.DeleteMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
                 inventory.Clear();
                 AddAllMaterialToInventoryList();
             }
@@ -337,7 +337,7 @@ namespace InventoryManagement
         {
             if (editMaterial != null)
             {
-                Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name);
+                Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name, Material.Connection.INVENTORY);
 
                 //Some logic
 
@@ -504,56 +504,6 @@ namespace InventoryManagement
 
         #endregion
 
-        #region TEST FUNCTIONS
-        private void mikonTestBtn_Click(object sender, RoutedEventArgs e)
-        {
-            dbManager.ReCreateDB();
-            dbManager.CreateSampleData();
-            Console.WriteLine("Testing method RetreiveAllMaterials()");
-            dbManager.RetrieveAllMaterials();
-            Console.WriteLine("Testing method AddNewMaterial(hehkulamppu)");
-            dbManager.AddNewMaterial(new Material("Hehkulamppu", "Varaosat", false, 100, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.MaxValue, null, Unit.G, Material.Connection.INVENTORY));
-            Console.WriteLine("Testing method RetreiveAllMaterialsInGroup(Ruoka)");
-            dbManager.RetrieveMaterialsInGroup("Ruoka");
-            Console.WriteLine("Testing method RetreiveAllMaterials()");
-            dbManager.RetrieveAllMaterials();
-            Console.WriteLine("Testing method RetrieveMaterialsByAmount(E, 1)");
-            dbManager.RetrieveMaterialsByAmount(DatabaseManager.ROperator.E, 1);
-            Console.WriteLine("Testing method RetrieveMaterialByName(Hehkulamppu)");
-            Material hehkulamppu = dbManager.RetrieveMaterialByName("Hehkulamppu");
-            Console.WriteLine("Testing method UpdateMaterial(hehkulamppu)");
-            dbManager.UpdateMaterial(hehkulamppu, new Material("Hehkulamppu", "Varaosat", false, 2, Material.MeasureType.PCS, DateTime.Now, DateTime.MaxValue, null, Unit.PCS, Material.Connection.INVENTORY));
-            Console.WriteLine("Testing method RetrieveMaterialByName(Hehkulamppu)");
-            dbManager.RetrieveMaterialByName("Hehkulamppu");
-            Console.WriteLine("Testing method DeleteMaterialByName(Kovalevy)");
-            dbManager.DeleteMaterialByName("Kovalevy");
-            Console.WriteLine("Testing method RetreiveAllMaterials()");
-            dbManager.RetrieveAllMaterials();
-            Console.WriteLine("Testing method RetreiveAllShoppingLists()");
-            dbManager.RetrieveAllShoppingLists();
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-
-            //Robbed your button Mikko ;) t. Ville
-            Console.WriteLine("Testing method RetrieveAllRecipes()");
-            dbManager.RetrieveAllRecipes();
-            Console.WriteLine("Testing method RetrieveRecipeByMaterialList()");
-            dbManager.RetrieveRecipeByMaterialList(dbManager.RetrieveMaterialsByAmount(DatabaseManager.ROperator.E, 240));
-            Console.WriteLine("Testing method RetrieveRecipeByName()");
-            dbManager.RetrieveRecipeByName("Resepti");
-            Console.WriteLine("Testing method RetrieveRecipeByName(string)");
-            dbManager.RetrieveRecipeByMaterialName("ES");
-            Console.WriteLine("Testing method RetrieveRecipeByName(<Material>)");
-            dbManager.RetrieveRecipeByMaterial(dbManager.RetrieveMaterialByName("Ruisleipä"));
-            Console.WriteLine("Testing method RetrieveRecipeByNamePart()");
-            dbManager.RetrieveRecipeByNamePart("ept");
-        }
-        
-
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             /*
@@ -562,9 +512,12 @@ namespace InventoryManagement
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             */
-
+            foreach (Material mat in selectedShopListContent)
+                dbManager.AddToInventoryFromShoplist(mat);
+            // HUONO VAIHTOEHTO MUTTA TOIMII :DD
+            inventory.Clear();
+            AddAllMaterialToInventoryList();
         }
-        #endregion
 
         private void About_MenuItem_Click(object sender, RoutedEventArgs e)
         {
