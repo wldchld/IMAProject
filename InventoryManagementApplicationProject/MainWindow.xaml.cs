@@ -389,6 +389,16 @@ namespace InventoryManagement
             shoppingListContentLW.Items.Refresh();
         }
 
+        private void Print_Selected_Shoplist(object sender, RoutedEventArgs e)
+        {
+            ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
+            PrintDialog dialog = new PrintDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                dialog.PrintVisual(shoppingListContentLW, sl.Name);
+            }
+        }
+
         private void Create_ShoppingList_And_Add(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
@@ -421,7 +431,7 @@ namespace InventoryManagement
             if (!(RecipesView.SelectedItem).Equals(null))
             {
                 Recipe a = (Recipe)RecipesView.SelectedItem;
-                RecipeInstructions.Content = a.Instructions;
+                RecipeInstructions.Text = a.Instructions;
                 if (a.Content.Count > 0)
                 {
                     recipesMaterials = new ObservableCollection<Material>(a.Content);
@@ -546,11 +556,19 @@ namespace InventoryManagement
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            /*
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Märkäsimo", "Muut", false, 1, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Kakka", "Muut", false, 2, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
+            */
+
         }
         #endregion
+
+        private void About_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Inventory Management Application\n\nMikko Ollila\nVille Hannu\nVille Minkkinen\nLauri Nykänen\nJukka Pelander");
+        }
     }
 }

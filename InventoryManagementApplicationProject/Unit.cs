@@ -88,6 +88,11 @@ namespace InventoryManagement
             }
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         //-----------------------------------------------
 
         // base units
