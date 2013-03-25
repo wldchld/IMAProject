@@ -35,13 +35,9 @@ namespace InventoryManagement
         private ObservableCollection<Recipe> recipes { get; set; }
         private ObservableCollection<Material> recipesMaterials { get; set; }
 
-<<<<<<< HEAD
-        private ObservableCollection<Material> search = new ObservableCollection<Material>();
-=======
         private ObservableCollection<Material> searchMaterial = new ObservableCollection<Material>();
         private ObservableCollection<Material> searchRecipe = new ObservableCollection<Material>();
 
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
 
         #endregion
 
@@ -53,15 +49,9 @@ namespace InventoryManagement
 
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
         {
-<<<<<<< HEAD
-            // Added because of unresolved exception, no material found from database, works when there is data in database
-            dbManager.ReCreateDB();
-            dbManager.CreateSampleData();
-=======
             //Added because of unresolved exception, no material found from database, works when there is data in database
             //dbManager.ReCreateDB();
             //dbManager.CreateSampleData();
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
 
             AddAllMaterialToInventoryList();
             shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
@@ -111,11 +101,7 @@ namespace InventoryManagement
         {
             if (SearchFilter.Text != "Search.." && SearchFilter.Text != String.Empty)
             {
-<<<<<<< HEAD
-                dbManager.SearchMaterials(SearchFilter.Text);
-=======
                 dbManager.SearchAll(SearchFilter.Text);
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
             }
         }
         #endregion
@@ -126,11 +112,7 @@ namespace InventoryManagement
             //Decrease selected item quantity
             if (this.selectedItem != null && selectedItem.Amount >= 1)
             {
-<<<<<<< HEAD
-                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
-=======
                 Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
                 selectedItem.Amount--;
                 selectedItem.LastModified = DateTime.Now;
                 dbManager.UpdateMaterial(tempItem, selectedItem);
@@ -143,11 +125,7 @@ namespace InventoryManagement
             //Increase selected item quantity
             if (this.selectedItem != null)
             {
-<<<<<<< HEAD
-                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name);
-=======
                 Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
                 selectedItem.Amount++;
                 selectedItem.LastModified = DateTime.Now;
                 dbManager.UpdateMaterial(tempItem, selectedItem);
@@ -157,17 +135,6 @@ namespace InventoryManagement
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
-<<<<<<< HEAD
-            //Go to manage inventory tab and select selected item
-            if (this.selectedItem != null)
-            {
-                tabControl.SelectedIndex = 4;
-                InitManageInventoryTab(selectedItem);
-            }
-        }
-        #endregion
-
-=======
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Visible;
         }
         #endregion
@@ -182,7 +149,6 @@ namespace InventoryManagement
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
         }
 
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
         #region Selection handling - Inventory Tab
         //Handle selections. 
         //If one item is selected, it is placed to "selectedItem" variable and "selectedItems" is null.
@@ -312,30 +278,6 @@ namespace InventoryManagement
         {
             if (selectedItem != null)
             {
-<<<<<<< HEAD
-            }
-        }
-
-        //private void menuItem_CopyUsername_Click(object sender, RoutedEventArgs e)
-        //{
-        //    //Clipboard.SetText(mySelectedItem.Username);
-        //    Console.WriteLine("Tama tuli tanne");
-        //}
-        //private void ListBox_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        //{
-        //    // a better version would turn the sender into the ListBoxItem
-        //    // find the list box, then find the ContextMenu that way
-        //    this.LeftClickMenu.PlacementTarget = sender as UIElement;
-        //    this.LeftClickMenu.IsOpen = true;
-        //}
-
-        //private void ListBox_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    // disables the SelectedIndex code
-        //    e.Handled = true;
-        //}
-
-=======
                 Console.WriteLine("poistetaan paskaa");
                 dbManager.DeleteMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
                 inventory.Clear();
@@ -343,7 +285,6 @@ namespace InventoryManagement
             }
         }
 
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
         #endregion
 
         #region Initialize different main window tabs
@@ -398,11 +339,7 @@ namespace InventoryManagement
         {
             if (editMaterial != null)
             {
-<<<<<<< HEAD
-                Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name);
-=======
                 Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name, Material.Connection.INVENTORY);
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
 
                 //Some logic
 
@@ -418,13 +355,9 @@ namespace InventoryManagement
             if (idx >= 0 && idx < shopLists.Count)
             {
                 ShoppingList sl = dbManager.RetrieveShoppingListByName(shoppingListsLW.SelectedItem.ToString());
-<<<<<<< HEAD
-                selectedShopListContent = new ObservableCollection<Material>(sl.Content);
-=======
                 List<Material> tempList = sl.Content;
                 tempList = tempList.OrderBy(o => o.Name).ToList();
                 selectedShopListContent = new ObservableCollection<Material>(tempList);
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
                 shoppingListContentLW.ItemsSource = selectedShopListContent;
             }
         }
@@ -441,10 +374,6 @@ namespace InventoryManagement
 
         private void ShopListItem_Click_Remove(object sender, RoutedEventArgs e)
         {
-<<<<<<< HEAD
-            ShoppingList sl = (ShoppingList) shoppingListsLW.SelectedItem;
-            Material item = (Material) shoppingListContentLW.SelectedItem;
-=======
             RemoveFromShoplist();
         }
 
@@ -452,7 +381,6 @@ namespace InventoryManagement
         {
             ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
             Material item = (Material)shoppingListContentLW.SelectedItem;
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
             // remove it from the ShoppingList object's content, update view and database
             sl.RemoveFromContent(item);
             dbManager.UpdateShoppingList(sl);
@@ -470,11 +398,6 @@ namespace InventoryManagement
             shoppingListContentLW.Items.Refresh();
         }
 
-<<<<<<< HEAD
-        private void Create_ShoppingList_And_Add(object sender, RoutedEventArgs e)
-        {
-
-=======
         private void Print_Selected_Shoplist(object sender, RoutedEventArgs e)
         {
             ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
@@ -506,7 +429,6 @@ namespace InventoryManagement
                     }
                 }
             }
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
         }
 
         #endregion
@@ -518,11 +440,7 @@ namespace InventoryManagement
             if (!(RecipesView.SelectedItem).Equals(null))
             {
                 Recipe a = (Recipe)RecipesView.SelectedItem;
-<<<<<<< HEAD
-                RecipeInstructions.Content = a.Instructions;
-=======
                 RecipeInstructions.Text = a.Instructions;
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
                 if (a.Content.Count > 0)
                 {
                     recipesMaterials = new ObservableCollection<Material>(a.Content);
@@ -540,26 +458,6 @@ namespace InventoryManagement
         #endregion
 
         #region Some functions - Advanced Search Tab
-<<<<<<< HEAD
-        private void QuantityEqualsButton_Click(object sender, RoutedEventArgs e)
-        {
-            String Qeb = this.QuantityEqualsButton.Content.ToString();
-            if (Qeb == " ")
-            {
-                this.QuantityEqualsButton.Content = ">";
-            }
-            else if (Qeb == ">")
-            {
-                this.QuantityEqualsButton.Content = "<";
-            }
-            else if (Qeb == "<")
-            {
-                this.QuantityEqualsButton.Content = "=";
-            }
-            else if (Qeb == "=")
-            {
-                this.QuantityEqualsButton.Content = " ";
-=======
         private void Laurintestinappi_Click(object sender, RoutedEventArgs e)
         {
 
@@ -587,94 +485,11 @@ namespace InventoryManagement
                 {
                     AdvancedResultList.Items.Add(o);
                 }
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
             }
         }
 
         private void AdvancedSearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-<<<<<<< HEAD
-            if (AdvancedSearchBox.Text != "Search.." && AdvancedSearchBox.Text != String.Empty)
-            {
-                search.Clear();
-                List<Material> result = dbManager.SearchMaterials(AdvancedSearchBox.Text);
-                foreach (Material item in result)
-                {
-                    search.Add(
-                        new Material(
-                        item.Name,
-                        item.GroupName,
-                        item.Infinite,
-                        item.Amount,
-                        item.TypeOfMeasure,
-                        item.LastModified,
-                        item.BestBefore,
-                        item.ExtraInfo,
-                        item.DisplayUnit,
-                        item.BelongsTo));
-                }
-            }
-        }
-
-        private void SearchTest_Click(object sender, RoutedEventArgs e)
-        {
-            AdvancedResultList.Items.Clear();
-
-            foreach (Material o in search)
-            AdvancedResultList.Items.Add(o);
-        }
-
-        #endregion
-
-        #region TEST FUNCTIONS
-        private void mikonTestBtn_Click(object sender, RoutedEventArgs e)
-        {
-            dbManager.ReCreateDB();
-            dbManager.CreateSampleData();
-            Console.WriteLine("Testing method RetreiveAllMaterials()");
-            dbManager.RetrieveAllMaterials();
-            Console.WriteLine("Testing method AddNewMaterial(hehkulamppu)");
-            dbManager.AddNewMaterial(new Material("Hehkulamppu", "Varaosat", false, 100, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.MaxValue, null, Unit.G, Material.Connection.INVENTORY));
-            Console.WriteLine("Testing method RetreiveAllMaterialsInGroup(Ruoka)");
-            dbManager.RetrieveMaterialsInGroup("Ruoka");
-            Console.WriteLine("Testing method RetreiveAllMaterials()");
-            dbManager.RetrieveAllMaterials();
-            Console.WriteLine("Testing method RetrieveMaterialsByAmount(E, 1)");
-            dbManager.RetrieveMaterialsByAmount(DatabaseManager.ROperator.E, 1);
-            Console.WriteLine("Testing method RetrieveMaterialByName(Hehkulamppu)");
-            Material hehkulamppu = dbManager.RetrieveMaterialByName("Hehkulamppu");
-            Console.WriteLine("Testing method UpdateMaterial(hehkulamppu)");
-            dbManager.UpdateMaterial(hehkulamppu, new Material("Hehkulamppu", "Varaosat", false, 2, Material.MeasureType.PCS, DateTime.Now, DateTime.MaxValue, null, Unit.PCS, Material.Connection.INVENTORY));
-            Console.WriteLine("Testing method RetrieveMaterialByName(Hehkulamppu)");
-            dbManager.RetrieveMaterialByName("Hehkulamppu");
-            Console.WriteLine("Testing method DeleteMaterialByName(Kovalevy)");
-            dbManager.DeleteMaterialByName("Kovalevy");
-            Console.WriteLine("Testing method RetreiveAllMaterials()");
-            dbManager.RetrieveAllMaterials();
-            Console.WriteLine("Testing method RetreiveAllShoppingLists()");
-            dbManager.RetrieveAllShoppingLists();
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-            Console.WriteLine("Testing method ");
-
-            //Robbed your button Mikko ;) t. Ville
-            Console.WriteLine("Testing method RetrieveAllRecipes()");
-            dbManager.RetrieveAllRecipes();
-            Console.WriteLine("Testing method RetrieveRecipeByMaterialList()");
-            dbManager.RetrieveRecipeByMaterialList(dbManager.RetrieveMaterialsByAmount(DatabaseManager.ROperator.E, 240));
-            Console.WriteLine("Testing method RetrieveRecipeByName()");
-            dbManager.RetrieveRecipeByName("Resepti");
-            Console.WriteLine("Testing method RetrieveRecipeByName(string)");
-            dbManager.RetrieveRecipeByMaterialName("ES");
-            Console.WriteLine("Testing method RetrieveRecipeByName(<Material>)");
-            dbManager.RetrieveRecipeByMaterial(dbManager.RetrieveMaterialByName("Ruisleipä"));
-            Console.WriteLine("Testing method RetrieveRecipeByNamePart()");
-            dbManager.RetrieveRecipeByNamePart("ept");
-        }
-=======
                 AdvancedSearchBox_Update();
         }
         private void AdvancedSearchBox_GotFocus(object sender, RoutedEventArgs e)
@@ -711,31 +526,15 @@ namespace InventoryManagement
         {
         }
 
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
         #endregion
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-<<<<<<< HEAD
-=======
             /*
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Märkäsimo", "Muut", false, 1, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Kakka", "Muut", false, 2, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
-<<<<<<< HEAD
-        }
-<<<<<<< HEAD
-=======
-
-
-   
-
-
-
->>>>>>> 2165f6478e48ec70cd0367125df44870c075af28
-=======
             */
             foreach (Material mat in selectedShopListContent)
                 dbManager.AddToInventoryFromShoplist(mat);
@@ -804,6 +603,5 @@ namespace InventoryManagement
     
 
      
->>>>>>> fc55c14401e2bafac11c5b054f81e08de2eda7fb
     }
 }
