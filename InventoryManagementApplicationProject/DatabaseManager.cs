@@ -521,14 +521,23 @@ namespace InventoryManagement
 
 
         /// Search
-        public List<Material> SearchMaterials(String input)
+        public List<Material> SearchAll(String input)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
-                return mat.Name.ToUpper().Contains(input.ToUpper());
+                return mat.Name.ToUpper().Contains(input.ToUpper()) &&
+                    mat.BelongsTo == Material.Connection.RECIPE || mat.BelongsTo == Material.Connection.INVENTORY;
             });
             return mats.ToList();
         }
-
+     
+        public List<Material> SearchMats(String input, Material.Connection belongsTo)
+        {
+            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            {
+                return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo;
+            });
+            return mats.ToList();
+        }
     }
 }
