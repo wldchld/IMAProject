@@ -35,7 +35,9 @@ namespace InventoryManagement
         private ObservableCollection<Recipe> recipes { get; set; }
         private ObservableCollection<Material> recipesMaterials { get; set; }
 
-        private ObservableCollection<Material> search = new ObservableCollection<Material>();
+        private ObservableCollection<Material> searchMaterial = new ObservableCollection<Material>();
+        private ObservableCollection<Material> searchRecipe = new ObservableCollection<Material>();
+
 
         #endregion
 
@@ -99,7 +101,7 @@ namespace InventoryManagement
         {
             if (SearchFilter.Text != "Search.." && SearchFilter.Text != String.Empty)
             {
-                dbManager.SearchMaterials(SearchFilter.Text);
+                dbManager.SearchAll(SearchFilter.Text);
             }
         }
         #endregion
@@ -353,7 +355,9 @@ namespace InventoryManagement
             if (idx >= 0 && idx < shopLists.Count)
             {
                 ShoppingList sl = dbManager.RetrieveShoppingListByName(shoppingListsLW.SelectedItem.ToString());
-                selectedShopListContent = new ObservableCollection<Material>(sl.Content);
+                List<Material> tempList = sl.Content;
+                tempList = tempList.OrderBy(o => o.Name).ToList();
+                selectedShopListContent = new ObservableCollection<Material>(tempList);
                 shoppingListContentLW.ItemsSource = selectedShopListContent;
             }
         }
@@ -370,8 +374,13 @@ namespace InventoryManagement
 
         private void ShopListItem_Click_Remove(object sender, RoutedEventArgs e)
         {
-            ShoppingList sl = (ShoppingList) shoppingListsLW.SelectedItem;
-            Material item = (Material) shoppingListContentLW.SelectedItem;
+            RemoveFromShoplist();
+        }
+
+        private void RemoveFromShoplist()
+        {
+            ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
+            Material item = (Material)shoppingListContentLW.SelectedItem;
             // remove it from the ShoppingList object's content, update view and database
             sl.RemoveFromContent(item);
             dbManager.UpdateShoppingList(sl);
@@ -470,57 +479,72 @@ namespace InventoryManagement
         #endregion
 
         #region Some functions - Advanced Search Tab
-        private void QuantityEqualsButton_Click(object sender, RoutedEventArgs e)
+        private void Laurintestinappi_Click(object sender, RoutedEventArgs e)
         {
-            String Qeb = this.QuantityEqualsButton.Content.ToString();
-            if (Qeb == " ")
+
+        }
+
+        private void AdvancedSearchBox_Update()
+        {
+            searchRecipe.Clear();
+            searchMaterial.Clear();
+            AdvancedResultList.Items.Clear();
+
+            if (MaterialCheckBox.IsChecked == true)
             {
-                this.QuantityEqualsButton.Content = ">";
+                searchMaterial = new ObservableCollection<Material>(dbManager.SearchMats(AdvancedSearchBox.Text, Material.Connection.INVENTORY));
+                foreach (Material o in searchMaterial)
+                {
+                    AdvancedResultList.Items.Add(o);
+                }
             }
-            else if (Qeb == ">")
+
+            if (RecipeCheckBox.IsChecked == true)
             {
-                this.QuantityEqualsButton.Content = "<";
-            }
-            else if (Qeb == "<")
-            {
-                this.QuantityEqualsButton.Content = "=";
-            }
-            else if (Qeb == "=")
-            {
-                this.QuantityEqualsButton.Content = " ";
+                searchRecipe = new ObservableCollection<Material>(dbManager.SearchMats(AdvancedSearchBox.Text, Material.Connection.RECIPE));
+                foreach (Material o in searchRecipe)
+                {
+                    AdvancedResultList.Items.Add(o);
+                }
             }
         }
 
         private void AdvancedSearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (AdvancedSearchBox.Text != "Search.." && AdvancedSearchBox.Text != String.Empty)
-            {
-                search.Clear();
-                List<Material> result = dbManager.SearchMaterials(AdvancedSearchBox.Text);
-                foreach (Material item in result)
-                {
-                    search.Add(
-                        new Material(
-                        item.Name,
-                        item.GroupName,
-                        item.Infinite,
-                        item.Amount,
-                        item.TypeOfMeasure,
-                        item.LastModified,
-                        item.BestBefore,
-                        item.ExtraInfo,
-                        item.DisplayUnit,
-                        item.BelongsTo));
-                }
-            }
+                AdvancedSearchBox_Update();
         }
+        private void AdvancedSearchBox_GotFocus(object sender, RoutedEventArgs e)
+        {/*
+            searchMaterial.Clear();
+            AdvancedResultList.Items.Clear();
+            
+            searchMaterial = new ObservableCollection<Material>(dbManager.SearchAll(AdvancedSearchBox.Text));
+            foreach (Material o in searchMaterial)
+            {
+                AdvancedResultList.Items.Add(o);
+            }
+          */
+        }
+        private void MaterialCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            AdvancedSearchBox_Update();
+        }
+        private void MaterialCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            AdvancedSearchBox_Update();
+        }
+        private void RecipeCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            AdvancedSearchBox_Update();
+        }
+        private void RecipeCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            AdvancedSearchBox_Update();
+        }
+
 
         private void SearchTest_Click(object sender, RoutedEventArgs e)
         {
-            AdvancedResultList.Items.Clear();
-
-            foreach (Material o in search)
-            AdvancedResultList.Items.Add(o);
         }
 
         #endregion
@@ -544,5 +568,63 @@ namespace InventoryManagement
         {
             MessageBox.Show("Inventory Management Application\n\nMikko Ollila\nVille Hannu\nVille Minkkinen\nLauri Nykänen\nJukka Pelander");
         }
+
+        private void MenuExit_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Move_To_Existing_Shoplist(object sender, RoutedEventArgs e)
+        {
+            Material selectedShoplistItem = (Material)shoppingListContentLW.SelectedItem;
+            MenuItem item = e.OriginalSource as MenuItem;
+            string slName = item.Header.ToString();
+            string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, selectedShoplistItem.Amount.ToString(), -1, -1);
+            if (text != "" && text != null)
+            {
+                double amount;
+                if (Double.TryParse(text, out amount))
+                {
+                    Material temp = new Material(selectedShoplistItem);
+                    temp.Amount = amount;
+                    temp.BelongsTo = Material.Connection.SHOPPING_LIST;
+                    dbManager.AddToShoppingList(slName, temp);
+                    RemoveFromShoplist();
+                }
+            }
+        }
+
+        private void Move_To_New_Shoplist(object sender, RoutedEventArgs e)
+        {
+            Material selectedShoplistItem = (Material)shoppingListContentLW.SelectedItem;
+            string slName = Interaction.InputBox("Enter name", "Add to a new shopping list:", "", -1, -1);
+            if (slName == null && slName == "")
+                return;
+            string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, selectedShoplistItem.Amount.ToString(), -1, -1);
+            if (text != "" && text != null)
+            {
+                double amount;
+                if (Double.TryParse(text, out amount))
+                {
+                    dbManager.AddNewShoppingList(slName);
+                    Material temp = new Material((Material) shoppingListContentLW.SelectedItem);
+                    temp.Amount = amount;
+                    temp.BelongsTo = Material.Connection.SHOPPING_LIST;
+                    dbManager.AddToShoppingList(slName, temp);
+                    RemoveFromShoplist();
+                }
+            }
+        }
+
+     
+
+     
+     
+
+      
+
+    
+
+     
     }
 }
