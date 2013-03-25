@@ -489,10 +489,15 @@ namespace InventoryManagement
             searchRecipe.Clear();
             searchMaterial.Clear();
             AdvancedResultList.Items.Clear();
+            string symbol = AdvancedSearchComboBox.Text;
+
+            int amount = 0;
+            int.TryParse(QuantityTextBox.Text, out amount);
 
             if (MaterialCheckBox.IsChecked == true)
             {
-                searchMaterial = new ObservableCollection<Material>(dbManager.SearchMats(AdvancedSearchBox.Text, Material.Connection.INVENTORY));
+                searchMaterial = new ObservableCollection<Material>(dbManager.SearchMats(AdvancedSearchBox.Text,
+                      Material.Connection.INVENTORY, symbol, amount));
                 foreach (Material o in searchMaterial)
                 {
                     AdvancedResultList.Items.Add(o);
@@ -501,7 +506,8 @@ namespace InventoryManagement
 
             if (RecipeCheckBox.IsChecked == true)
             {
-                searchRecipe = new ObservableCollection<Material>(dbManager.SearchMats(AdvancedSearchBox.Text, Material.Connection.RECIPE));
+                searchRecipe = new ObservableCollection<Material>(dbManager.SearchMats(AdvancedSearchBox.Text,
+                     Material.Connection.RECIPE, symbol, amount));
                 foreach (Material o in searchRecipe)
                 {
                     AdvancedResultList.Items.Add(o);
@@ -514,16 +520,7 @@ namespace InventoryManagement
                 AdvancedSearchBox_Update();
         }
         private void AdvancedSearchBox_GotFocus(object sender, RoutedEventArgs e)
-        {/*
-            searchMaterial.Clear();
-            AdvancedResultList.Items.Clear();
-            
-            searchMaterial = new ObservableCollection<Material>(dbManager.SearchAll(AdvancedSearchBox.Text));
-            foreach (Material o in searchMaterial)
-            {
-                AdvancedResultList.Items.Add(o);
-            }
-          */
+        {
         }
         private void MaterialCheckBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -538,6 +535,14 @@ namespace InventoryManagement
             AdvancedSearchBox_Update();
         }
         private void RecipeCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            AdvancedSearchBox_Update();
+        }
+        private void AdvancedSearchComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            AdvancedSearchBox_Update();
+        }
+        private void QuantityTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             AdvancedSearchBox_Update();
         }
@@ -615,6 +620,10 @@ namespace InventoryManagement
                 }
             }
         }
+
+      
+
+     
 
      
 

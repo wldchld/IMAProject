@@ -559,14 +559,45 @@ namespace InventoryManagement
             });
             return mats.ToList();
         }
-     
-        public List<Material> SearchMats(String input, Material.Connection belongsTo)
+
+        public List<Material> SearchMats(String input, Material.Connection belongsTo, string symbol, int amount)
         {
-            IList<Material> mats = db.Query<Material>(delegate(Material mat)
+            if (symbol == "=")
             {
-                return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo;
-            });
-            return mats.ToList();
+                IList<Material> mats = db.Query<Material>(delegate(Material mat)
+                {
+                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                        && mat.Amount == amount;
+                });
+                return mats.ToList();
+
+            }
+            else if (symbol == ">")
+            {
+                IList<Material> mats = db.Query<Material>(delegate(Material mat)
+                {
+                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                        && mat.Amount > amount;
+                });
+                return mats.ToList();
+            }
+            else if (symbol == "<")
+            {
+                IList<Material> mats = db.Query<Material>(delegate(Material mat)
+                {
+                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                        && mat.Amount < amount;
+                });
+                return mats.ToList();
+            }
+            else
+            {
+                IList<Material> mats = db.Query<Material>(delegate(Material mat)
+                {
+                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo;
+                });
+                return mats.ToList();
+            }
         }
     }
 }
