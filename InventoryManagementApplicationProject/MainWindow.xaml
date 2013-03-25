@@ -184,7 +184,7 @@
                         <ListView Width="200" Margin="0,29,0,0" x:Name="RecipesView" ItemsSource="{Binding recipes}" SelectionChanged="RecipesView_SelectionChanged">
                             <ListView.ContextMenu>
                                 <ContextMenu HasDropShadow="True">
-                                    <MenuItem x:Name="Delete" Header="Delete"/>
+                                    <MenuItem x:Name="Delete" Header="Delete" Click="Delete_Click"/>
                                 </ContextMenu>
                             </ListView.ContextMenu>
                             <ListView.View>
@@ -200,6 +200,11 @@
                         </ListView>
                         <Separator Width="5"/>
                         <ListView Width="350" Margin="0,29,0,0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" >
+                            <ListView.ContextMenu>
+                                <ContextMenu HasDropShadow="True">
+                                    <MenuItem x:Name="DeleteContent" Header="Delete" Click="DeleteContent_Click"/>
+                                </ContextMenu>
+                            </ListView.ContextMenu>
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Name"  DisplayMemberBinding="{Binding Name, Mode=TwoWay}" Width="250"/>

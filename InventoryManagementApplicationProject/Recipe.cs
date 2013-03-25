@@ -30,8 +30,11 @@ namespace InventoryManagement
                         add = true;
                     }
                 }
-                if(!add)
+                if (!add)
+                {
                     content.Add(material);
+                    content.Last().BelongsTo = Material.Connection.RECIPE;
+                }
             }
         }
 

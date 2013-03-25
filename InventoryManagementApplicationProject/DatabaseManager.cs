@@ -107,7 +107,7 @@ namespace InventoryManagement
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
-                return mat.GroupName == groupName;
+                return mat.GroupName == groupName && mat.BelongsTo == Material.Connection.INVENTORY;
             });
             PrintMaterialList(mats.ToList());
             return mats.ToList();
@@ -340,6 +340,35 @@ namespace InventoryManagement
             }
         }
 
+        public void DeleteRecipeByName(String recipeName)
+        {
+            IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
+
+            for (int i = 0; i < recipes.Count; i++)
+            {
+                db.Delete(recipes[i]);
+                Console.WriteLine(recipeName + " is deleted from recipes");
+            }
+        }
+
+        public void DeleteMaterialFromRecipe(String RecipeName, String MaterialName)
+        {
+            IList<Recipe> recipes = RetrieveRecipeByName(RecipeName);
+
+            for (int i = 0; i < recipes.Count; i++)
+            {
+                for (int a = 0; a < recipes[i].Content.Count; a++)
+                {
+                    if (recipes[i].Content[a].Name == MaterialName && recipes[i].Content[a].BelongsTo == Material.Connection.RECIPE)
+                    {
+                        recipes[i].Content.RemoveAt(a);
+                        db.Store(recipes[i]);
+                        Console.WriteLine(MaterialName + " removed from recipe " + RecipeName);
+                    }
+                }
+            }
+        }
+
         public void AddMaterialToRecipe(String recipeName, String materialName, double amount)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
@@ -388,7 +417,7 @@ namespace InventoryManagement
             {
                 for (int i = 0; i < recipe.Content.Count; i++)
                 {
-                    if (recipe.Content[i].Equals(material))
+                    if (recipe.Content[i].Name.Equals(material.Name))
                         return true;
                 }
                 return false;
