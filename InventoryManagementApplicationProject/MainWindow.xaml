@@ -11,7 +11,7 @@
         <Menu>
             <MenuItem Header="_File" >
                 <MenuItem Header="_Print"/>
-                <MenuItem Header="_Exit"/>
+                <MenuItem Header="_Exit" Click="MenuExit_Click_1"/>
             </MenuItem>
             <MenuItem Header="Placeholder" >
                 <MenuItem Header="SampleItem"/>
@@ -240,13 +240,15 @@
                         <ListView.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Remove" Click="ShopListItem_Click_Remove" />
+                                <MenuItem Header="Move to new..." Click="Move_To_New_Shoplist" />
+                                <MenuItem Header="Move to existing..." ItemsSource="{Binding ShopLists}" Click="Move_To_Existing_Shoplist" />
                             </ContextMenu>
                         </ListView.ContextMenu>
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Name"  DisplayMemberBinding="{Binding Name, Mode=TwoWay}" Width="250"/>
                                 <GridViewColumn Header="Amount"  DisplayMemberBinding="{Binding Amount, Mode=TwoWay}" Width="Auto"/>
-                                <GridViewColumn Header="Unit"  DisplayMemberBinding="{Binding DisplayUnit, Mode=OneWay}" Width="Auto"/>
+                                <GridViewColumn Header="Unit"  DisplayMemberBinding="{Binding DisplayUnit, Mode=OneWay}" Width="40"/>
                             </GridView>
                         </ListView.View>
                     </ListView>

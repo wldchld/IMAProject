@@ -355,7 +355,9 @@ namespace InventoryManagement
             if (idx >= 0 && idx < shopLists.Count)
             {
                 ShoppingList sl = dbManager.RetrieveShoppingListByName(shoppingListsLW.SelectedItem.ToString());
-                selectedShopListContent = new ObservableCollection<Material>(sl.Content);
+                List<Material> tempList = sl.Content;
+                tempList = tempList.OrderBy(o => o.Name).ToList();
+                selectedShopListContent = new ObservableCollection<Material>(tempList);
                 shoppingListContentLW.ItemsSource = selectedShopListContent;
             }
         }
@@ -372,8 +374,13 @@ namespace InventoryManagement
 
         private void ShopListItem_Click_Remove(object sender, RoutedEventArgs e)
         {
-            ShoppingList sl = (ShoppingList) shoppingListsLW.SelectedItem;
-            Material item = (Material) shoppingListContentLW.SelectedItem;
+            RemoveFromShoplist();
+        }
+
+        private void RemoveFromShoplist()
+        {
+            ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
+            Material item = (Material)shoppingListContentLW.SelectedItem;
             // remove it from the ShoppingList object's content, update view and database
             sl.RemoveFromContent(item);
             dbManager.UpdateShoppingList(sl);
@@ -539,6 +546,51 @@ namespace InventoryManagement
         private void About_MenuItem_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Inventory Management Application\n\nMikko Ollila\nVille Hannu\nVille Minkkinen\nLauri Nykänen\nJukka Pelander");
+        }
+
+        private void MenuExit_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Move_To_Existing_Shoplist(object sender, RoutedEventArgs e)
+        {
+            MenuItem item = e.OriginalSource as MenuItem;
+            string slName = item.Header.ToString();
+            string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, "1", -1, -1);
+            if (text != "" && text != null)
+            {
+                double amount;
+                if (Double.TryParse(text, out amount))
+                {
+                    Material temp = new Material((Material) shoppingListContentLW.SelectedItem);
+                    temp.Amount = amount;
+                    temp.BelongsTo = Material.Connection.SHOPPING_LIST;
+                    dbManager.AddToShoppingList(slName, temp);
+                    RemoveFromShoplist();
+                }
+            }
+        }
+
+        private void Move_To_New_Shoplist(object sender, RoutedEventArgs e)
+        {
+            string slName = Interaction.InputBox("Enter name", "Add to a new shopping list:", "", -1, -1);
+            if (slName == null && slName == "")
+                return;
+            string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, "1", -1, -1);
+            if (text != "" && text != null)
+            {
+                double amount;
+                if (Double.TryParse(text, out amount))
+                {
+                    dbManager.AddNewShoppingList(slName);
+                    Material temp = new Material((Material) shoppingListContentLW.SelectedItem);
+                    temp.Amount = amount;
+                    temp.BelongsTo = Material.Connection.SHOPPING_LIST;
+                    dbManager.AddToShoppingList(slName, temp);
+                    RemoveFromShoplist();
+                }
+            }
         }
 
      
