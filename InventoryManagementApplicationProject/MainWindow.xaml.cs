@@ -444,6 +444,22 @@ namespace InventoryManagement
         #endregion
 
         #region Context menu functions - Inventory Tab
+
+        private void InventoryItemList_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            // If there are no items selected, cancel viewing the context menu
+            if (InventoryItemList.SelectedItems.Count <= 0)
+            {
+                e.Handled = true;
+            }
+            else if (InventoryItemList.SelectedItems.Count > 3)
+            {
+
+                Console.WriteLine(LeftClickedMenu.Name);
+            }
+        }
+
+
         private void Add_Recipe(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
@@ -596,12 +612,15 @@ namespace InventoryManagement
 
         private void Remove_Whole_Shoplist(object sender, RoutedEventArgs e)
         {
-            ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
-            dbManager.DeleteShoppingListByName(sl.Name);
-            shopLists.Remove(sl);
-            shoppingListsLW.Items.Refresh();
-            shoppingListContentLW.ItemsSource = null;
-            shoppingListContentLW.Items.Refresh();
+            if (selectedItem != null)
+            {
+                ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
+                dbManager.DeleteShoppingListByName(sl.Name);
+                shopLists.Remove(sl);
+                shoppingListsLW.Items.Refresh();
+                shoppingListContentLW.ItemsSource = null;
+                shoppingListContentLW.Items.Refresh();
+            }
         }
 
         private void Print_Selected_Shoplist(object sender, RoutedEventArgs e)
@@ -667,14 +686,20 @@ namespace InventoryManagement
 
         private void DeleteContent_Click(object sender, RoutedEventArgs e)
         {
-            dbManager.DeleteMaterialFromRecipe(((Recipe)RecipesView.SelectedItem).Name,(((Material)RecipesMaterials.SelectedItem).Name));
-            LoadContentView();
+            if (selectedItem != null)
+            {
+                dbManager.DeleteMaterialFromRecipe(((Recipe)RecipesView.SelectedItem).Name, (((Material)RecipesMaterials.SelectedItem).Name));
+                LoadContentView();
+            }
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            dbManager.DeleteRecipeByName(((Recipe)RecipesView.SelectedItem).Name);
-            LoadContentView();
+            if (selectedItem != null)
+            {
+                dbManager.DeleteRecipeByName(((Recipe)RecipesView.SelectedItem).Name);
+                LoadContentView();
+            }
         }
         
         #endregion
@@ -795,6 +820,22 @@ namespace InventoryManagement
 
         #endregion
 
+        #region Menubar Functions
+
+        private void About_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Inventory Management Application\n\nVille Hannu\nVille Minkkinen\nLauri Nykänen\nMikko Ollila\nJukka Pelander\n\nGooglaa nimellä Facebookista, jos haluat tietää lisää.");
+        }
+
+        private void MenuExit_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        #endregion
+
+        // Se joka tietää/uskaltaa katsoa mihin nämä kuuluvat voi siirtää ne nätisti paikkaan, joka on kullekin oma.
+        #region MIHIN VITTUUN NÄMÄ KUULUVAT???
+
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             /*
@@ -803,21 +844,14 @@ namespace InventoryManagement
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
             */
-            foreach (Material mat in selectedShopListContent)
-                dbManager.AddToInventoryFromShoplist(mat);
-            // HUONO VAIHTOEHTO MUTTA TOIMII :DD
-            inventory.Clear();
-            AddAllMaterialToInventoryList();
-        }
-
-        private void About_MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Inventory Management Application\n\nMikko Ollila\nVille Hannu\nVille Minkkinen\nLauri Nykänen\nJukka Pelander");
-        }
-
-        private void MenuExit_Click_1(object sender, RoutedEventArgs e)
-        {
-            this.Close();
+            if (selectedShopListContent != null)
+            {
+                foreach (Material mat in selectedShopListContent)
+                    dbManager.AddToInventoryFromShoplist(mat);
+                // HUONO VAIHTOEHTO MUTTA TOIMII :DD
+                inventory.Clear();
+                AddAllMaterialToInventoryList();
+            }
         }
 
         private void Move_To_Existing_Shoplist(object sender, RoutedEventArgs e)
@@ -861,20 +895,7 @@ namespace InventoryManagement
                 }
             }
         }
+        #endregion
 
-      
-
-     
-
-     
-
-     
-     
-
-      
-
-    
-
-     
     }
 }

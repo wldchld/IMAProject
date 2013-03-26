@@ -41,13 +41,15 @@
                         <ComboBox x:Name="GroupFilter"/>
                         <TextBox x:Name="SearchFilter" TextAlignment="Right" Text="Search.." Foreground="Black" LostFocus="SearchFilter_LostFocus" GotFocus="SearchFilter_GotFocus" TextChanged="SearchFilter_TextChanged"/>
 
-                        <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="300" MaxHeight="300" SelectionChanged="InventoryItemList_SelectionChanged">
+                        <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="300" MaxHeight="300" 
+                                  SelectionChanged="InventoryItemList_SelectionChanged"
+                                  ContextMenuOpening="InventoryItemList_ContextMenuOpening">
                             <ListView.ContextMenu>
                                 <ContextMenu x:Name="LeftClickedMenu">
                                     <MenuItem x:Name="addToShopListMenuItem" Header="Add to existing shopping list" ItemsSource="{Binding ShopLists}" Click="Add_To_Existing_Shopping_List" />
                                     <MenuItem Header="Add to a new shoppinglist" Click="Create_ShoppingList_And_Add" />
                                     <MenuItem Header="Add to recipe" Click="Add_Recipe" />
-                                    <MenuItem Header="Edit" Click="Edit_Selected_Item" />
+                                    <MenuItem x:Name="editSelectedItem" Header="Edit" Click="Edit_Selected_Item" />
                                     <MenuItem Header="Remove" Click="Remove_Selected_Item" />
                                     <Separator/>
                                     <MenuItem Header="Cancel" />
