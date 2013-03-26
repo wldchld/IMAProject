@@ -384,6 +384,16 @@ namespace InventoryManagement
                 inventory.Clear();
                 AddAllMaterialToInventoryList();
             }
+            else if(selectedItems != null)
+            {
+                Console.WriteLine("poistetaan monta paskaa");
+                foreach (Material deleteItems in selectedItems)
+                {
+                    dbManager.DeleteMaterialByName(deleteItems.Name);
+                }
+                inventory.Clear();
+                AddAllMaterialToInventoryList();
+            }
         }
 
         #endregion
