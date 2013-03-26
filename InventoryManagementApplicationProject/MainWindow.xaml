@@ -143,7 +143,12 @@
                                 </StackPanel>
                                 <StackPanel x:Name="ItemUnitEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemUnitHeaderEditDialog" Content="Unit:" MinWidth="125"/>
-                                    <TextBox x:Name="ItemUnitContentEditDialog" Text="" MinWidth="200"/>
+                                    <ComboBox x:Name="ItemUnitComboBox" Text="ItemUnitComboBox" Width="100" SelectedItem="{Binding ComboBoxAddEditUnit}">
+                                        <ComboBoxItem x:Name="pcs">pcs</ComboBoxItem>
+                                        <ComboBoxItem x:Name="g">g</ComboBoxItem>
+                                        <ComboBoxItem x:Name="l">l</ComboBoxItem>
+                                        <ComboBoxItem x:Name="m">m</ComboBoxItem>
+                                    </ComboBox>
                                 </StackPanel>
                                 <!--
                                 <StackPanel x:Name="ItemPriceEditDialog" Orientation="Horizontal">
@@ -154,14 +159,18 @@
                                     <TextBox x:Name="ItemPriceUnitEditDialog" Text="" MinWidth="50"/>
                                 </StackPanel>
                                 -->
+                                
                                 <StackPanel x:Name="ItemIsInfiniteEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemIsInfiniteHeaderEditDialog" Content="Infinite:" MinWidth="125"/>
-                                    <TextBox x:Name="ItemIsInfiniteContentEditDialog" Text="" MinWidth="200"/>
+                                    <ComboBox x:Name="ItemIsInfiniteComboBox" Text="ItemIsInfiniteComboBox" Width="100" SelectedItem="{Binding ComboBoxAddEditInfinite}">
+                                        <ComboBoxItem x:Name="yes">yes</ComboBoxItem>
+                                        <ComboBoxItem x:Name="no">no</ComboBoxItem>
+                                    </ComboBox>
                                 </StackPanel>
                                 
                                 <StackPanel x:Name="ItemBestBeforeEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemBestBeforeHeaderEditDialog" Content="Best before:" MinWidth="125"/>
-                                    <TextBox x:Name="ItemBestBeforeContentEditDialog" Text="" MinWidth="200"/>
+                                    <DatePicker x:Name="ItemBestBeforePicker"/>
                                 </StackPanel>
                                 <StackPanel Margin="25" Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button x:Name="OkButton" Margin="5" Content="   Ok   " Background="{x:Null}" Click="OkButton_Click"/>
@@ -292,11 +301,7 @@
                     </ComboBox>
 
                 </Grid>
-            </TabItem>
-            <TabItem x:Name="MainWindowTabManageInventory" Header="Manage inventory">
-                <Grid Background="#FFFFFFFF"/>
-            </TabItem>
-
+            </TabItem>            
 
         </TabControl>
     </StackPanel>

@@ -20,7 +20,7 @@ namespace InventoryManagement
         private double amount = 0;
         private MeasureType typeOfMeasure = MeasureType.PCS;
         private DateTime lastModified = DateTime.Now;
-        private DateTime bestBefore = new DateTime(0);
+        private DateTime? bestBefore;
         private Unit displayUnit;
         private Connection belongsTo;
         
@@ -45,7 +45,7 @@ namespace InventoryManagement
         }
 
         public Material(string name, string groupName, bool infinite, double amount, MeasureType typeOfMeasure, 
-            DateTime lastModified, DateTime bestBefore, string extraInfo, Unit displayUnit, Connection belongsTo)
+            DateTime lastModified, DateTime? bestBefore, string extraInfo, Unit displayUnit, Connection belongsTo)
         {
             this.Name = name;
             this.Infinite = infinite;
@@ -192,7 +192,7 @@ namespace InventoryManagement
             }
         }
 
-        public DateTime BestBefore
+        public DateTime? BestBefore
         {
             get
             {
@@ -234,11 +234,6 @@ namespace InventoryManagement
             {
                 this.belongsTo = value;
             }
-        }
-
-        public String GetBestBeforeString()
-        {
-            return this.bestBefore.ToString("dd.MM.yyyy");
         }
 
         public String GetLastModifiedString()

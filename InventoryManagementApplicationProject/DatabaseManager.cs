@@ -41,7 +41,8 @@ namespace InventoryManagement
             PrintMaterialList(materials);
             if (materials.Any() == false)
             {
-                throw new Exception("Nothing found from database!");
+                //TODO: This exception cannot be thrown because database can be empty!!!
+                //throw new Exception("Nothing found from database!");
             }
             return materials;
         }

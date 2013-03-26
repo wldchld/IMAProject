@@ -14,20 +14,23 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.VisualBasic;
+using System.ComponentModel;
 
 namespace InventoryManagement
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
         #region Private variables
         private ObservableCollection<Material> inventory = new ObservableCollection<Material>();
         private Material selectedItem = null;
         private List<Material> selectedItems = null;
 
+        private ComboBoxItem comboBoxAddEditInfinite = new ComboBoxItem();
+        private ComboBoxItem comboBoxAddEditUnit = new ComboBoxItem();
+        
         private DatabaseManager dbManager = new DatabaseManager();
 
         private ObservableCollection<ShoppingList> shopLists;
@@ -134,33 +137,52 @@ namespace InventoryManagement
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
-        {         
+        {
             if (selectedItem != null)
             {
-                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);                
+                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
 
                 ItemNameContentEditDialog.Text = tempItem.Name;
                 ItemDescriptionContentEditDialog.Text = tempItem.ExtraInfo;
                 ItemGroupContentEditDialog.Text = tempItem.GroupName;
                 ItemQuantityContentEditDialog.Text = tempItem.Amount.ToString();
-                ItemUnitContentEditDialog.Text = tempItem.DisplayUnit.Name;
-                //ItemPriceContentEditDialog.Text = "Amount";
-                //ItemPriceUnitEditDialog.Text = "Unit";
+
+                if (tempItem.DisplayUnit.TypeOfMeasure == Material.MeasureType.WEIGHT)
+                {
+                    var combo = ItemUnitEditDialog.FindName("ItemUnitComboBox") as ComboBox;
+                    ComboBoxAddEditUnit = combo.FindName("g") as ComboBoxItem;
+                }
+                else if (tempItem.DisplayUnit.TypeOfMeasure == Material.MeasureType.VOLUME)
+                {
+                    var combo = ItemUnitEditDialog.FindName("ItemUnitComboBox") as ComboBox;
+                    ComboBoxAddEditUnit = combo.FindName("l") as ComboBoxItem;
+                }
+                else if (tempItem.DisplayUnit.TypeOfMeasure == Material.MeasureType.LENGTH)
+                {
+                    var combo = ItemUnitEditDialog.FindName("ItemUnitComboBox") as ComboBox;
+                    ComboBoxAddEditUnit = combo.FindName("m") as ComboBoxItem;
+                }
+                else if (tempItem.DisplayUnit.TypeOfMeasure == Material.MeasureType.PCS)
+                {
+                    var combo = ItemUnitEditDialog.FindName("ItemUnitComboBox") as ComboBox;
+                    ComboBoxAddEditUnit = combo.FindName("pcs") as ComboBoxItem;
+                }
+
                 if (tempItem.Infinite)
                 {
-                    ItemIsInfiniteContentEditDialog.Text = "Yes";
+                    var combo = ItemUnitEditDialog.FindName("ItemIsInfiniteComboBox") as ComboBox;
+                    ComboBoxAddEditInfinite = combo.FindName("yes") as ComboBoxItem;
                 }
                 else
                 {
-                    ItemIsInfiniteContentEditDialog.Text = "No";
+                    var combo = ItemUnitEditDialog.FindName("ItemIsInfiniteComboBox") as ComboBox;
+                    ComboBoxAddEditInfinite = combo.FindName("no") as ComboBoxItem;
                 }
-                if (tempItem.GetBestBeforeString() == "01.01.0001")
+
+                var picker = ItemBestBefore.FindName("ItemBestBeforePicker") as DatePicker;
+                if (tempItem.BestBefore.HasValue)
                 {
-                    ItemBestBeforeContentEditDialog.Text = "";
-                }
-                else
-                {
-                    ItemBestBeforeContentEditDialog.Text = tempItem.GetBestBeforeString();
+                    picker.SelectedDate = tempItem.BestBefore;
                 }
             }
             else
@@ -169,11 +191,16 @@ namespace InventoryManagement
                 ItemDescriptionContentEditDialog.Text = String.Empty;
                 ItemGroupContentEditDialog.Text = String.Empty;
                 ItemQuantityContentEditDialog.Text = String.Empty;
-                ItemUnitContentEditDialog.Text = String.Empty;
-                //ItemPriceContentEditDialog.Text = String.Empty;
-                //ItemPriceUnitEditDialog.Text = String.Empty;
-                ItemIsInfiniteContentEditDialog.Text = String.Empty;
-                ItemBestBeforeContentEditDialog.Text = String.Empty;
+
+                var comboUnit = ItemUnitEditDialog.FindName("ItemUnitComboBox") as ComboBox;
+                ComboBoxAddEditUnit = comboUnit.FindName("pcs") as ComboBoxItem;
+
+                var comboInfinite = ItemUnitEditDialog.FindName("ItemIsInfiniteComboBox") as ComboBox;
+                ComboBoxAddEditInfinite = comboInfinite.FindName("no") as ComboBoxItem;
+
+                var picker = ItemBestBefore.FindName("ItemBestBeforePicker") as DatePicker;
+
+                picker.SelectedDate = null;
             }
 
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Visible;
@@ -183,55 +210,132 @@ namespace InventoryManagement
         #region Add/edit material
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedItem != null)
+            try
             {
-                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);                
-
-                selectedItem.Name = ItemNameContentEditDialog.Text;
-                selectedItem.ExtraInfo = ItemDescriptionContentEditDialog.Text;
-                selectedItem.GroupName = ItemGroupContentEditDialog.Text;
-                //selectedItem.Amount = ItemQuantityContentEditDialog.Text;
-                //selectedItem.DisplayUnit.Name = ItemUnitContentEditDialog.Text;
-                //ItemPriceContentEditDialog.Text = "Amount";
-                //ItemPriceUnitEditDialog.Text = "Unit";
-                if (ItemIsInfiniteContentEditDialog.Text.ToLower() == "yes")
+                if (selectedItem != null)
                 {
-                    selectedItem.Infinite = true;
+                    Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
+
+                    if (ItemNameContentEditDialog.Text == "")
+                    {
+                        throw new Exception("Item name cannot be null.");
+                    }
+                    selectedItem.Name = ItemNameContentEditDialog.Text;
+                    selectedItem.ExtraInfo = ItemDescriptionContentEditDialog.Text;
+                    selectedItem.GroupName = ItemGroupContentEditDialog.Text;
+
+                    int tempAmount = 0;
+                    try
+                    {
+                        tempAmount = Convert.ToInt32(ItemQuantityContentEditDialog.Text);
+                    }
+                    catch
+                    {
+
+                    }
+                    selectedItem.Amount = tempAmount;
+
+                    if (ComboBoxAddEditUnit.Name == "g")
+                    {
+                        selectedItem.DisplayUnit = Unit.G;
+                    }
+                    else if (ComboBoxAddEditUnit.Name == "l")
+                    {
+                        selectedItem.DisplayUnit = Unit.L;
+                    }
+                    else if (ComboBoxAddEditUnit.Name == "m")
+                    {
+                        selectedItem.DisplayUnit = Unit.M;
+                    }
+                    else if (ComboBoxAddEditUnit.Name == "pcs")
+                    {
+                        selectedItem.DisplayUnit = Unit.PCS;
+                    }
+
+                    if (ComboBoxAddEditInfinite.Name == "yes")
+                    {
+                        selectedItem.Infinite = true;
+                    }
+                    else if (ComboBoxAddEditInfinite.Name == "no")
+                    {
+                        selectedItem.Infinite = false;
+                    }
+
+                    selectedItem.LastModified = DateTime.Now;
+
+                    var picker = ItemBestBefore.FindName("ItemBestBeforePicker") as DatePicker;
+                    if (picker.SelectedDate.HasValue)
+                    {
+                        selectedItem.BestBefore = picker.SelectedDate.Value;
+                    }
+
+                    dbManager.UpdateMaterial(tempItem, selectedItem);
+                    UpdateInventoryItemPanel();
                 }
                 else
                 {
-                    selectedItem.Infinite = false;
-                }
-                selectedItem.LastModified = DateTime.Now;
-                //selectedItem.BestBefore = ItemBestBeforeContentEditDialog.Text;
+                    var newItem = new Material();
 
-                dbManager.UpdateMaterial(tempItem, selectedItem);
-                UpdateInventoryItemPanel();
+                    if (ItemNameContentEditDialog.Text == "")
+                    {
+                        throw new Exception("Item name cannot be null.");
+                    }
+                    newItem.Name = ItemNameContentEditDialog.Text;
+                    newItem.ExtraInfo = ItemDescriptionContentEditDialog.Text;
+                    newItem.GroupName = ItemGroupContentEditDialog.Text;
+
+                    int tempAmount = 0;
+                    try
+                    {
+                        tempAmount = Convert.ToInt32(ItemQuantityContentEditDialog.Text);
+                    }
+                    catch
+                    {
+
+                    }
+                    newItem.Amount = tempAmount;
+
+                    if (ComboBoxAddEditUnit.Name == "g")
+                    {
+                        newItem.DisplayUnit = Unit.G;
+                    }
+                    else if (ComboBoxAddEditUnit.Name == "l")
+                    {
+                        newItem.DisplayUnit = Unit.L;
+                    }
+                    else if (ComboBoxAddEditUnit.Name == "m")
+                    {
+                        newItem.DisplayUnit = Unit.M;
+                    }
+                    else if (ComboBoxAddEditUnit.Name == "pcs")
+                    {
+                        newItem.DisplayUnit = Unit.PCS;
+                    }
+
+                    if (ComboBoxAddEditInfinite.Name == "yes")
+                    {
+                        newItem.Infinite = true;
+                    }
+                    else
+                    {
+                        newItem.Infinite = false;
+                    }
+                    newItem.LastModified = DateTime.Now;
+
+                    var picker = ItemBestBefore.FindName("ItemBestBeforePicker") as DatePicker;
+                    if (picker.SelectedDate.HasValue)
+                    {
+                        newItem.BestBefore = picker.SelectedDate.Value;
+                    }
+
+                    inventory.Add(newItem);
+                    dbManager.AddNewMaterial(newItem);
+                }
             }
-            else
+            catch
             {
-                var newItem = new Material();
-                newItem.Name = ItemNameContentEditDialog.Text;
-                newItem.ExtraInfo = ItemDescriptionContentEditDialog.Text;
-                newItem.GroupName = ItemGroupContentEditDialog.Text;
-                //newItem.Amount = ItemQuantityContentEditDialog.Text;
-                //newItem.DisplayUnit = ItemUnitContentEditDialog.Text;
-                //ItemPriceContentEditDialog.Text = "Amount";
-                //ItemPriceUnitEditDialog.Text = "Unit";
-                if (ItemIsInfiniteContentEditDialog.Text.ToLower() == "yes")
-                {
-                    newItem.Infinite = true;
-                }
-                else
-                {
-                    newItem.Infinite = false;
-                }
-                newItem.LastModified = DateTime.Now;
-                //newItem.BestBefore = ItemBestBeforeContentEditDialog.Text;
-
-                inventory.Add(newItem);
-                dbManager.AddNewMaterial(newItem);
-                
+                //TODO: Make exception handling
+                //throw new Exception("Failed to add or edit item.");
             }
 
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
@@ -284,13 +388,13 @@ namespace InventoryManagement
                 {
                     this.ItemNameContent.Content = selectedItem.Name;
                     this.ItemQuantityContent.Content = selectedItem.Amount;
-                    this.ItemUnitContent.Content = selectedItem.TypeOfMeasure + " (" + selectedItem.DisplayUnit.Name + ")";
+                    this.ItemUnitContent.Content = selectedItem.DisplayUnit.TypeOfMeasure + " (" + selectedItem.DisplayUnit.Name + ")";
                     this.ItemGroupContent.Content = selectedItem.GroupName;
                     this.ItemDescriptionContent.Content = selectedItem.ExtraInfo;
                     this.ItemLastModifiedContent.Content = selectedItem.GetLastModifiedString();
-                    if (selectedItem.BestBefore != new DateTime(0))
+                    if (selectedItem.BestBefore.HasValue)
                     {
-                        this.ItemBestBeforeContent.Content = selectedItem.GetBestBeforeString();
+                        this.ItemBestBeforeContent.Content = selectedItem.BestBefore.Value.ToString("dd.MM.yyyy");
                     }
                     else
                     {
@@ -324,8 +428,6 @@ namespace InventoryManagement
                 this.ItemGroupContent.Content = "";
                 this.ItemQuantityContent.Content = "0";
                 this.ItemUnitContent.Content = "";
-                //this.ItemPriceContent.Content = "";
-                //this.ItemPriceUnit.Content = "";
                 this.ItemIsInfiniteContent.Content = "";
                 this.ItemLastModifiedContent.Content = "";
                 this.ItemBestBeforeContent.Content = "";
@@ -389,7 +491,7 @@ namespace InventoryManagement
                 Console.WriteLine("poistetaan monta paskaa");
                 foreach (Material deleteItems in selectedItems)
                 {
-                    dbManager.DeleteMaterialByName(deleteItems.Name);
+                    dbManager.DeleteMaterialByName(deleteItems.Name, Material.Connection.INVENTORY);
                 }
                 inventory.Clear();
                 AddAllMaterialToInventoryList();
@@ -417,11 +519,7 @@ namespace InventoryManagement
             else if (MainWindowTabAdvancedSearch.IsSelected)
             {
                 InitAdvancedSearchTab();
-            }
-            else if (MainWindowTabManageInventory.IsSelected)
-            {
-                InitManageInventoryTab();
-            }
+            }            
         }
 
         private void InitInventoryTab()
@@ -445,18 +543,7 @@ namespace InventoryManagement
         {
             //throw new NotImplementedException();
         }
-
-        private void InitManageInventoryTab(Material editMaterial = null)
-        {
-            if (editMaterial != null)
-            {
-                Material tempItem = dbManager.RetrieveMaterialByName(editMaterial.Name, Material.Connection.INVENTORY);
-
-                //Some logic
-
-                dbManager.UpdateMaterial(tempItem, editMaterial);
-            }
-        }
+        
         #endregion        
 
         #region Selection handling - Shoppinglist Tab
@@ -585,8 +672,43 @@ namespace InventoryManagement
         #endregion
 
         #region Public Properties
+        #region INotifyPropertyChanged Members
+        public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
+
         public ObservableCollection<Material> Inventory { get { return this.inventory; } }
         public ObservableCollection<ShoppingList> ShopLists { get { return this.shopLists; } }
+        public ComboBoxItem ComboBoxAddEditInfinite 
+        { 
+            get 
+            { 
+                return this.comboBoxAddEditInfinite; 
+            } 
+            set 
+            {
+                if (this.comboBoxAddEditInfinite != value)
+                {
+                    this.comboBoxAddEditInfinite = value;
+                    PropertyChanged(this, new PropertyChangedEventArgs("ComboBoxAddEditInfinite"));
+                }
+            } 
+        }
+        public ComboBoxItem ComboBoxAddEditUnit 
+        { 
+            get 
+            { 
+                return this.comboBoxAddEditUnit; 
+            } 
+            set 
+            {
+                if (this.comboBoxAddEditUnit != value)
+                {
+                    this.comboBoxAddEditUnit = value;
+                    PropertyChanged(this, new PropertyChangedEventArgs("ComboBoxAddEditUnit"));
+                }
+            } 
+        }
+
         #endregion
 
         #region Some functions - Advanced Search Tab
