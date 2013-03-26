@@ -106,8 +106,9 @@
                             <Label x:Name="ItemBestBeforeHeader" Content="Best before:"/>
                             <Label x:Name="ItemBestBeforeContent" Content=""/>
                         </StackPanel>
-                        <StackPanel x:Name="ItemEdit" Orientation="Horizontal">
-                            <Button x:Name="EditButton" Content="   Add/Edit   " Click="EditButton_Click"/>
+                        <StackPanel x:Name="ItemAddEdit" Orientation="Horizontal">
+                            <Button x:Name="EditAdd" Content="   Add   " Click="AddButton_Click"/>
+                            <Button x:Name="EditButton" Content="   Edit   " Click="EditButton_Click"/>
                         </StackPanel>
                     </StackPanel>
 

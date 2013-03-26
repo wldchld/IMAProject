@@ -41,6 +41,7 @@ namespace InventoryManagement
         private ObservableCollection<Material> searchMaterial = new ObservableCollection<Material>();
         private ObservableCollection<Material> searchRecipe = new ObservableCollection<Material>();
 
+        private bool addItemWindow;
 
         #endregion
 
@@ -136,6 +137,28 @@ namespace InventoryManagement
             }
         }
 
+        public void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            ItemNameContentEditDialog.Text = String.Empty;
+            ItemDescriptionContentEditDialog.Text = String.Empty;
+            ItemGroupContentEditDialog.Text = String.Empty;
+            ItemQuantityContentEditDialog.Text = String.Empty;
+
+            var comboUnit = ItemUnitEditDialog.FindName("ItemUnitComboBox") as ComboBox;
+            ComboBoxAddEditUnit = comboUnit.FindName("pcs") as ComboBoxItem;
+
+            var comboInfinite = ItemUnitEditDialog.FindName("ItemIsInfiniteComboBox") as ComboBox;
+            ComboBoxAddEditInfinite = comboInfinite.FindName("no") as ComboBoxItem;
+
+            var picker = ItemBestBefore.FindName("ItemBestBeforePicker") as DatePicker;
+
+            picker.SelectedDate = null;
+
+            addItemWindow = true;
+
+            AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Visible;
+        }
+
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
@@ -184,26 +207,11 @@ namespace InventoryManagement
                 {
                     picker.SelectedDate = tempItem.BestBefore;
                 }
-            }
-            else
-            {
-                ItemNameContentEditDialog.Text = String.Empty;
-                ItemDescriptionContentEditDialog.Text = String.Empty;
-                ItemGroupContentEditDialog.Text = String.Empty;
-                ItemQuantityContentEditDialog.Text = String.Empty;
 
-                var comboUnit = ItemUnitEditDialog.FindName("ItemUnitComboBox") as ComboBox;
-                ComboBoxAddEditUnit = comboUnit.FindName("pcs") as ComboBoxItem;
+                addItemWindow = false;
 
-                var comboInfinite = ItemUnitEditDialog.FindName("ItemIsInfiniteComboBox") as ComboBox;
-                ComboBoxAddEditInfinite = comboInfinite.FindName("no") as ComboBoxItem;
-
-                var picker = ItemBestBefore.FindName("ItemBestBeforePicker") as DatePicker;
-
-                picker.SelectedDate = null;
-            }
-
-            AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Visible;
+                AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Visible;
+            }            
         }
         #endregion
 
@@ -212,7 +220,7 @@ namespace InventoryManagement
         {
             try
             {
-                if (selectedItem != null)
+                if (!addItemWindow)
                 {
                     Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
 
