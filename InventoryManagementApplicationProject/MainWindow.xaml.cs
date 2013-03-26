@@ -134,13 +134,106 @@ namespace InventoryManagement
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
-        {
+        {         
+            if (selectedItem != null)
+            {
+                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);                
+
+                ItemNameContentEditDialog.Text = tempItem.Name;
+                ItemDescriptionContentEditDialog.Text = tempItem.ExtraInfo;
+                ItemGroupContentEditDialog.Text = tempItem.GroupName;
+                ItemQuantityContentEditDialog.Text = tempItem.Amount.ToString();
+                ItemUnitContentEditDialog.Text = tempItem.DisplayUnit.Name;
+                //ItemPriceContentEditDialog.Text = "Amount";
+                //ItemPriceUnitEditDialog.Text = "Unit";
+                if (tempItem.Infinite)
+                {
+                    ItemIsInfiniteContentEditDialog.Text = "Yes";
+                }
+                else
+                {
+                    ItemIsInfiniteContentEditDialog.Text = "No";
+                }
+                if (tempItem.GetBestBeforeString() == "01.01.0001")
+                {
+                    ItemBestBeforeContentEditDialog.Text = "";
+                }
+                else
+                {
+                    ItemBestBeforeContentEditDialog.Text = tempItem.GetBestBeforeString();
+                }
+            }
+            else
+            {
+                ItemNameContentEditDialog.Text = String.Empty;
+                ItemDescriptionContentEditDialog.Text = String.Empty;
+                ItemGroupContentEditDialog.Text = String.Empty;
+                ItemQuantityContentEditDialog.Text = String.Empty;
+                ItemUnitContentEditDialog.Text = String.Empty;
+                //ItemPriceContentEditDialog.Text = String.Empty;
+                //ItemPriceUnitEditDialog.Text = String.Empty;
+                ItemIsInfiniteContentEditDialog.Text = String.Empty;
+                ItemBestBeforeContentEditDialog.Text = String.Empty;
+            }
+
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Visible;
         }
         #endregion
 
+        #region Add/edit material
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
+            if (selectedItem != null)
+            {
+                Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);                
+
+                selectedItem.Name = ItemNameContentEditDialog.Text;
+                selectedItem.ExtraInfo = ItemDescriptionContentEditDialog.Text;
+                selectedItem.GroupName = ItemGroupContentEditDialog.Text;
+                //selectedItem.Amount = ItemQuantityContentEditDialog.Text;
+                //selectedItem.DisplayUnit.Name = ItemUnitContentEditDialog.Text;
+                //ItemPriceContentEditDialog.Text = "Amount";
+                //ItemPriceUnitEditDialog.Text = "Unit";
+                if (ItemIsInfiniteContentEditDialog.Text.ToLower() == "yes")
+                {
+                    selectedItem.Infinite = true;
+                }
+                else
+                {
+                    selectedItem.Infinite = false;
+                }
+                selectedItem.LastModified = DateTime.Now;
+                //selectedItem.BestBefore = ItemBestBeforeContentEditDialog.Text;
+
+                dbManager.UpdateMaterial(tempItem, selectedItem);
+                UpdateInventoryItemPanel();
+            }
+            else
+            {
+                var newItem = new Material();
+                newItem.Name = ItemNameContentEditDialog.Text;
+                newItem.ExtraInfo = ItemDescriptionContentEditDialog.Text;
+                newItem.GroupName = ItemGroupContentEditDialog.Text;
+                //newItem.Amount = ItemQuantityContentEditDialog.Text;
+                //newItem.DisplayUnit = ItemUnitContentEditDialog.Text;
+                //ItemPriceContentEditDialog.Text = "Amount";
+                //ItemPriceUnitEditDialog.Text = "Unit";
+                if (ItemIsInfiniteContentEditDialog.Text.ToLower() == "yes")
+                {
+                    newItem.Infinite = true;
+                }
+                else
+                {
+                    newItem.Infinite = false;
+                }
+                newItem.LastModified = DateTime.Now;
+                //newItem.BestBefore = ItemBestBeforeContentEditDialog.Text;
+
+                inventory.Add(newItem);
+                dbManager.AddNewMaterial(newItem);
+                
+            }
+
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
         }
 
@@ -148,6 +241,7 @@ namespace InventoryManagement
         {
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
         }
+        #endregion
 
         #region Selection handling - Inventory Tab
         //Handle selections. 
@@ -156,7 +250,6 @@ namespace InventoryManagement
         //If all items are deselected both variables are null.
         private void InventoryItemList_SelectionChanged(object sender, SelectionChangedEventArgs e = null)
         {
-
             if ((sender as ListView).SelectedItems.Count > 1)
             {
                 this.selectedItem = null;
@@ -187,28 +280,36 @@ namespace InventoryManagement
         {
             if (selectedItem != null)
             {
-                this.ItemNameContent.Content = selectedItem.Name;
-                this.ItemQuantityContent.Content = selectedItem.Amount;
-                this.ItemUnitContent.Content = selectedItem.TypeOfMeasure + " (" + selectedItem.DisplayUnit.Name + ")";
-                this.ItemGroupContent.Content = selectedItem.GroupName;
-                this.ItemDescriptionContent.Content = selectedItem.ExtraInfo;                
-                this.ItemLastModifiedContent.Content = selectedItem.GetLastModifiedString();
-                if (selectedItem.BestBefore != new DateTime(0))
+                try
                 {
-                    this.ItemBestBeforeContent.Content = selectedItem.GetBestBeforeString();
-                }
-                else
-                {
-                    this.ItemBestBeforeContent.Content = "";
-                }
+                    this.ItemNameContent.Content = selectedItem.Name;
+                    this.ItemQuantityContent.Content = selectedItem.Amount;
+                    this.ItemUnitContent.Content = selectedItem.TypeOfMeasure + " (" + selectedItem.DisplayUnit.Name + ")";
+                    this.ItemGroupContent.Content = selectedItem.GroupName;
+                    this.ItemDescriptionContent.Content = selectedItem.ExtraInfo;
+                    this.ItemLastModifiedContent.Content = selectedItem.GetLastModifiedString();
+                    if (selectedItem.BestBefore != new DateTime(0))
+                    {
+                        this.ItemBestBeforeContent.Content = selectedItem.GetBestBeforeString();
+                    }
+                    else
+                    {
+                        this.ItemBestBeforeContent.Content = "";
+                    }
 
-                if (selectedItem.Infinite)
-                {
-                    this.ItemIsInfiniteContent.Content = "Yes";
+                    if (selectedItem.Infinite)
+                    {
+                        this.ItemIsInfiniteContent.Content = "Yes";
+                    }
+                    else
+                    {
+                        this.ItemIsInfiniteContent.Content = "No";
+                    }
                 }
-                else
+                catch
                 {
-                    this.ItemIsInfiniteContent.Content = "No";
+                    //TODO: Perhaps some kind of error handling?
+                    //throw new Exception("Selected item doesn't have all information avaible.");
                 }
                 
             }
@@ -223,8 +324,8 @@ namespace InventoryManagement
                 this.ItemGroupContent.Content = "";
                 this.ItemQuantityContent.Content = "0";
                 this.ItemUnitContent.Content = "";
-                this.ItemPriceContent.Content = "";
-                this.ItemPriceUnit.Content = "";
+                //this.ItemPriceContent.Content = "";
+                //this.ItemPriceUnit.Content = "";
                 this.ItemIsInfiniteContent.Content = "";
                 this.ItemLastModifiedContent.Content = "";
                 this.ItemBestBeforeContent.Content = "";

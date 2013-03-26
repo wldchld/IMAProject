@@ -86,11 +86,13 @@
                             <Label x:Name="ItemUnitHeader" Content="Unit:"/>
                             <Label x:Name="ItemUnitContent" Content=""/>
                         </StackPanel>
+                        <!--
                         <StackPanel x:Name="ItemPrice" Orientation="Horizontal">
                             <Label x:Name="ItemPriceHeader" Content="Price:"/>
                             <Label x:Name="ItemPriceContent" Content=""/>
                             <Label x:Name="ItemPriceUnit" Content=""/>
                         </StackPanel>
+                        -->
                         <StackPanel x:Name="ItemIsInfinite" Orientation="Horizontal">
                             <Label x:Name="ItemIsInfiniteHeader" Content="Infinite:"/>
                             <Label x:Name="ItemIsInfiniteContent" Content=""/>
@@ -143,6 +145,7 @@
                                     <Label x:Name="ItemUnitHeaderEditDialog" Content="Unit:" MinWidth="125"/>
                                     <TextBox x:Name="ItemUnitContentEditDialog" Text="" MinWidth="200"/>
                                 </StackPanel>
+                                <!--
                                 <StackPanel x:Name="ItemPriceEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemPriceHeaderEditDialog" Content="Price:" MinWidth="125"/>
                                     <Label x:Name="ItemPricePriceAmountEditDialog" Content="Amount:"/>
@@ -150,15 +153,12 @@
                                     <Label x:Name="ItemPricePriceUnitEditDialog" Content="Unit:"/>
                                     <TextBox x:Name="ItemPriceUnitEditDialog" Text="" MinWidth="50"/>
                                 </StackPanel>
+                                -->
                                 <StackPanel x:Name="ItemIsInfiniteEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemIsInfiniteHeaderEditDialog" Content="Infinite:" MinWidth="125"/>
                                     <TextBox x:Name="ItemIsInfiniteContentEditDialog" Text="" MinWidth="200"/>
                                 </StackPanel>
-
-                                <StackPanel x:Name="ItemLastModifiedEditDialog" Orientation="Horizontal">
-                                    <Label x:Name="ItemLastModifiedHeaderEditDialog" Content="Last modified:" MinWidth="125"/>
-                                    <TextBox x:Name="ItemLastModifiedContentEditDialog" Text="" MinWidth="200"/>
-                                </StackPanel>
+                                
                                 <StackPanel x:Name="ItemBestBeforeEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemBestBeforeHeaderEditDialog" Content="Best before:" MinWidth="125"/>
                                     <TextBox x:Name="ItemBestBeforeContentEditDialog" Text="" MinWidth="200"/>
