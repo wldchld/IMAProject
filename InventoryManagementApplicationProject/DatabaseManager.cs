@@ -591,6 +591,24 @@ namespace InventoryManagement
                 });
                 return mats.ToList();
             }
+            else if (symbol == "≥")
+            {
+                IList<Material> mats = db.Query<Material>(delegate(Material mat)
+                {
+                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                        && mat.Amount >= amount;
+                });
+                return mats.ToList();
+            }
+            else if (symbol == "≤")
+            {
+                IList<Material> mats = db.Query<Material>(delegate(Material mat)
+                {
+                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                        && mat.Amount <= amount;
+                });
+                return mats.ToList();
+            }
             else
             {
                 IList<Material> mats = db.Query<Material>(delegate(Material mat)

@@ -844,7 +844,6 @@ namespace InventoryManagement
         #region Some functions - Advanced Search Tab
         private void Laurintestinappi_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void AdvancedSearchBox_Update()
@@ -853,7 +852,7 @@ namespace InventoryManagement
             searchMaterial.Clear();
             AdvancedResultList.Items.Clear();
             string symbol = AdvancedSearchComboBox.Text;
-
+            
             int amount = 0;
             int.TryParse(QuantityTextBox.Text, out amount);
 
@@ -887,6 +886,7 @@ namespace InventoryManagement
         }
         private void MaterialCheckBox_Checked(object sender, RoutedEventArgs e)
         {
+            RecipeCheckBox.IsChecked = false;
             AdvancedSearchBox_Update();
         }
         private void MaterialCheckBox_Unchecked(object sender, RoutedEventArgs e)
@@ -895,6 +895,7 @@ namespace InventoryManagement
         }
         private void RecipeCheckBox_Checked(object sender, RoutedEventArgs e)
         {
+            MaterialCheckBox.IsChecked = false;
             AdvancedSearchBox_Update();
         }
         private void RecipeCheckBox_Unchecked(object sender, RoutedEventArgs e)
