@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -628,9 +629,52 @@ namespace InventoryManagement
             ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() == true)
+                dialog.PrintDocument(CreateShoppingListFlowDocument(dialog.PrintableAreaWidth), "Shopping list");        
+        }
+
+        /// <summary>
+        /// Creates the DocumentPaginator that can be used with PrintDialog's PrintDocument method.
+        /// </summary>
+        /// <param name="printAreaWidth">Makes sure that the page's width is used completely</param>
+        /// <returns>Printable shoppinglist</returns>
+        private DocumentPaginator CreateShoppingListFlowDocument(double printAreaWidth)
+        {
+            FlowDocument flowDoc = new FlowDocument();
+            flowDoc.ColumnWidth = printAreaWidth;
+            Table t = new Table();
+            for (int i = 0; i < 3; i++)
+                t.Columns.Add(new TableColumn());
+            TableRow row = new TableRow();
+            row.Background = Brushes.Silver;
+            row.FontSize = 26;
+            row.FontWeight = System.Windows.FontWeights.Bold;
+            row.Cells.Add(new TableCell(new Paragraph(new Run("Name"))));
+            row.Cells.Add(new TableCell(new Paragraph(new Run("Amount"))));
+            row.Cells.Add(new TableCell(new Paragraph(new Run("Unit"))));
+            row.Cells[0].ColumnSpan = 20;
+            row.Cells[1].ColumnSpan = 5;
+            row.Cells[2].ColumnSpan = 5;
+            var rg = new TableRowGroup();
+            rg.Rows.Add(row);
+            t.RowGroups.Add(rg);
+            flowDoc.Blocks.Add(t);
+            foreach (Material mat in selectedShopListContent)
             {
-                dialog.PrintVisual(shoppingListContentLW, sl.Name);
+                row = new TableRow();
+                row.FontSize = 24;
+                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.Name))));
+                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.Amount.ToString()))));
+                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.DisplayUnit.ToString()))));
+                row.Cells[0].ColumnSpan = 20;
+                row.Cells[1].ColumnSpan = 5;
+                row.Cells[2].ColumnSpan = 5;
+                rg = new TableRowGroup();
+                rg.Rows.Add(row);
+                t.RowGroups.Add(rg);
+                flowDoc.Blocks.Add(t);
             }
+            IDocumentPaginatorSource doc = flowDoc;
+            return doc.DocumentPaginator;
         }
 
         private void Create_ShoppingList_And_Add(object sender, RoutedEventArgs e)
@@ -656,6 +700,60 @@ namespace InventoryManagement
             }
         }
 
+
+        private void AddToInventoryFromShoplist(object sender, RoutedEventArgs e)
+        {
+            if (selectedShopListContent != null)
+            {
+                foreach (Material mat in selectedShopListContent)
+                    dbManager.AddToInventoryFromShoplist(mat);
+                // HUONO VAIHTOEHTO MUTTA TOIMII :DD
+                inventory.Clear();
+                AddAllMaterialToInventoryList();
+            }
+        }
+
+        private void Move_To_Existing_Shoplist(object sender, RoutedEventArgs e)
+        {
+            Material selectedShoplistItem = (Material)shoppingListContentLW.SelectedItem;
+            MenuItem item = e.OriginalSource as MenuItem;
+            string slName = item.Header.ToString();
+            string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, selectedShoplistItem.Amount.ToString(), -1, -1);
+            if (text != "" && text != null)
+            {
+                double amount;
+                if (Double.TryParse(text, out amount))
+                {
+                    Material temp = new Material(selectedShoplistItem);
+                    temp.Amount = amount;
+                    temp.BelongsTo = Material.Connection.SHOPPING_LIST;
+                    dbManager.AddToShoppingList(slName, temp);
+                    RemoveFromShoplist();
+                }
+            }
+        }
+
+        private void Move_To_New_Shoplist(object sender, RoutedEventArgs e)
+        {
+            Material selectedShoplistItem = (Material)shoppingListContentLW.SelectedItem;
+            string slName = Interaction.InputBox("Enter name", "Add to a new shopping list:", "", -1, -1);
+            if (slName == null && slName == "")
+                return;
+            string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, selectedShoplistItem.Amount.ToString(), -1, -1);
+            if (text != "" && text != null)
+            {
+                double amount;
+                if (Double.TryParse(text, out amount))
+                {
+                    dbManager.AddNewShoppingList(slName);
+                    Material temp = new Material((Material)shoppingListContentLW.SelectedItem);
+                    temp.Amount = amount;
+                    temp.BelongsTo = Material.Connection.SHOPPING_LIST;
+                    dbManager.AddToShoppingList(slName, temp);
+                    RemoveFromShoplist();
+                }
+            }
+        }
         #endregion
 
         #region Recipes Tab
@@ -701,7 +799,6 @@ namespace InventoryManagement
                 LoadContentView();
             }
         }
-        
         #endregion
 
         #region Public Properties
@@ -832,70 +929,5 @@ namespace InventoryManagement
             this.Close();
         }
         #endregion
-
-        // Se joka tietää/uskaltaa katsoa mihin nämä kuuluvat voi siirtää ne nätisti paikkaan, joka on kullekin oma.
-        #region MIHIN VITTUUN NÄMÄ KUULUVAT???
-
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            /*
-            dbManager.AddToShoppingList("Ruokakauppa", new Material("Märkäsimo", "Muut", false, 1, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
-            dbManager.AddToShoppingList("Ruokakauppa", new Material("Kakka", "Muut", false, 2, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
-            dbManager.AddToShoppingList("Ruokakauppa", new Material("Pieru", "Muut", false, 3, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
-            dbManager.AddToShoppingList("Ruokakauppa", new Material("Oksennus", "Muut", false, 4, Material.MeasureType.PCS, Unit.PCS, Material.Connection.SHOPPING_LIST));
-            */
-            if (selectedShopListContent != null)
-            {
-                foreach (Material mat in selectedShopListContent)
-                    dbManager.AddToInventoryFromShoplist(mat);
-                // HUONO VAIHTOEHTO MUTTA TOIMII :DD
-                inventory.Clear();
-                AddAllMaterialToInventoryList();
-            }
-        }
-
-        private void Move_To_Existing_Shoplist(object sender, RoutedEventArgs e)
-        {
-            Material selectedShoplistItem = (Material)shoppingListContentLW.SelectedItem;
-            MenuItem item = e.OriginalSource as MenuItem;
-            string slName = item.Header.ToString();
-            string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, selectedShoplistItem.Amount.ToString(), -1, -1);
-            if (text != "" && text != null)
-            {
-                double amount;
-                if (Double.TryParse(text, out amount))
-                {
-                    Material temp = new Material(selectedShoplistItem);
-                    temp.Amount = amount;
-                    temp.BelongsTo = Material.Connection.SHOPPING_LIST;
-                    dbManager.AddToShoppingList(slName, temp);
-                    RemoveFromShoplist();
-                }
-            }
-        }
-
-        private void Move_To_New_Shoplist(object sender, RoutedEventArgs e)
-        {
-            Material selectedShoplistItem = (Material)shoppingListContentLW.SelectedItem;
-            string slName = Interaction.InputBox("Enter name", "Add to a new shopping list:", "", -1, -1);
-            if (slName == null && slName == "")
-                return;
-            string text = Interaction.InputBox("Enter amount", "Add to shopping list " + slName, selectedShoplistItem.Amount.ToString(), -1, -1);
-            if (text != "" && text != null)
-            {
-                double amount;
-                if (Double.TryParse(text, out amount))
-                {
-                    dbManager.AddNewShoppingList(slName);
-                    Material temp = new Material((Material) shoppingListContentLW.SelectedItem);
-                    temp.Amount = amount;
-                    temp.BelongsTo = Material.Connection.SHOPPING_LIST;
-                    dbManager.AddToShoppingList(slName, temp);
-                    RemoveFromShoplist();
-                }
-            }
-        }
-        #endregion
-
     }
 }
