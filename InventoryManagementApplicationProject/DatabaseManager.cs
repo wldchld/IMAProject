@@ -35,7 +35,7 @@ namespace InventoryManagement
             while (result.HasNext())
             {
                 Material temp = (Material)result.Next();
-                if(temp.BelongsTo == Material.Connection.INVENTORY)
+                if (temp.BelongsTo == Material.Connection.INVENTORY)
                     materials.Add(temp);
             }
             PrintMaterialList(materials);
@@ -91,10 +91,10 @@ namespace InventoryManagement
             db.Delete(RetrieveMaterialByName(name, belongsTo));
         }
 
-        public void AddNewMaterial(String name, String groupName, bool infinite, double amount, Material.MeasureType typeOfMeasure, 
+        public void AddNewMaterial(String name, String groupName, bool infinite, double amount, Material.MeasureType typeOfMeasure,
             DateTime dateBought, DateTime bestBefore, String extraInfo, Unit unit, Material.Connection belongsTo)
         {
-            Material mat = new Material(name, groupName, infinite, amount, typeOfMeasure, 
+            Material mat = new Material(name, groupName, infinite, amount, typeOfMeasure,
                 dateBought, bestBefore, extraInfo, unit, belongsTo);
             db.Store(mat);
         }
@@ -231,7 +231,7 @@ namespace InventoryManagement
             return mats.ToList();
         }
 
-  
+
 
         //------------------------------------
         //----- SHOPPING LIST OPERATIONS -----
@@ -247,7 +247,7 @@ namespace InventoryManagement
             IObjectSet sls = db.QueryByExample(new ShoppingList(listName));
             ShoppingList list = null;
             if (sls.HasNext())
-                list = (ShoppingList) sls.Next();
+                list = (ShoppingList)sls.Next();
             if (list != null)
                 list.AddToContent(mat);
             db.Ext().Store(list, Int32.MaxValue);
@@ -271,7 +271,7 @@ namespace InventoryManagement
             IObjectSet result = db.QueryByExample(typeof(ShoppingList));
             List<ShoppingList> sls = new List<ShoppingList>();
             while (result.HasNext())
-                sls.Add((ShoppingList) result.Next());
+                sls.Add((ShoppingList)result.Next());
             //PrintShoppingListList(sls);
             return sls;
         }
@@ -281,9 +281,9 @@ namespace InventoryManagement
             ShoppingList ret = null;
             IList<ShoppingList> lists = db.Query<ShoppingList>(delegate(ShoppingList sl)
             {
-                return sl.Name == name ;
+                return sl.Name == name;
             });
-            if(lists.Count > 0)
+            if (lists.Count > 0)
                 ret = lists[0];
             return ret;
         }
@@ -297,7 +297,7 @@ namespace InventoryManagement
         //----- RECIPE OPERATIONS -----
         //-----------------------------
 
-        public void AddNewRecipe(Recipe recipe) 
+        public void AddNewRecipe(Recipe recipe)
         {
             db.Store(recipe);
         }
@@ -320,7 +320,7 @@ namespace InventoryManagement
                 Material material = new Material(content[i]);
                 material.BelongsTo = Material.Connection.RECIPE;
                 recipe.Content.Add(material);
-                
+
             }
             recipe.Name = name;
             recipe.Instructions = instructions;
@@ -331,8 +331,8 @@ namespace InventoryManagement
         public void AddMaterialToRecipe(String recipeName, Material material)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
-            
-            for (int i = 0; i < recipes.Count; i++) 
+
+            for (int i = 0; i < recipes.Count; i++)
             {
                 Material material_ = new Material(material);
                 material_.BelongsTo = Material.Connection.RECIPE;
@@ -373,7 +373,7 @@ namespace InventoryManagement
         public void AddMaterialToRecipe(String recipeName, String materialName, double amount)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
-            
+
             for (int i = 0; i < recipes.Count; i++)
             {
                 Material material = new Material(RetrieveMaterialByName(materialName, Material.Connection.INVENTORY));
@@ -468,7 +468,7 @@ namespace InventoryManagement
         //--------------------------------------------
         //----- WHOLE DATABASE AFFECTING METHODS -----
         //--------------------------------------------
-        
+
         // Deletes the database and creates a new empty database.
         public void ReCreateDB()
         {
@@ -546,7 +546,7 @@ namespace InventoryManagement
                 Console.WriteLine("Nimi: " + o.Name + ", Ohje: " + o.Instructions + ", Materiaalit: ");
                 for (int i = 0; i < o.Content.Count; i++)
                     Console.WriteLine(o.Content[i].Name);
-            }   
+            }
         }
 
 
@@ -617,6 +617,14 @@ namespace InventoryManagement
                 });
                 return mats.ToList();
             }
+        }
+        public IList<Recipe> SearchRecipes(String input)
+        {
+            IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe rec)
+            {
+                return rec.Name.ToUpper().Contains(input.ToUpper());
+            });
+            return recipes.ToList();
         }
     }
 }

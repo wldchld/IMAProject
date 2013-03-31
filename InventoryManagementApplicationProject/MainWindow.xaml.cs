@@ -40,7 +40,7 @@ namespace InventoryManagement
         private ObservableCollection<Material> recipesMaterials { get; set; }
 
         private ObservableCollection<Material> searchMaterial = new ObservableCollection<Material>();
-        private ObservableCollection<Material> searchRecipe = new ObservableCollection<Material>();
+        private ObservableCollection<Recipe> searchRecipe = new ObservableCollection<Recipe>();
 
         private bool addItemWindow;
 
@@ -868,12 +868,11 @@ namespace InventoryManagement
 
             if (RecipeCheckBox.IsChecked == true)
             {
-                searchRecipe = new ObservableCollection<Material>(dbManager.SearchMats(AdvancedSearchBox.Text,
-                     Material.Connection.RECIPE, symbol, amount));
-                foreach (Material o in searchRecipe)
-                {
-                    AdvancedResultList.Items.Add(o);
-                }
+               searchRecipe = new ObservableCollection<Recipe>(dbManager.SearchRecipes(AdvancedSearchBox.Text));
+               for (int i = 0; i < searchRecipe.Count; i++)
+               {
+                   AdvancedResultList.Items.Add(searchRecipe[i].Name);
+               }
             }
         }
 
