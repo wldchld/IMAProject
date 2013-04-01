@@ -801,6 +801,55 @@ namespace InventoryManagement
                 LoadContentView();
             }
         }
+
+        private void CreateNewRecipeOkButton_Click(object sender, RoutedEventArgs e)
+        {
+            dbManager.AddNewRecipe(NewRecipeName.Text, NewRecipeInstructions.Text);
+            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+        }
+
+        private void CreateRecipe_Click(object sender, RoutedEventArgs e)
+        {
+            NewRecipeName.Text = "";
+            NewRecipeInstructions.Text = "";
+            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void CreateNewRecipeCanselButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+        }
+
+        private void AddMaterialToRecipe_Click(object sender, RoutedEventArgs e)
+        {
+            AddNewMaterialToRecipeName.Text = "";
+            AddNewMaterialToRecipeAmount.Text = "";
+            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void AddNewMaterialToRecipeOkButton_Click(object sender, RoutedEventArgs e)
+        {
+            dbManager.AddMaterialToRecipe(((Recipe)RecipesView.SelectedItem).Name, AddNewMaterialToRecipeName.Text, Convert.ToDouble(AddNewMaterialToRecipeAmount.Text));
+            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+        }
+
+        private void UseRecipeFromInventory_Click(object sender, RoutedEventArgs e)
+        {
+            Recipe r = (Recipe)RecipesView.SelectedItem;
+            for (int i = 0; i < r.Content.Count; i++)
+            {
+                Material m = new Material(dbManager.RetrieveMaterialByName(r.Content[i].Name, Material.Connection.INVENTORY));
+                if (m.Amount > r.Content[i].Amount)
+                    m.Amount = m.Amount - r.Content[i].Amount;
+                else
+                    m.Amount = 0;
+                dbManager.UpdateMaterial(dbManager.RetrieveMaterialByName(r.Content[i].Name, Material.Connection.INVENTORY), m);
+            }
+            inventory.Clear();
+            AddAllMaterialToInventoryList();
+        }
+
         #endregion
 
         #region Public Properties
@@ -963,36 +1012,6 @@ namespace InventoryManagement
         }
         #endregion 
 
-        private void CreateNewRecipeOkButton_Click(object sender, RoutedEventArgs e)
-        {
-            dbManager.AddNewRecipe(NewRecipeName.Text, NewRecipeInstructions.Text);
-            AddNewRecipeGrid.Visibility=System.Windows.Visibility.Hidden;
-        }
-
-        private void CreateRecipe_Click(object sender, RoutedEventArgs e)
-        {
-            NewRecipeName.Text = "";
-            NewRecipeInstructions.Text = "";
-            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Visible;
-        }
-
-        private void CreateNewRecipeCanselButton_Click(object sender, RoutedEventArgs e)
-        {
-            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
-            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
-        }
-
-        private void AddMaterialToRecipe_Click(object sender, RoutedEventArgs e)
-        {
-            AddNewMaterialToRecipeName.Text = "";
-            AddNewMaterialToRecipeAmount.Text = "";
-            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Visible;
-        }
-
-        private void AddNewMaterialToRecipeOkButton_Click(object sender, RoutedEventArgs e)
-        {
-            dbManager.AddMaterialToRecipe(((Recipe)RecipesView.SelectedItem).Name,AddNewMaterialToRecipeName.Text,Convert.ToDouble(AddNewMaterialToRecipeAmount.Text));
-            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
-        }
+        
     }
 }

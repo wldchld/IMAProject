@@ -197,25 +197,29 @@
                         <Label Content="Instructions"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" >
-                        <ListView Width="200" Margin="0,29,0,0" x:Name="RecipesView" ItemsSource="{Binding recipes}" SelectionChanged="RecipesView_SelectionChanged">
-                            <ListView.ContextMenu>
-                                <ContextMenu HasDropShadow="True">
-                                    <MenuItem x:Name="DeleteRecipe" Header="Delete" Click="Delete_Click"/>
-                                    <MenuItem x:Name="CreateRecipe" Header="Create new recipe" Click="CreateRecipe_Click"/>
-                                    <MenuItem x:Name="AddMaterialToRecipe" Header="Add material to recipe" Click="AddMaterialToRecipe_Click"/>
-                                </ContextMenu>
-                            </ListView.ContextMenu>
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Recipes name"/>
-                                </GridView>
-                            </ListView.View>
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Name, Mode=TwoWay}"/>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                        <StackPanel>
+                            <ListView Width="200" Margin="0,29,0,0" x:Name="RecipesView" ItemsSource="{Binding recipes}" SelectionChanged="RecipesView_SelectionChanged">
+                                <ListView.ContextMenu>
+                                    <ContextMenu HasDropShadow="True">
+                                        <MenuItem x:Name="DeleteRecipe" Header="Delete" Click="Delete_Click"/>
+                                        <MenuItem x:Name="CreateRecipe" Header="Create new recipe" Click="CreateRecipe_Click"/>
+                                        <MenuItem x:Name="AddMaterialToRecipe" Header="Add material to recipe" Click="AddMaterialToRecipe_Click"/>
+                                        <MenuItem x:Name="UseRecipeFromInventory" Header="Use recipe from inventory" Click="UseRecipeFromInventory_Click"/>
+                                    </ContextMenu>
+                                </ListView.ContextMenu>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Recipes name"/>
+                                    </GridView>
+                                </ListView.View>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name, Mode=TwoWay}"/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <Button Name="UseRecipeFromInventoryButton" Content="Use recipe from inventory"/>
+                        </StackPanel>
                         <Separator Width="5"/>
                         <ListView Width="350" Margin="0,29,0,0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" >
                             <ListView.ContextMenu>
