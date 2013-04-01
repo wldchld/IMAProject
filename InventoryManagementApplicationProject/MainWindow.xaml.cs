@@ -761,7 +761,7 @@ namespace InventoryManagement
 
         private void LoadRecipeView()
         {
-
+            
         }
 
         private void LoadContentView()
@@ -775,6 +775,7 @@ namespace InventoryManagement
                     recipesMaterials = new ObservableCollection<Material>(a.Content);
                     RecipesMaterials.ItemsSource = recipesMaterials;
                 }
+                LoadRecipeView();
             }
         }
 
@@ -960,19 +961,38 @@ namespace InventoryManagement
         {
             this.Close();
         }
-        #endregion
+        #endregion 
 
-       
+        private void CreateNewRecipeOkButton_Click(object sender, RoutedEventArgs e)
+        {
+            dbManager.AddNewRecipe(NewRecipeName.Text, NewRecipeInstructions.Text);
+            AddNewRecipeGrid.Visibility=System.Windows.Visibility.Hidden;
+        }
 
-       
+        private void CreateRecipe_Click(object sender, RoutedEventArgs e)
+        {
+            NewRecipeName.Text = "";
+            NewRecipeInstructions.Text = "";
+            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Visible;
+        }
 
+        private void CreateNewRecipeCanselButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+        }
 
-      
+        private void AddMaterialToRecipe_Click(object sender, RoutedEventArgs e)
+        {
+            AddNewMaterialToRecipeName.Text = "";
+            AddNewMaterialToRecipeAmount.Text = "";
+            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Visible;
+        }
 
-
-
-      
-
-       
+        private void AddNewMaterialToRecipeOkButton_Click(object sender, RoutedEventArgs e)
+        {
+            dbManager.AddMaterialToRecipe(((Recipe)RecipesView.SelectedItem).Name,AddNewMaterialToRecipeName.Text,Convert.ToDouble(AddNewMaterialToRecipeAmount.Text));
+            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+        }
     }
 }
