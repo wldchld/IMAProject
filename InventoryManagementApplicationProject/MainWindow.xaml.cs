@@ -843,20 +843,21 @@ namespace InventoryManagement
         #endregion
 
         #region Some functions - Advanced Search Tab
-        private void Laurintestinappi_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
+ 
         private void GroupComboBox_Update()
         {
+            object lastSelected = GroupComboBox.SelectedItem;
+
             GroupComboBox.Items.Clear();
+            GroupComboBox.Items.Add("");
+
             groups = new HashSet<Material>(dbManager.RetrieveAllMaterials());
             IList<Material> groupList = groups.ToList();
 
-            for (int i = 0; i < groups.Count; i++)
+            for (int i = 1; i < groups.Count; i++)
             {
                 GroupComboBox.Items.Add(groupList[i].GroupName);
-                for (int y = 0; y < i; y++)
+                for (int y = 1; y < i; y++)
                 {
                     if (groupList[y].GroupName == groupList[i].GroupName)
                     {
@@ -865,6 +866,7 @@ namespace InventoryManagement
                     }
                 }
             }
+            GroupComboBox.SelectedItem = lastSelected;
         }
 
         private void AdvancedSearchBox_Update()
@@ -872,15 +874,21 @@ namespace InventoryManagement
             searchRecipe.Clear();
             searchMaterial.Clear();
             AdvancedResultList.Items.Clear();
+
             string symbol = AdvancedSearchComboBox.Text;
-            
             int amount = 0;
             int.TryParse(QuantityTextBox.Text, out amount);
+
+            string group = "";
+            if (GroupComboBox.SelectedIndex != -1)
+            {
+                group = GroupComboBox.SelectedItem.ToString();
+            }
 
             if (MaterialCheckBox.IsChecked == true)
             {
                 searchMaterial = new ObservableCollection<Material>(dbManager.SearchMats(AdvancedSearchBox.Text,
-                      Material.Connection.INVENTORY, symbol, amount));
+                      Material.Connection.INVENTORY, symbol, amount, group));
                 foreach (Material o in searchMaterial)
                 {
                     AdvancedResultList.Items.Add(o);
@@ -934,9 +942,9 @@ namespace InventoryManagement
         {
             GroupComboBox_Update();
         }
-
-        private void SearchTest_Click(object sender, RoutedEventArgs e)
+        private void GroupComboBox_DropDownClosed(object sender, EventArgs e)
         {
+            AdvancedSearchBox_Update();
         }
 
         #endregion
@@ -953,6 +961,8 @@ namespace InventoryManagement
             this.Close();
         }
         #endregion
+
+       
 
        
 

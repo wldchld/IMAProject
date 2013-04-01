@@ -561,14 +561,20 @@ namespace InventoryManagement
             return mats.ToList();
         }
 
-        public List<Material> SearchMats(String input, Material.Connection belongsTo, string symbol, int amount)
+        public List<Material> SearchMats(String input, Material.Connection belongsTo,
+            string symbol, int amount, string group)
         {
             if (symbol == "=")
             {
                 IList<Material> mats = db.Query<Material>(delegate(Material mat)
                 {
+                    if (group == "")
+                    {
+                        return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                            && mat.Amount == amount;
+                    }
                     return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
-                        && mat.Amount == amount;
+                        && mat.Amount == amount && mat.GroupName == group;
                 });
                 return mats.ToList();
 
@@ -577,8 +583,13 @@ namespace InventoryManagement
             {
                 IList<Material> mats = db.Query<Material>(delegate(Material mat)
                 {
+                    if (group == "")
+                    {
+                       return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                       && mat.Amount > amount;
+                    }
                     return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
-                        && mat.Amount > amount;
+                        && mat.Amount > amount && mat.GroupName == group;
                 });
                 return mats.ToList();
             }
@@ -586,8 +597,13 @@ namespace InventoryManagement
             {
                 IList<Material> mats = db.Query<Material>(delegate(Material mat)
                 {
+                    if (group == "")
+                    {
+                       return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                       && mat.Amount < amount;
+                    }
                     return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
-                        && mat.Amount < amount;
+                        && mat.Amount < amount && mat.GroupName == group;
                 });
                 return mats.ToList();
             }
@@ -595,8 +611,13 @@ namespace InventoryManagement
             {
                 IList<Material> mats = db.Query<Material>(delegate(Material mat)
                 {
-                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                    if (group == "")
+                    {
+                        return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
                         && mat.Amount >= amount;
+                    }
+                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                        && mat.Amount >= amount && mat.GroupName == group;
                 });
                 return mats.ToList();
             }
@@ -604,8 +625,13 @@ namespace InventoryManagement
             {
                 IList<Material> mats = db.Query<Material>(delegate(Material mat)
                 {
+                    if (group == "")
+                    {
+                        return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                      && mat.Amount <= amount;
+                    }
                     return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
-                        && mat.Amount <= amount;
+                        && mat.Amount <= amount && mat.GroupName == group;
                 });
                 return mats.ToList();
             }
@@ -613,7 +639,12 @@ namespace InventoryManagement
             {
                 IList<Material> mats = db.Query<Material>(delegate(Material mat)
                 {
-                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo;
+                    if (group == "")
+                    {
+                        return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo;
+                    }
+                    return mat.Name.ToUpper().Contains(input.ToUpper()) && mat.BelongsTo == belongsTo
+                        && mat.GroupName == group;
                 });
                 return mats.ToList();
             }
