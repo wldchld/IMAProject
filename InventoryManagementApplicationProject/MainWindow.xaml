@@ -279,25 +279,28 @@
                         <ColumnDefinition Width="46*"/>
                         <ColumnDefinition Width="206*"/>
                         <ColumnDefinition Width="14*"/>
-                        <ColumnDefinition Width="577*"/>
+                        <ColumnDefinition Width="14*"/>
+                        <ColumnDefinition Width="563*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="AdvancedSearchBox" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="330" TextChanged="AdvancedSearchBox_TextChanged" Grid.ColumnSpan="4" GotFocus="AdvancedSearchBox_GotFocus"/>
-                    <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="327" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="4" >
+                    <TextBox x:Name="AdvancedSearchBox" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="330" TextChanged="AdvancedSearchBox_TextChanged" Grid.ColumnSpan="5" GotFocus="AdvancedSearchBox_GotFocus"/>
+                    <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="327" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="5" >
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn/>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <CheckBox x:Name="MaterialCheckBox" Content="Material" HorizontalAlignment="Left" Margin="116,29,0,0" VerticalAlignment="Top" Grid.Column="3" Checked="MaterialCheckBox_Checked" Unchecked="MaterialCheckBox_Unchecked"/>
-                    <CheckBox x:Name="RecipeCheckBox" Content="Recipe" HorizontalAlignment="Left" Margin="242,29,0,0" VerticalAlignment="Top" Height="16" Grid.Column="3" Checked="RecipeCheckBox_Checked" Unchecked="RecipeCheckBox_Unchecked"/>
-                    <ComboBox HorizontalAlignment="Left" Margin="181,56,0,0" VerticalAlignment="Top" Width="113" Height="30" RenderTransformOrigin="0.486,0.667" Grid.Column="3"/>
-                    <Label x:Name="GroupLabel" Content="Group" HorizontalAlignment="Left" Margin="116,56,0,0" VerticalAlignment="Top" Height="30" RenderTransformOrigin="1.093,1.3" Width="60" Grid.Column="3"/>
-                    <Label x:Name="QuantityLabel" Content="Quantity" HorizontalAlignment="Left" Margin="116,117,0,0" VerticalAlignment="Top" Width="60" Grid.Column="3"/>
-                    <Button x:Name="Laurintestinappi" Content=" " HorizontalAlignment="Left" Margin="321,117,0,0" VerticalAlignment="Top" Width="39" Height="26" Click="Laurintestinappi_Click" Grid.Column="3"/>
-                    <TextBox x:Name="QuantityTextBox" HorizontalAlignment="Left" Height="26" Margin="242,117,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" Grid.Column="3" TextChanged="QuantityTextBox_TextChanged"/>
-                    <Button x:Name="SearchTest" Content="SearchTest" Grid.Column="3" HorizontalAlignment="Left" Margin="116,214,0,0" VerticalAlignment="Top" Width="80" Click="SearchTest_Click"/>
-                    <ComboBox x:Name="AdvancedSearchComboBox" Grid.Column="3" HorizontalAlignment="Left" Margin="181,117,0,0" VerticalAlignment="Top" Width="48" Height="26" DropDownClosed="AdvancedSearchComboBox_DropDownClosed">
+                    <CheckBox x:Name="MaterialCheckBox" Content="Material" HorizontalAlignment="Left" Margin="102,29,0,0" VerticalAlignment="Top" Grid.Column="4" Checked="MaterialCheckBox_Checked" Unchecked="MaterialCheckBox_Unchecked"/>
+                    <CheckBox x:Name="RecipeCheckBox" Content="Recipe" HorizontalAlignment="Left" Margin="228,29,0,0" VerticalAlignment="Top" Height="16" Grid.Column="4" Checked="RecipeCheckBox_Checked" Unchecked="RecipeCheckBox_Unchecked"/>
+                    <ComboBox x:Name="GroupComboBox" HorizontalAlignment="Left" Margin="167,56,0,0" VerticalAlignment="Top" Width="113" Height="30" RenderTransformOrigin="0.486,0.667" Grid.Column="4" DropDownOpened="GroupComboBox_DropDownOpened">
+                        <ListBoxItem Content=""/>
+                    </ComboBox>
+                    <Label x:Name="GroupLabel" Content="Group" HorizontalAlignment="Left" Margin="102,56,0,0" VerticalAlignment="Top" Height="30" RenderTransformOrigin="1.093,1.3" Width="60" Grid.Column="4"/>
+                    <Label x:Name="QuantityLabel" Content="Quantity" HorizontalAlignment="Left" Margin="102,117,0,0" VerticalAlignment="Top" Width="60" Grid.Column="4"/>
+                    <Button x:Name="Laurintestinappi" Content=" " HorizontalAlignment="Left" Margin="307,117,0,0" VerticalAlignment="Top" Width="39" Height="26" Click="Laurintestinappi_Click" Grid.Column="4"/>
+                    <TextBox x:Name="QuantityTextBox" HorizontalAlignment="Left" Height="26" Margin="228,117,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" Grid.Column="4" TextChanged="QuantityTextBox_TextChanged"/>
+                    <Button x:Name="SearchTest" Content="SearchTest" Grid.Column="4" HorizontalAlignment="Left" Margin="102,214,0,0" VerticalAlignment="Top" Width="80" Click="SearchTest_Click"/>
+                    <ComboBox x:Name="AdvancedSearchComboBox" Grid.Column="4" HorizontalAlignment="Left" Margin="167,117,0,0" VerticalAlignment="Top" Width="48" Height="26" DropDownClosed="AdvancedSearchComboBox_DropDownClosed">
                         <ListBoxItem Content="&gt;"/>
                         <ListBoxItem/>
                         <ListBoxItem Content="="/>

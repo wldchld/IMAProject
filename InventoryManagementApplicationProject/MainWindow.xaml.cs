@@ -41,6 +41,7 @@ namespace InventoryManagement
 
         private ObservableCollection<Material> searchMaterial = new ObservableCollection<Material>();
         private ObservableCollection<Recipe> searchRecipe = new ObservableCollection<Recipe>();
+        private HashSet<Material> groups = new HashSet<Material>();
 
         private bool addItemWindow;
 
@@ -846,6 +847,26 @@ namespace InventoryManagement
         {
         }
 
+        private void GroupComboBox_Update()
+        {
+            GroupComboBox.Items.Clear();
+            groups = new HashSet<Material>(dbManager.RetrieveAllMaterials());
+            IList<Material> groupList = groups.ToList();
+
+            for (int i = 0; i < groups.Count; i++)
+            {
+                GroupComboBox.Items.Add(groupList[i].GroupName);
+                for (int y = 0; y < i; y++)
+                {
+                    if (groupList[y].GroupName == groupList[i].GroupName)
+                    {
+                        GroupComboBox.Items.Remove(groupList[i].GroupName);
+                        break;
+                    }
+                }
+            }
+        }
+
         private void AdvancedSearchBox_Update()
         {
             searchRecipe.Clear();
@@ -909,7 +930,10 @@ namespace InventoryManagement
         {
             AdvancedSearchBox_Update();
         }
-
+        private void GroupComboBox_DropDownOpened(object sender, EventArgs e)
+        {
+            GroupComboBox_Update();
+        }
 
         private void SearchTest_Click(object sender, RoutedEventArgs e)
         {
@@ -929,5 +953,16 @@ namespace InventoryManagement
             this.Close();
         }
         #endregion
+
+       
+
+
+      
+
+
+
+      
+
+       
     }
 }
