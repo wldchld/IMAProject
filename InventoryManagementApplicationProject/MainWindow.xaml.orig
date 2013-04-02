@@ -41,53 +41,20 @@
                         <ComboBox x:Name="GroupFilter"/>
                         <TextBox x:Name="SearchFilter" TextAlignment="Right" Text="Search.." Foreground="Black" LostFocus="SearchFilter_LostFocus" GotFocus="SearchFilter_GotFocus" TextChanged="SearchFilter_TextChanged"/>
 
-<<<<<<< Updated upstream
-                        <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="300" MaxHeight="300" SelectionChanged="InventoryItemList_SelectionChanged">
+                        <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="300" MaxHeight="300" 
+                                  SelectionChanged="InventoryItemList_SelectionChanged"
+                                  ContextMenuOpening="InventoryItemList_ContextMenuOpening">
                             <ListView.ContextMenu>
                                 <ContextMenu x:Name="LeftClickedMenu">
                                     <MenuItem x:Name="addToShopListMenuItem" Header="Add to existing shopping list" ItemsSource="{Binding ShopLists}" Click="Add_To_Existing_Shopping_List" />
                                     <MenuItem Header="Add to a new shoppinglist" Click="Create_ShoppingList_And_Add" />
                                     <MenuItem Header="Add to recipe" Click="Add_Recipe" />
-                                    <MenuItem Header="Edit" Click="Edit_Selected_Item" />
+                                    <MenuItem x:Name="editSelectedItem" Header="Edit" Click="Edit_Selected_Item" />
                                     <MenuItem Header="Remove" Click="Remove_Selected_Item" />
                                     <Separator/>
                                     <MenuItem Header="Cancel" />
                                 </ContextMenu>
                             </ListView.ContextMenu>
-=======
-    <TabControl SelectionChanged="OnTabChanged" Name="tabControl">
-        <TabItem x:Name="MainWindowTabInventory" Header="Inventory">
-            <Grid Background="#FFFFFFFF">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="106*" />
-                    <ColumnDefinition Width="41*"/>
-                    <ColumnDefinition Width="22*"/>
-                    <ColumnDefinition Width="12*"/>
-                    <ColumnDefinition Width="72*"/>
-                    <ColumnDefinition Width="13*"/>
-                    <ColumnDefinition Width="9*"/>
-                    <ColumnDefinition Width="6*"/>
-                    <ColumnDefinition Width="94*"/>
-                    <ColumnDefinition Width="375*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel x:Name="InventoryListPanel" Grid.Column="0" Grid.ColumnSpan="9">
-                    <ComboBox x:Name="GroupFilter">
-                    </ComboBox>
-                    <TextBox x:Name="SearchFilter" TextAlignment="Right" Text="Search.." Foreground="Black" LostFocus="SearchFilter_LostFocus" GotFocus="SearchFilter_GotFocus" TextChanged="SearchFilter_TextChanged">
-                    </TextBox>
-
-                    <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="300" MaxHeight="300" SelectionChanged="InventoryItemList_SelectionChanged">
-                        <ListView.ContextMenu>
-                            <ContextMenu Name="LeftClickedMenu">
-                                <MenuItem Name="addToShopListMenuItem" Header="Add to existing shopping list" ItemsSource="{Binding ShopLists}" Click="Add_To_Existing_Shopping_List" />
-                                <MenuItem Header="Add to a new shoppinglist" Click="Create_ShoppingList_And_Add" />                               <MenuItem Header="Add to recipe" Click="Add_Recipe" />
-                                <MenuItem Header="Edit" Click="Edit_Selected_Item" />
-                                <MenuItem Header="Delete" Click="Remove_Selected_Item" />
-                                <Separator/>
-                                <MenuItem Header="Cancel" />
-                            </ContextMenu>
-                        </ListView.ContextMenu>
->>>>>>> Stashed changes
 
                             <ListView.View>
                                 <GridView>
@@ -141,8 +108,9 @@
                             <Label x:Name="ItemBestBeforeHeader" Content="Best before:"/>
                             <Label x:Name="ItemBestBeforeContent" Content=""/>
                         </StackPanel>
-                        <StackPanel x:Name="ItemEdit" Orientation="Horizontal">
-                            <Button x:Name="EditButton" Content="   Add/Edit   " Click="EditButton_Click"/>
+                        <StackPanel x:Name="ItemAddEdit" Orientation="Horizontal">
+                            <Button x:Name="EditAdd" Content="   Add   " Click="AddButton_Click"/>
+                            <Button x:Name="EditButton" Content="   Edit   " Click="EditButton_Click"/>
                         </StackPanel>
                     </StackPanel>
 
@@ -178,7 +146,12 @@
                                 </StackPanel>
                                 <StackPanel x:Name="ItemUnitEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemUnitHeaderEditDialog" Content="Unit:" MinWidth="125"/>
-                                    <TextBox x:Name="ItemUnitContentEditDialog" Text="" MinWidth="200"/>
+                                    <ComboBox x:Name="ItemUnitComboBox" Text="ItemUnitComboBox" Width="100" SelectedItem="{Binding ComboBoxAddEditUnit}">
+                                        <ComboBoxItem x:Name="pcs">pcs</ComboBoxItem>
+                                        <ComboBoxItem x:Name="g">g</ComboBoxItem>
+                                        <ComboBoxItem x:Name="l">l</ComboBoxItem>
+                                        <ComboBoxItem x:Name="m">m</ComboBoxItem>
+                                    </ComboBox>
                                 </StackPanel>
                                 <!--
                                 <StackPanel x:Name="ItemPriceEditDialog" Orientation="Horizontal">
@@ -189,14 +162,18 @@
                                     <TextBox x:Name="ItemPriceUnitEditDialog" Text="" MinWidth="50"/>
                                 </StackPanel>
                                 -->
+
                                 <StackPanel x:Name="ItemIsInfiniteEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemIsInfiniteHeaderEditDialog" Content="Infinite:" MinWidth="125"/>
-                                    <TextBox x:Name="ItemIsInfiniteContentEditDialog" Text="" MinWidth="200"/>
+                                    <ComboBox x:Name="ItemIsInfiniteComboBox" Text="ItemIsInfiniteComboBox" Width="100" SelectedItem="{Binding ComboBoxAddEditInfinite}">
+                                        <ComboBoxItem x:Name="yes">yes</ComboBoxItem>
+                                        <ComboBoxItem x:Name="no">no</ComboBoxItem>
+                                    </ComboBox>
                                 </StackPanel>
-                                
+
                                 <StackPanel x:Name="ItemBestBeforeEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemBestBeforeHeaderEditDialog" Content="Best before:" MinWidth="125"/>
-                                    <TextBox x:Name="ItemBestBeforeContentEditDialog" Text="" MinWidth="200"/>
+                                    <DatePicker x:Name="ItemBestBeforePicker"/>
                                 </StackPanel>
                                 <StackPanel Margin="25" Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button x:Name="OkButton" Margin="5" Content="   Ok   " Background="{x:Null}" Click="OkButton_Click"/>
@@ -210,16 +187,48 @@
             </TabItem>
             <TabItem x:Name="MainWindowTabRecipies" Header="Recipies">
                 <Grid>
-                    <StackPanel Orientation="Horizontal">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="94*"/>
+                        <ColumnDefinition Width="27*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
                         <Label Content="Recipe" Width="206"/>
                         <Label Content="Content" Width="352" />
-                        <Label Content="Instructions" Width="134" />
+                        <Label Content="Instructions"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" >
+                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" >
+<<<<<<< HEAD
+                        <StackPanel>
+                            <ListView Width="200" Margin="0,29,0,0" x:Name="RecipesView" ItemsSource="{Binding recipes}" SelectionChanged="RecipesView_SelectionChanged">
+                                <ListView.ContextMenu>
+                                    <ContextMenu HasDropShadow="True">
+                                        <MenuItem x:Name="DeleteRecipe" Header="Delete" Click="Delete_Click"/>
+                                        <MenuItem x:Name="CreateRecipe" Header="Create new recipe" Click="CreateRecipe_Click"/>
+                                        <MenuItem x:Name="AddMaterialToRecipe" Header="Add material to recipe" Click="AddMaterialToRecipe_Click"/>
+                                        <MenuItem x:Name="UseRecipeFromInventory" Header="Use recipe from inventory" Click="UseRecipeFromInventory_Click"/>
+                                    </ContextMenu>
+                                </ListView.ContextMenu>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Recipes name"/>
+                                    </GridView>
+                                </ListView.View>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name, Mode=TwoWay}"/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <Button Name="UseRecipeFromInventoryButton" Content="Use recipe from inventory"/>
+                        </StackPanel>
+=======
                         <ListView Width="200" Margin="0,29,0,0" x:Name="RecipesView" ItemsSource="{Binding recipes}" SelectionChanged="RecipesView_SelectionChanged">
                             <ListView.ContextMenu>
                                 <ContextMenu HasDropShadow="True">
-                                    <MenuItem x:Name="Delete" Header="Delete" Click="Delete_Click"/>
+                                    <MenuItem x:Name="DeleteRecipe" Header="Delete" Click="Delete_Click"/>
+                                    <MenuItem x:Name="CreateRecipe" Header="Create new recipe" Click="CreateRecipe_Click"/>
+                                    <MenuItem x:Name="AddMaterialToRecipe" Header="Add material to recipe" Click="AddMaterialToRecipe_Click"/>
+                                    <MenuItem x:Name="Print" Header="Print" Click="Print_Recipe_Click"/>
                                 </ContextMenu>
                             </ListView.ContextMenu>
                             <ListView.View>
@@ -233,6 +242,7 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
+>>>>>>> 2b1a7466e93761e7e21f7adc0d5a65d0701ef3d6
                         <Separator Width="5"/>
                         <ListView Width="350" Margin="0,29,0,0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" >
                             <ListView.ContextMenu>
@@ -254,9 +264,53 @@
                             </ListView.ItemTemplate>
                         </ListView>
                         <Separator Width="5"/>
-                        <TextBlock x:Name="RecipeInstructions" Width="259" Margin="0,29,0,0"/>
+                        <StackPanel Width="286">
+                            <TextBlock x:Name="RecipeInstructions" Margin="0,29,0,0" Height="216"/>
+                            <StackPanel x:Name="AmountGrid" Orientation="Horizontal">
+                                <Label Content="Amount:"/>
+                                <TextBlock x:Name="RecipeMaterialAmount"/>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
+                    <!-- Add new recipe view-->
+                    <Grid Name="AddNewRecipeGrid" Grid.ColumnSpan="2" Margin="0,0,10,0" Background="Black" Opacity="0.5" Visibility="Hidden">
+                        <StackPanel Background="White" Opacity="1.3" Margin="300,100,300,100">
+                            <Label Content="Add new Recipe"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Name:"/>
+                                <TextBox x:Name="NewRecipeName" Width="100"/>
+                            </StackPanel>
+                            <Label Content="Instructions:"/>
+                            <TextBox x:Name="NewRecipeInstructions"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button x:Name="CreateNewRecipeOkButton" Content="Ok" Click="CreateNewRecipeOkButton_Click"/>
+                                <Separator Width="5"/>
+                                <Button x:Name="CreateNewRecipeCanselButton" Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <!-- Add new material to recipe view-->
+                    <Grid Name="AddNewMaterialToRecipeGrid" Grid.ColumnSpan="2" Margin="0,0,10,0" Background="Black" Opacity="0.5" Visibility="Hidden">
+                        <StackPanel Background="White" Opacity="1.3" Margin="300,100,300,100">
+                            <Label Content="Add new Recipe"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Name:"/>
+                                <TextBox x:Name="AddNewMaterialToRecipeName" Width="100"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <Label Content="Amount:"/>
+                                <TextBox x:Name="AddNewMaterialToRecipeAmount"/>
+                            </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                <Button x:Name="AddNewMaterialToRecipeOkButton" Content="Ok" Click="AddNewMaterialToRecipeOkButton_Click"/>
+                                <Separator Width="5"/>
+                                <Button x:Name="AddNewMaterialToRecipeCanselButton" Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
+                
+
             </TabItem>
             <TabItem x:Name="MainWindowTabShoppingList" Header="Shopping list">
                 <Grid Background="#FFFFFFFF" Margin="0,0,0,-41" Height="411" VerticalAlignment="Top">
@@ -293,7 +347,7 @@
                         </ListView.View>
                     </ListView>
                     <Label Content="Content" HorizontalAlignment="Left" Margin="205,10,0,0" VerticalAlignment="Top" Height="26" Width="69"/>
-                    <Button Content="Add to Inventory" HorizontalAlignment="Left" Margin="437,354,0,0" VerticalAlignment="Top" Width="115" Click="Button_Click_2" Height="28"/>
+                    <Button Content="Add to Inventory" HorizontalAlignment="Left" Margin="437,354,0,0" VerticalAlignment="Top" Width="115" Click="AddToInventoryFromShoplist" Height="28"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="MainWindowTabAdvancedSearch" Header="Advanced search" Height="23" VerticalAlignment="Bottom">
@@ -302,37 +356,39 @@
                         <ColumnDefinition Width="46*"/>
                         <ColumnDefinition Width="206*"/>
                         <ColumnDefinition Width="14*"/>
-                        <ColumnDefinition Width="577*"/>
+                        <ColumnDefinition Width="14*"/>
+                        <ColumnDefinition Width="563*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="AdvancedSearchBox" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="330" TextChanged="AdvancedSearchBox_TextChanged" Grid.ColumnSpan="4" GotFocus="AdvancedSearchBox_GotFocus"/>
-                    <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="327" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="4" >
+                    <TextBox x:Name="AdvancedSearchBox" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="330" TextChanged="AdvancedSearchBox_TextChanged" Grid.ColumnSpan="5" GotFocus="AdvancedSearchBox_GotFocus"/>
+                    <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="327" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="5" >
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn/>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <CheckBox x:Name="MaterialCheckBox" Content="Material" HorizontalAlignment="Left" Margin="116,29,0,0" VerticalAlignment="Top" Grid.Column="3" Checked="MaterialCheckBox_Checked" Unchecked="MaterialCheckBox_Unchecked"/>
-                    <CheckBox x:Name="RecipeCheckBox" Content="Recipe" HorizontalAlignment="Left" Margin="242,29,0,0" VerticalAlignment="Top" Height="16" Grid.Column="3" Checked="RecipeCheckBox_Checked" Unchecked="RecipeCheckBox_Unchecked"/>
-                    <ComboBox HorizontalAlignment="Left" Margin="181,56,0,0" VerticalAlignment="Top" Width="113" Height="30" RenderTransformOrigin="0.486,0.667" Grid.Column="3"/>
-                    <Label x:Name="GroupLabel" Content="Group" HorizontalAlignment="Left" Margin="116,56,0,0" VerticalAlignment="Top" Height="30" RenderTransformOrigin="1.093,1.3" Width="60" Grid.Column="3"/>
-                    <Label x:Name="QuantityLabel" Content="Quantity" HorizontalAlignment="Left" Margin="116,117,0,0" VerticalAlignment="Top" Width="60" Grid.Column="3"/>
-                    <Button x:Name="Laurintestinappi" Content=" " HorizontalAlignment="Left" Margin="321,117,0,0" VerticalAlignment="Top" Width="39" Height="26" Click="Laurintestinappi_Click" Grid.Column="3"/>
-                    <TextBox x:Name="QuantityTextBox" HorizontalAlignment="Left" Height="26" Margin="242,117,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" Grid.Column="3" TextChanged="QuantityTextBox_TextChanged"/>
-                    <Button x:Name="SearchTest" Content="SearchTest" Grid.Column="3" HorizontalAlignment="Left" Margin="116,214,0,0" VerticalAlignment="Top" Width="80" Click="SearchTest_Click"/>
-                    <ComboBox x:Name="AdvancedSearchComboBox" Grid.Column="3" HorizontalAlignment="Left" Margin="181,117,0,0" VerticalAlignment="Top" Width="48" Height="26" DropDownClosed="AdvancedSearchComboBox_DropDownClosed">
+                    <CheckBox x:Name="MaterialCheckBox" Content="Material" HorizontalAlignment="Left" Margin="102,29,0,0" VerticalAlignment="Top" Grid.Column="4" Checked="MaterialCheckBox_Checked" Unchecked="MaterialCheckBox_Unchecked"/>
+                    <CheckBox x:Name="RecipeCheckBox" Content="Recipe" HorizontalAlignment="Left" Margin="228,29,0,0" VerticalAlignment="Top" Height="16" Grid.Column="4" Checked="RecipeCheckBox_Checked" Unchecked="RecipeCheckBox_Unchecked"/>
+                    <ComboBox x:Name="GroupComboBox" HorizontalAlignment="Left" Margin="167,56,0,0" VerticalAlignment="Top" Width="113" Height="30" RenderTransformOrigin="0.486,0.667" Grid.Column="4" DropDownOpened="GroupComboBox_DropDownOpened" DropDownClosed="GroupComboBox_DropDownClosed">
+                        <ListBoxItem Content=""/>
+                    </ComboBox>
+                    <Label x:Name="GroupLabel" Content="Group" HorizontalAlignment="Left" Margin="102,56,0,0" VerticalAlignment="Top" Height="30" RenderTransformOrigin="1.093,1.3" Width="60" Grid.Column="4"/>
+                    <Label x:Name="QuantityLabel" Content="Quantity" HorizontalAlignment="Left" Margin="102,117,0,0" VerticalAlignment="Top" Width="60" Grid.Column="4"/>
+                    <TextBox x:Name="QuantityTextBox" HorizontalAlignment="Left" Height="26" Margin="228,117,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" Grid.Column="4" TextChanged="QuantityTextBox_TextChanged"/>
+                    <ComboBox x:Name="AdvancedSearchComboBox" Grid.Column="4" HorizontalAlignment="Left" Margin="167,117,0,0" VerticalAlignment="Top" Width="48" Height="26" DropDownClosed="AdvancedSearchComboBox_DropDownClosed">
+                        <ListBoxItem Content=""/>
                         <ListBoxItem Content="&gt;"/>
+                        <ListBoxItem/>
                         <ListBoxItem Content="="/>
                         <ListBoxItem Content="&lt;"/>
+                        <ListBoxItem Content="≥"/>
+                        <ListBoxItem Content="≤"/>
                     </ComboBox>
 
                 </Grid>
             </TabItem>
-            <TabItem x:Name="MainWindowTabManageInventory" Header="Manage inventory">
-                <Grid Background="#FFFFFFFF"/>
-            </TabItem>
-
 
         </TabControl>
+        <Grid Height="100"/>
     </StackPanel>
 </Window>

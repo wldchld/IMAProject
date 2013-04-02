@@ -205,6 +205,7 @@
                                         <MenuItem x:Name="CreateRecipe" Header="Create new recipe" Click="CreateRecipe_Click"/>
                                         <MenuItem x:Name="AddMaterialToRecipe" Header="Add material to recipe" Click="AddMaterialToRecipe_Click"/>
                                         <MenuItem x:Name="UseRecipeFromInventory" Header="Use recipe from inventory" Click="UseRecipeFromInventory_Click"/>
+                                    <MenuItem x:Name="Print" Header="Print" Click="Print_Recipe_Click"/>
                                     </ContextMenu>
                                 </ListView.ContextMenu>
                                 <ListView.View>
