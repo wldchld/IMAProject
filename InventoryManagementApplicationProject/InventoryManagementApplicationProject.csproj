@@ -59,9 +59,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ListViewPrinter.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Recipe.cs" />
     <Compile Include="Search.cs" />
     <Compile Include="ShoppingList.cs" />

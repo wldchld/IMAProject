@@ -963,6 +963,7 @@ namespace InventoryManagement
         }
         #endregion 
 
+        #region Context menu functions - Recipes Tab
         private void CreateNewRecipeOkButton_Click(object sender, RoutedEventArgs e)
         {
             dbManager.AddNewRecipe(NewRecipeName.Text, NewRecipeInstructions.Text);
@@ -994,5 +995,56 @@ namespace InventoryManagement
             dbManager.AddMaterialToRecipe(((Recipe)RecipesView.SelectedItem).Name,AddNewMaterialToRecipeName.Text,Convert.ToDouble(AddNewMaterialToRecipeAmount.Text));
             AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
         }
+        
+
+        private void Print_Recipe_Click(object sender, RoutedEventArgs e)
+        {
+            Recipe selectedRecipe = (Recipe)RecipesView.SelectedItem;
+            PrintDialog dialog = new PrintDialog();
+            if (dialog.ShowDialog() == true)
+                dialog.PrintDocument(CreateRecipeFlowDocument(dialog.PrintableAreaWidth, selectedRecipe), selectedRecipe.Name);  
+        }
+
+        private DocumentPaginator CreateRecipeFlowDocument(double printAreaWidth, Recipe selectedRecipe)
+        {
+            FlowDocument flowDoc = new FlowDocument();
+            flowDoc.ColumnWidth = printAreaWidth;
+            Table t = new Table();
+            for (int i = 0; i < 3; i++)
+                t.Columns.Add(new TableColumn());
+            TableRow row = new TableRow();
+            row.Background = Brushes.Silver;
+            row.FontSize = 26;
+            row.FontWeight = System.Windows.FontWeights.Bold;
+            row.Cells.Add(new TableCell(new Paragraph(new Run("Name"))));
+            row.Cells.Add(new TableCell(new Paragraph(new Run("Amount"))));
+            row.Cells.Add(new TableCell(new Paragraph(new Run("Unit"))));
+            row.Cells[0].ColumnSpan = 20;
+            row.Cells[1].ColumnSpan = 5;
+            row.Cells[2].ColumnSpan = 5;
+            var rg = new TableRowGroup();
+            rg.Rows.Add(row);
+            t.RowGroups.Add(rg);
+            flowDoc.Blocks.Add(t);
+            foreach (Material mat in selectedRecipe.Content)
+            {
+                row = new TableRow();
+                row.FontSize = 24;
+                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.Name))));
+                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.Amount.ToString()))));
+                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.DisplayUnit.ToString()))));
+                row.Cells[0].ColumnSpan = 20;
+                row.Cells[1].ColumnSpan = 5;
+                row.Cells[2].ColumnSpan = 5;
+                rg = new TableRowGroup();
+                rg.Rows.Add(row);
+                t.RowGroups.Add(rg);
+                flowDoc.Blocks.Add(t);
+            }
+            flowDoc.Blocks.Add(new Paragraph(new Run(selectedRecipe.Instructions)));
+            IDocumentPaginatorSource doc = flowDoc;
+            return doc.DocumentPaginator;
+        }
+        #endregion
     }
 }

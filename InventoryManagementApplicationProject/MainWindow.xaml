@@ -203,6 +203,7 @@
                                     <MenuItem x:Name="DeleteRecipe" Header="Delete" Click="Delete_Click"/>
                                     <MenuItem x:Name="CreateRecipe" Header="Create new recipe" Click="CreateRecipe_Click"/>
                                     <MenuItem x:Name="AddMaterialToRecipe" Header="Add material to recipe" Click="AddMaterialToRecipe_Click"/>
+                                    <MenuItem x:Name="Print" Header="Print" Click="Print_Recipe_Click"/>
                                 </ContextMenu>
                             </ListView.ContextMenu>
                             <ListView.View>
