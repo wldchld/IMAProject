@@ -90,25 +90,30 @@ namespace InventoryManagement
         //These functions handle placeholder text "Search.."
         private void SearchFilter_LostFocus(object sender, RoutedEventArgs e)
         {
+            /*
             if (SearchFilter.Text == String.Empty)
             {
                 SearchFilter.Text = "Search..";
-            }
+            }*/
         }
         private void SearchFilter_GotFocus(object sender, RoutedEventArgs e)
-        {
+        {/*
             if (SearchFilter.Text == "Search..")
             {
                 SearchFilter.Text = String.Empty;
             }
+          */
         }
 
         private void SearchFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
+            /*
             if (SearchFilter.Text != "Search.." && SearchFilter.Text != String.Empty)
             {
                 dbManager.SearchAll(SearchFilter.Text);
             }
+            */
+            SearchBox_Update();
         }
         #endregion
 
@@ -924,7 +929,7 @@ namespace InventoryManagement
             }
             GroupComboBox.SelectedItem = lastSelected;
         }
-
+        
         private void AdvancedSearchBox_Update()
         {
             searchRecipe.Clear();
@@ -1002,7 +1007,105 @@ namespace InventoryManagement
         {
             AdvancedSearchBox_Update();
         }
+        #endregion
 
+        #region main window search
+
+        private void GroupFilter_DropDownOpened(object sender, EventArgs e)
+        {
+            GroupFilter_Update();
+        }
+        private void GroupFilter_Update()
+        {
+            object lastSelected = GroupFilter.SelectedItem;
+
+            GroupFilter.Items.Clear();
+            GroupFilter.Items.Add("");
+
+            groups = new HashSet<Material>(dbManager.RetrieveAllMaterials());
+            IList<Material> groupList = groups.ToList();
+
+            for (int i = 1; i < groups.Count; i++)
+            {
+                GroupFilter.Items.Add(groupList[i].GroupName);
+                for (int y = 1; y < i; y++)
+                {
+                    if (groupList[y].GroupName == groupList[i].GroupName)
+                    {
+                        GroupFilter.Items.Remove(groupList[i].GroupName);
+                        break;
+                    }
+                }
+            }
+            GroupFilter.SelectedItem = lastSelected;
+        }
+
+        private void SearchBox_Update()
+        {
+            searchRecipe.Clear();
+            searchMaterial.Clear();
+            InventoryItemList2.Items.Clear();
+
+            string symbol = QuantityFilterComboBox.Text;
+            int amount = 0;
+            int.TryParse(QuantityFilterTextBox.Text, out amount);
+
+            string group = "";
+            if (GroupFilter.SelectedIndex != -1)
+            {
+                group = GroupFilter.SelectedItem.ToString();
+            }
+
+            if (MCheckBox.IsChecked == true)
+            {
+                searchMaterial = new ObservableCollection<Material>(dbManager.SearchMats(SearchFilter.Text,
+                      Material.Connection.INVENTORY, symbol, amount, group));
+                foreach (Material o in searchMaterial)
+                {
+                    InventoryItemList2.Items.Add(o);
+                }
+            }
+
+            if (RCheckBox.IsChecked == true)
+            {
+                searchRecipe = new ObservableCollection<Recipe>(dbManager.SearchRecipes(SearchFilter.Text));
+                for (int i = 0; i < searchRecipe.Count; i++)
+                {
+                    InventoryItemList2.Items.Add(searchRecipe[i].Name);
+                }
+            }
+        }
+
+        private void MCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            RCheckBox.IsChecked = false;
+            SearchBox_Update();
+        }
+        private void MCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SearchBox_Update();
+        }
+        private void RCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            MCheckBox.IsChecked = false;
+            SearchBox_Update();
+        }
+        private void RCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SearchBox_Update();
+        }
+        private void QuantityFilterComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            SearchBox_Update();
+        }
+        private void QuantityFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            SearchBox_Update();
+        }
+        private void GroupFilter_DropDownClosed(object sender, EventArgs e)
+        {
+            SearchBox_Update();
+        }
         #endregion
 
         #region Menubar Functions
@@ -1071,5 +1174,20 @@ namespace InventoryManagement
             return doc.DocumentPaginator;
         }
         #endregion
+
+       
+
+     
+
+       
+
+      
+
+       
+
+     
+
+   
+
     }
 }

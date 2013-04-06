@@ -38,12 +38,14 @@
                         <ColumnDefinition Width="375*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel x:Name="InventoryListPanel" Grid.Column="0" Grid.ColumnSpan="9">
-                        <ComboBox x:Name="GroupFilter"/>
-                        <TextBox x:Name="SearchFilter" TextAlignment="Right" Text="Search.." Foreground="Black" LostFocus="SearchFilter_LostFocus" GotFocus="SearchFilter_GotFocus" TextChanged="SearchFilter_TextChanged"/>
+                        <ComboBox x:Name="GroupFilter" DropDownOpened="GroupFilter_DropDownOpened" DropDownClosed="GroupFilter_DropDownClosed"/>
+                        <TextBox x:Name="SearchFilter" TextAlignment="Right" Foreground="Black" LostFocus="SearchFilter_LostFocus" GotFocus="SearchFilter_GotFocus" TextChanged="SearchFilter_TextChanged"/>
+                        <CheckBox x:Name="MCheckBox" Content="Material" Margin="303,0,0,0" Checked="MCheckBox_Checked" Unchecked="MCheckBox_Unchecked"/>
+                        <CheckBox x:Name="RCheckBox" Content="Recipe" Margin="303,0,0,0" Checked="RCheckBox_Checked" Unchecked="RCheckBox_Unchecked"/>
 
                         <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="300" MaxHeight="300" 
                                   SelectionChanged="InventoryItemList_SelectionChanged"
-                                  ContextMenuOpening="InventoryItemList_ContextMenuOpening">
+                                  ContextMenuOpening="InventoryItemList_ContextMenuOpening" Height="259" Margin="226,0,0,0">
                             <ListView.ContextMenu>
                                 <ContextMenu x:Name="LeftClickedMenu">
                                     <MenuItem x:Name="addToShopListMenuItem" Header="Add to existing shopping list" ItemsSource="{Binding ShopLists}" Click="Add_To_Existing_Shopping_List" />
@@ -183,6 +185,37 @@
                             </StackPanel>
                         </Border>
                     </Grid>
+                    <ComboBox x:Name="QuantityFilterComboBox" HorizontalAlignment="Left" Margin="10,47,0,0" VerticalAlignment="Top" Width="49" DropDownClosed="QuantityFilterComboBox_DropDownClosed">
+                        <ListBoxItem Content=""/>
+                        <ListBoxItem Content="&gt;"/>
+                        <ListBoxItem Content="="/>
+                        <ListBoxItem Content="&lt;"/>
+                        <ListBoxItem Content="≥"/>
+                        <ListBoxItem Content="≤"/>
+                    </ComboBox>
+                    <TextBox x:Name="QuantityFilterTextBox" Height="23" Margin="73,46,31,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.ColumnSpan="2" TextChanged="QuantityFilterTextBox_TextChanged" RenderTransformOrigin="0.667,0.478"/>
+                    <ListView x:Name="InventoryItemList2" MinHeight="300" MaxHeight="300" 
+                    	SelectionChanged="InventoryItemList_SelectionChanged"
+                    	ContextMenuOpening="InventoryItemList_ContextMenuOpening" Margin="10,74,70,26" Grid.ColumnSpan="5">
+                        <ListView.ContextMenu>
+                            <ContextMenu x:Name="LeftClickedMenu1">
+                                <MenuItem x:Name="addToShopListMenuItem1" Header="Add to existing shopping list" ItemsSource="{Binding ShopLists}" Click="Add_To_Existing_Shopping_List" />
+                                <MenuItem Header="Add to a new shoppinglist" Click="Create_ShoppingList_And_Add" />
+                                <MenuItem Header="Add to recipe" Click="Add_Recipe" />
+                                <MenuItem x:Name="editSelectedItem1" Header="Edit" Click="Edit_Selected_Item" />
+                                <MenuItem Header="Remove" Click="Remove_Selected_Item" />
+                                <Separator/>
+                                <MenuItem Header="Cancel" />
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn Header="Amount" DisplayMemberBinding="{Binding Amount}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </Grid>
             </TabItem>
             <TabItem x:Name="MainWindowTabRecipies" Header="Recipies">
@@ -332,28 +365,29 @@
                 <Grid Background="#FFFFFFFF">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="46*"/>
-                        <ColumnDefinition Width="206*"/>
+                        <ColumnDefinition Width="7*"/>
+                        <ColumnDefinition Width="199*"/>
                         <ColumnDefinition Width="14*"/>
                         <ColumnDefinition Width="14*"/>
                         <ColumnDefinition Width="563*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="AdvancedSearchBox" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="330" TextChanged="AdvancedSearchBox_TextChanged" Grid.ColumnSpan="5" GotFocus="AdvancedSearchBox_GotFocus"/>
-                    <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="327" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="5" >
+                    <TextBox x:Name="AdvancedSearchBox" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="330" TextChanged="AdvancedSearchBox_TextChanged" Grid.ColumnSpan="6" GotFocus="AdvancedSearchBox_GotFocus"/>
+                    <ListView x:Name="AdvancedResultList" HorizontalAlignment="Left" Height="327" Margin="10,56,0,0" VerticalAlignment="Top" Width="330" SelectedIndex="1" Grid.ColumnSpan="6" >
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn/>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <CheckBox x:Name="MaterialCheckBox" Content="Material" HorizontalAlignment="Left" Margin="102,29,0,0" VerticalAlignment="Top" Grid.Column="4" Checked="MaterialCheckBox_Checked" Unchecked="MaterialCheckBox_Unchecked"/>
-                    <CheckBox x:Name="RecipeCheckBox" Content="Recipe" HorizontalAlignment="Left" Margin="228,29,0,0" VerticalAlignment="Top" Height="16" Grid.Column="4" Checked="RecipeCheckBox_Checked" Unchecked="RecipeCheckBox_Unchecked"/>
-                    <ComboBox x:Name="GroupComboBox" HorizontalAlignment="Left" Margin="167,56,0,0" VerticalAlignment="Top" Width="113" Height="30" RenderTransformOrigin="0.486,0.667" Grid.Column="4" DropDownOpened="GroupComboBox_DropDownOpened" DropDownClosed="GroupComboBox_DropDownClosed">
+                    <CheckBox x:Name="MaterialCheckBox" Content="Material" HorizontalAlignment="Left" Margin="102,29,0,0" VerticalAlignment="Top" Grid.Column="5" Checked="MaterialCheckBox_Checked" Unchecked="MaterialCheckBox_Unchecked"/>
+                    <CheckBox x:Name="RecipeCheckBox" Content="Recipe" HorizontalAlignment="Left" Margin="228,29,0,0" VerticalAlignment="Top" Height="16" Grid.Column="5" Checked="RecipeCheckBox_Checked" Unchecked="RecipeCheckBox_Unchecked"/>
+                    <ComboBox x:Name="GroupComboBox" HorizontalAlignment="Left" Margin="167,56,0,0" VerticalAlignment="Top" Width="113" Height="30" RenderTransformOrigin="0.486,0.667" Grid.Column="5" DropDownOpened="GroupComboBox_DropDownOpened" DropDownClosed="GroupComboBox_DropDownClosed">
                         <ListBoxItem Content=""/>
                     </ComboBox>
-                    <Label x:Name="GroupLabel" Content="Group" HorizontalAlignment="Left" Margin="102,56,0,0" VerticalAlignment="Top" Height="30" RenderTransformOrigin="1.093,1.3" Width="60" Grid.Column="4"/>
-                    <Label x:Name="QuantityLabel" Content="Quantity" HorizontalAlignment="Left" Margin="102,117,0,0" VerticalAlignment="Top" Width="60" Grid.Column="4"/>
-                    <TextBox x:Name="QuantityTextBox" HorizontalAlignment="Left" Height="26" Margin="228,117,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" Grid.Column="4" TextChanged="QuantityTextBox_TextChanged"/>
-                    <ComboBox x:Name="AdvancedSearchComboBox" Grid.Column="4" HorizontalAlignment="Left" Margin="167,117,0,0" VerticalAlignment="Top" Width="48" Height="26" DropDownClosed="AdvancedSearchComboBox_DropDownClosed">
+                    <Label x:Name="GroupLabel" Content="Group" HorizontalAlignment="Left" Margin="102,56,0,0" VerticalAlignment="Top" Height="30" RenderTransformOrigin="1.093,1.3" Width="60" Grid.Column="5"/>
+                    <Label x:Name="QuantityLabel" Content="Quantity" HorizontalAlignment="Left" Margin="102,117,0,0" VerticalAlignment="Top" Width="60" Grid.Column="5"/>
+                    <TextBox x:Name="QuantityTextBox" HorizontalAlignment="Left" Height="26" Margin="228,117,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" Grid.Column="5" TextChanged="QuantityTextBox_TextChanged"/>
+                    <ComboBox x:Name="AdvancedSearchComboBox" Grid.Column="5" HorizontalAlignment="Left" Margin="167,117,0,0" VerticalAlignment="Top" Width="48" Height="26" DropDownClosed="AdvancedSearchComboBox_DropDownClosed">
                         <ListBoxItem Content=""/>
                         <ListBoxItem Content="&gt;"/>
                         <ListBoxItem/>
