@@ -384,6 +384,21 @@ namespace InventoryManagement
             }
         }
 
+        public void UpdateRecipe(Recipe recipe)
+        {
+            IList<Recipe> sls = RetrieveRecipeByName(recipe.Name);
+            Recipe oldList = null;
+            for (int i = 0; i < sls.Count; i++)
+            {
+                oldList = sls[i];
+                if (oldList != null)
+                {
+                    oldList = recipe;
+                    db.Ext().Store(recipe, Int32.MaxValue);
+                }
+            }
+        }
+
         public IList<Recipe> RetrieveAllRecipes()
         {
             IList<Recipe> recipes = db.Query<Recipe>();

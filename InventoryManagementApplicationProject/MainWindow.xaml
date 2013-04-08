@@ -211,10 +211,10 @@
                             <ListView Margin="5,5,5,0" x:Name="RecipesView" ItemsSource="{Binding recipes}" SelectionChanged="RecipesView_SelectionChanged" Height="325" Width="150">
                                 <ListView.ContextMenu>
                                     <ContextMenu HasDropShadow="True">
-                                        <MenuItem x:Name="DeleteRecipe" Header="Delete" Click="DeleteRecipe_Click"/>
+                                        <MenuItem Header="Delete" Click="DeleteRecipe_Click"/>
                                         <MenuItem x:Name="CreateRecipe" Header="Create new recipe" Click="CreateRecipe_Click"/>
                                         <MenuItem x:Name="AddMaterialToRecipe" Header="Add material to recipe" Click="AddMaterialToRecipe_Click"/>
-                                        <MenuItem x:Name="UseRecipeFromInventory" Header="Use recipe from inventory" Click="UseRecipeFromInventory_Click"/>
+                                        <MenuItem Header="Use recipe from inventory" Click="UseRecipeFromInventory"/>
                                         <MenuItem x:Name="Print" Header="Print" Click="Print_Recipe_Click"/>
                                     </ContextMenu>
                                 </ListView.ContextMenu>
@@ -229,9 +229,9 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
-                            <Button Content="Use recipe from inventory" VerticalAlignment="Bottom" Margin="5,5,5,0"/>
-                            <Button Content="Create new recipe" Margin="5,5,5,0"/>
-                            <Button Content="Edit Recipe" Margin="5,5,5,0"/>
+                            <Button Content="Use recipe from inventory" VerticalAlignment="Bottom" Margin="5,5,5,0" Click="UseRecipeFromInventory"/>
+                            <Button Content="Create new recipe" Margin="5,5,5,0" Click="CreateRecipe_Click"/>
+                            <Button Content="Delete Recipe" Margin=" 5,5,5,0" Click="DeleteRecipe_Click"/>
                         </StackPanel>
                         <Separator Width="5"/>
                         <StackPanel>
@@ -255,8 +255,8 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
-                                <Button Content="Add material to recipe" Margin="0,5,0,0" HorizontalAlignment="Center" MinWidth="151"/>
-                                <Button Content="Delete material from Recipe" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                                <Button Content="Add material to recipe" Margin="0,5,0,0" HorizontalAlignment="Center" MinWidth="151" Click="AddMaterialToRecipe_Click"/>
+                                <Button Content="Delete material from Recipe" Margin="0,5,0,0" HorizontalAlignment="Center" Click="DeleteContent_Click"/>
                             <Label Content="Amount:" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                             <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Center">
                                 <Button Content="-" Height="22" Width="22"/>
@@ -268,7 +268,7 @@
                         <StackPanel MinWidth="150">
                             <Label Content="Instructions:" Margin="5,0,0,0"/>
                             <TextBlock x:Name="RecipeInstructions" Margin="5,0,0,0" Height="350" TextWrapping="WrapWithOverflow" MaxHeight="0" MaxWidth="240" MinHeight="350" Width="240" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-                            <Button Content="Edit Instructions" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                            <Button Content="Edit Instructions" HorizontalAlignment="Center" Margin="0,5,0,0" Click="OpenEditInstructionsDialog"/>
                         </StackPanel>
                     </StackPanel>
                     <!-- Colored background grid for opening windows-->
@@ -285,7 +285,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Button x:Name="CreateNewRecipeOkButton" Content="Ok" Click="CreateNewRecipeOkButton_Click"/>
                             <Separator Width="5"/>
-                            <Button x:Name="CreateNewRecipeCanselButton" Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
+                            <Button x:Name="CreateNewRecipeCanselButton" Content="Cancel" Click="CreateNewRecipeCanselButton_Click"/>
                         </StackPanel>
                     </StackPanel>
                     <!-- Edit Instructions view-->
@@ -293,9 +293,9 @@
                         <Label Content="Edit instructions:"/>
                         <TextBox x:Name="EditedInstructions" Width="300" Height="250" AcceptsReturn="True" AcceptsTab="True" TextWrapping="WrapWithOverflow"/>
                         <StackPanel Orientation="Horizontal">
-                            <Button Content="Ok" Click="CreateNewRecipeOkButton_Click"/>
+                            <Button Content="Ok" Click="EditInstructionsDialogOkButton"/>
                             <Separator Width="5"/>
-                            <Button Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
+                            <Button Content="Cancel" Click="EditInstructionsDialogCancelButton"/>
                         </StackPanel>
                     </StackPanel>
                     <!-- Add new material to recipe view-->
@@ -309,7 +309,7 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button x:Name="AddNewMaterialToRecipeOkButton" Content="Ok" Click="AddNewMaterialToRecipeOkButton_Click"/>
                             <Separator Width="5"/>
-                            <Button x:Name="AddNewMaterialToRecipeCanselButton" Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
+                            <Button x:Name="AddNewMaterialToRecipeCanselButton" Content="Cancel" Click="CreateNewRecipeCanselButton_Click"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>

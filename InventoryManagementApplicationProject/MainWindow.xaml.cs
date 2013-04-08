@@ -773,7 +773,7 @@ namespace InventoryManagement
         }
         #endregion
 
-        #region Recipies Tab
+        #region Recipies Tab - functions
 
         private void LoadRecipiesView()
         {
@@ -822,7 +822,52 @@ namespace InventoryManagement
             }
         }
 
+        private void DeleteRecipesMaterial()
+        {
+            if (RecipesMaterials.SelectedItem != null)
+            {
+                dbManager.DeleteMaterialFromRecipe(((Recipe)RecipesView.SelectedItem).Name, (((Material)RecipesMaterials.SelectedItem).Name));
+                LoadContentView();
+            }
+        }
 
+        private void UpdateRecipiesTab()
+        {
+            LoadRecipiesView();
+            LoadInstructions();
+            LoadContentView();
+        }
+
+        private void DeleteRecipe()
+        {
+            if (RecipesView.SelectedItem != null)
+            {
+                dbManager.DeleteRecipeByName(((Recipe)RecipesView.SelectedItem).Name);
+                LoadRecipiesView();
+                LoadContentView();
+                LoadInstructions();
+            }
+        }
+
+        private void UseRecipeFromInventory(object sender, RoutedEventArgs e)
+        {
+            Recipe r = (Recipe)RecipesView.SelectedItem;
+            for (int i = 0; i < r.Content.Count; i++)
+            {
+                Material m = new Material(dbManager.RetrieveMaterialByName(r.Content[i].Name, Material.Connection.INVENTORY));
+                if (m.Amount > r.Content[i].Amount)
+                    m.Amount = m.Amount - r.Content[i].Amount;
+                else
+                    m.Amount = 0;
+                dbManager.UpdateMaterial(dbManager.RetrieveMaterialByName(r.Content[i].Name, Material.Connection.INVENTORY), m);
+            }
+            inventory.Clear();
+            AddAllMaterialToInventoryList();
+        }
+
+        #endregion
+
+        #region Recipies Tab - events
 
         private void RecipesView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -832,22 +877,12 @@ namespace InventoryManagement
 
         private void DeleteContent_Click(object sender, RoutedEventArgs e)
         {
-            if (RecipesMaterials.SelectedItem != null)
-            {
-                dbManager.DeleteMaterialFromRecipe(((Recipe)RecipesView.SelectedItem).Name, (((Material)RecipesMaterials.SelectedItem).Name));
-                LoadContentView();
-            }
+            DeleteRecipesMaterial();
         }
 
         private void DeleteRecipe_Click(object sender, RoutedEventArgs e)
         {
-            if (RecipesView.SelectedItem != null)
-            {
-                dbManager.DeleteRecipeByName(((Recipe)RecipesView.SelectedItem).Name);
-                LoadRecipiesView();
-                LoadContentView();
-                LoadInstructions();
-            }
+            DeleteRecipe();
         }
 
         private void CreateNewRecipeOkButton_Click(object sender, RoutedEventArgs e)
@@ -912,20 +947,28 @@ namespace InventoryManagement
             }
         }
 
-        private void UseRecipeFromInventory_Click(object sender, RoutedEventArgs e)
+        private void OpenEditInstructionsDialog(object sender, RoutedEventArgs e)
         {
-            Recipe r = (Recipe)RecipesView.SelectedItem;
-            for (int i = 0; i < r.Content.Count; i++)
-            {
-                Material m = new Material(dbManager.RetrieveMaterialByName(r.Content[i].Name, Material.Connection.INVENTORY));
-                if (m.Amount > r.Content[i].Amount)
-                    m.Amount = m.Amount - r.Content[i].Amount;
-                else
-                    m.Amount = 0;
-                dbManager.UpdateMaterial(dbManager.RetrieveMaterialByName(r.Content[i].Name, Material.Connection.INVENTORY), m);
-            }
-            inventory.Clear();
-            AddAllMaterialToInventoryList();
+            EditedInstructions.Text = RecipeInstructions.Text;
+            WindowBackgroundGrid.Visibility = System.Windows.Visibility.Visible;
+            EditInstructionsStackPanel.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void EditInstructionsDialogOkButton(object sender, RoutedEventArgs e)
+        {
+
+            Recipe a = (dbManager.RetrieveRecipeByName(((Recipe)RecipesView.SelectedItem).Name)).First();
+            a.Instructions = EditedInstructions.Text;
+            dbManager.UpdateRecipe(a);
+            WindowBackgroundGrid.Visibility = System.Windows.Visibility.Hidden;
+            EditInstructionsStackPanel.Visibility = System.Windows.Visibility.Hidden;
+            LoadInstructions();
+        }
+
+        private void EditInstructionsDialogCancelButton(object sender, RoutedEventArgs e)
+        {
+            WindowBackgroundGrid.Visibility = System.Windows.Visibility.Hidden;
+            EditInstructionsStackPanel.Visibility = System.Windows.Visibility.Hidden;
         }
 
         #endregion
