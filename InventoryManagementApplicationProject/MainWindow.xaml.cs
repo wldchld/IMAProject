@@ -41,7 +41,7 @@ namespace InventoryManagement
 
         private ObservableCollection<Material> searchMaterial = new ObservableCollection<Material>();
         private ObservableCollection<Recipe> searchRecipe = new ObservableCollection<Recipe>();
-        private HashSet<Material> groups = new HashSet<Material>();
+        private HashSet<string> groups = new HashSet<string>();
 
         private bool addItemWindow;
 
@@ -87,34 +87,55 @@ namespace InventoryManagement
         #endregion
 
         #region Search functions - Inventory Tab
-        //These functions handle placeholder text "Search.."
-        private void SearchFilter_LostFocus(object sender, RoutedEventArgs e)
-        {
-            /*
-            if (SearchFilter.Text == String.Empty)
-            {
-                SearchFilter.Text = "Search..";
-            }*/
-        }
-        private void SearchFilter_GotFocus(object sender, RoutedEventArgs e)
-        {/*
-            if (SearchFilter.Text == "Search..")
-            {
-                SearchFilter.Text = String.Empty;
-            }
-          */
-        }
-
         private void SearchFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            /*
-            if (SearchFilter.Text != "Search.." && SearchFilter.Text != String.Empty)
-            {
-                dbManager.SearchAll(SearchFilter.Text);
-            }
-            */
-            SearchBox_Update();
+            UpdateSearchResults();
         }
+
+        private void UpdateSearchResults()
+        {
+            List<Material> matching = new List<Material>();
+            Console.WriteLine(SearchFilter.Text);
+            if (SearchFilter.Text.Length < 1 && QuantityFilterTextBox.Text.Length < 1 && GroupFilter.SelectedIndex == 0)
+            {
+                inventory.Clear();
+                AddAllMaterialToInventoryList();
+                InventoryItemList.ItemsSource = inventory;
+            }
+            else
+            {
+                if (inventory != null && InventoryItemList != null)
+                {
+                    for (int i = 0; i < inventory.Count; i++)
+                    {
+                        Material mat = inventory[i];
+                        double amount = 0;
+                        bool add = true;
+                        if (SearchFilter.Text.Length > 0 && !mat.Name.ToLower().StartsWith(SearchFilter.Text.ToLower()))
+                            add = false;
+                        if (add && Double.TryParse(QuantityFilterTextBox.Text, out amount) && QuantityFilterComboBox.SelectedIndex > 0)
+                        {
+                            if (QuantityFilterComboBox.SelectedIndex == 1 && mat.Amount <= amount)
+                                add = false;
+                            else if (QuantityFilterComboBox.SelectedIndex == 2 && mat.Amount != amount)
+                                add = false;
+                            else if (QuantityFilterComboBox.SelectedIndex == 3 && mat.Amount >= amount)
+                                add = false;
+                            else if (QuantityFilterComboBox.SelectedIndex == 4 && mat.Amount < amount)
+                                add = false;
+                            else if (QuantityFilterComboBox.SelectedIndex == 5 && mat.Amount > amount)
+                                add = false;
+                        }
+                        if (GroupFilter.SelectedIndex != 0 && (string)GroupFilter.SelectedItem != mat.GroupName)
+                            add = false;
+                        if(add)
+                            matching.Add(inventory[i]);
+                    }
+                    InventoryItemList.ItemsSource = new ObservableCollection<Material>(matching);
+                }
+            }
+        }
+
         #endregion
 
         #region Edit single material - Inventory Tab
@@ -146,6 +167,7 @@ namespace InventoryManagement
 
         public void AddButton_Click(object sender, RoutedEventArgs e)
         {
+            InventoryItemList.ItemsSource = inventory;
             ItemNameContentEditDialog.Text = String.Empty;
             ItemDescriptionContentEditDialog.Text = String.Empty;
             ItemGroupContentEditDialog.Text = String.Empty;
@@ -168,6 +190,7 @@ namespace InventoryManagement
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
+            InventoryItemList.ItemsSource = inventory;
             if (selectedItem != null)
             {
                 Material tempItem = dbManager.RetrieveMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
@@ -461,7 +484,6 @@ namespace InventoryManagement
             }
             else if (InventoryItemList.SelectedItems.Count > 3)
             {
-
                 Console.WriteLine(LeftClickedMenu.Name);
             }
         }
@@ -516,6 +538,7 @@ namespace InventoryManagement
                 dbManager.DeleteMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
                 inventory.Clear();
                 AddAllMaterialToInventoryList();
+                InventoryItemList.ItemsSource = inventory;
             }
             else if(selectedItems != null)
             {
@@ -526,6 +549,7 @@ namespace InventoryManagement
                 }
                 inventory.Clear();
                 AddAllMaterialToInventoryList();
+                InventoryItemList.ItemsSource = inventory;
             }
         }
 
@@ -535,27 +559,14 @@ namespace InventoryManagement
         // Method that can be used to initialize a tab when it's selected.
         private void OnTabChanged(Object sender, SelectionChangedEventArgs args)
         {
-            if (MainWindowTabInventory.IsSelected)
-            {
-                InitInventoryTab();
-            }
-            else if (MainWindowTabRecipies.IsSelected)
+            if (MainWindowTabRecipies.IsSelected)
             {
                 InitRecipiesTab();
             }
             else if (MainWindowTabShoppingList.IsSelected)
             {
                 InitShoppingListTab();
-            }
-            else if (MainWindowTabAdvancedSearch.IsSelected)
-            {
-                InitAdvancedSearchTab();
-            }            
-        }
-
-        private void InitInventoryTab()
-        {
-            //throw new NotImplementedException();
+            }          
         }
 
         private void InitRecipiesTab()
@@ -903,209 +914,23 @@ namespace InventoryManagement
 
         #endregion
 
-        #region Some functions - Advanced Search Tab
- 
-        private void GroupComboBox_Update()
-        {
-            object lastSelected = GroupComboBox.SelectedItem;
-
-            GroupComboBox.Items.Clear();
-            GroupComboBox.Items.Add("");
-
-            groups = new HashSet<Material>(dbManager.RetrieveAllMaterials());
-            IList<Material> groupList = groups.ToList();
-
-            for (int i = 1; i < groups.Count; i++)
-            {
-                GroupComboBox.Items.Add(groupList[i].GroupName);
-                for (int y = 1; y < i; y++)
-                {
-                    if (groupList[y].GroupName == groupList[i].GroupName)
-                    {
-                        GroupComboBox.Items.Remove(groupList[i].GroupName);
-                        break;
-                    }
-                }
-            }
-            GroupComboBox.SelectedItem = lastSelected;
-        }
-        
-        private void AdvancedSearchBox_Update()
-        {
-            searchRecipe.Clear();
-            searchMaterial.Clear();
-            AdvancedResultList.Items.Clear();
-
-            string symbol = AdvancedSearchComboBox.Text;
-            int amount = 0;
-            int.TryParse(QuantityTextBox.Text, out amount);
-
-            string group = "";
-            if (GroupComboBox.SelectedIndex != -1)
-            {
-                group = GroupComboBox.SelectedItem.ToString();
-            }
-
-            if (MaterialCheckBox.IsChecked == true)
-            {
-                searchMaterial = new ObservableCollection<Material>(dbManager.SearchMats(AdvancedSearchBox.Text,
-                      Material.Connection.INVENTORY, symbol, amount, group));
-                foreach (Material o in searchMaterial)
-                {
-                    AdvancedResultList.Items.Add(o);
-                }
-            }
-
-            if (RecipeCheckBox.IsChecked == true)
-            {
-               searchRecipe = new ObservableCollection<Recipe>(dbManager.SearchRecipes(AdvancedSearchBox.Text));
-               for (int i = 0; i < searchRecipe.Count; i++)
-               {
-                   AdvancedResultList.Items.Add(searchRecipe[i].Name);
-               }
-            }
-        }
-
-        private void AdvancedSearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-                AdvancedSearchBox_Update();
-        }
-        private void AdvancedSearchBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-        }
-        private void MaterialCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            RecipeCheckBox.IsChecked = false;
-            AdvancedSearchBox_Update();
-        }
-        private void MaterialCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            AdvancedSearchBox_Update();
-        }
-        private void RecipeCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            MaterialCheckBox.IsChecked = false;
-            AdvancedSearchBox_Update();
-        }
-        private void RecipeCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            AdvancedSearchBox_Update();
-        }
-        private void AdvancedSearchComboBox_DropDownClosed(object sender, EventArgs e)
-        {
-            AdvancedSearchBox_Update();
-        }
-        private void QuantityTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            AdvancedSearchBox_Update();
-        }
-        private void GroupComboBox_DropDownOpened(object sender, EventArgs e)
-        {
-            GroupComboBox_Update();
-        }
-        private void GroupComboBox_DropDownClosed(object sender, EventArgs e)
-        {
-            AdvancedSearchBox_Update();
-        }
-        #endregion
-
         #region main window search
 
-        private void GroupFilter_DropDownOpened(object sender, EventArgs e)
+       
+
+        private void GroupFilter_Update_Items()
         {
-            GroupFilter_Update();
-        }
-        private void GroupFilter_Update()
-        {
-            object lastSelected = GroupFilter.SelectedItem;
+            groups.Clear();
+            groups.Add("");
+            List<Material> all = dbManager.RetrieveAllMaterials();
 
-            GroupFilter.Items.Clear();
-            GroupFilter.Items.Add("");
+            foreach(Material mat in all)
+                groups.Add(mat.GroupName);
 
-            groups = new HashSet<Material>(dbManager.RetrieveAllMaterials());
-            IList<Material> groupList = groups.ToList();
-
-            for (int i = 1; i < groups.Count; i++)
-            {
-                GroupFilter.Items.Add(groupList[i].GroupName);
-                for (int y = 1; y < i; y++)
-                {
-                    if (groupList[y].GroupName == groupList[i].GroupName)
-                    {
-                        GroupFilter.Items.Remove(groupList[i].GroupName);
-                        break;
-                    }
-                }
-            }
-            GroupFilter.SelectedItem = lastSelected;
+            GroupFilter.ItemsSource = groups;
+            GroupFilter.Items.Refresh();
         }
 
-        private void SearchBox_Update()
-        {
-            searchRecipe.Clear();
-            searchMaterial.Clear();
-            InventoryItemList2.Items.Clear();
-
-            string symbol = QuantityFilterComboBox.Text;
-            int amount = 0;
-            int.TryParse(QuantityFilterTextBox.Text, out amount);
-
-            string group = "";
-            if (GroupFilter.SelectedIndex != -1)
-            {
-                group = GroupFilter.SelectedItem.ToString();
-            }
-
-            if (MCheckBox.IsChecked == true)
-            {
-                searchMaterial = new ObservableCollection<Material>(dbManager.SearchMats(SearchFilter.Text,
-                      Material.Connection.INVENTORY, symbol, amount, group));
-                foreach (Material o in searchMaterial)
-                {
-                    InventoryItemList2.Items.Add(o);
-                }
-            }
-
-            if (RCheckBox.IsChecked == true)
-            {
-                searchRecipe = new ObservableCollection<Recipe>(dbManager.SearchRecipes(SearchFilter.Text));
-                for (int i = 0; i < searchRecipe.Count; i++)
-                {
-                    InventoryItemList2.Items.Add(searchRecipe[i].Name);
-                }
-            }
-        }
-
-        private void MCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            RCheckBox.IsChecked = false;
-            SearchBox_Update();
-        }
-        private void MCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            SearchBox_Update();
-        }
-        private void RCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            MCheckBox.IsChecked = false;
-            SearchBox_Update();
-        }
-        private void RCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            SearchBox_Update();
-        }
-        private void QuantityFilterComboBox_DropDownClosed(object sender, EventArgs e)
-        {
-            SearchBox_Update();
-        }
-        private void QuantityFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            SearchBox_Update();
-        }
-        private void GroupFilter_DropDownClosed(object sender, EventArgs e)
-        {
-            SearchBox_Update();
-        }
         #endregion
 
         #region Menubar Functions
@@ -1175,19 +1000,24 @@ namespace InventoryManagement
         }
         #endregion
 
-       
+        private void QuantityFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateSearchResults();
+        }
 
-     
+        private void QuantityFilterComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            UpdateSearchResults();
+        }
 
-       
+        private void GroupFilter_DropDownOpened(object sender, EventArgs e)
+        {
+            GroupFilter_Update_Items();
+        }
 
-      
-
-       
-
-     
-
-   
-
+        private void GroupFilter_DropDownClosed(object sender, EventArgs e)
+        {
+            UpdateSearchResults();
+        }
     }
 }
