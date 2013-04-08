@@ -36,7 +36,7 @@ namespace InventoryManagement
 
         private ObservableCollection<ShoppingList> shopLists;
         private ObservableCollection<Material> selectedShopListContent;
-        private ObservableCollection<Recipe> recipes { get; set; }
+        private ObservableCollection<Recipe> recipesView { get; set; }
         private ObservableCollection<Material> recipesMaterials { get; set; }
 
         private ObservableCollection<Material> searchMaterial = new ObservableCollection<Material>();
@@ -560,8 +560,8 @@ namespace InventoryManagement
 
         private void InitRecipiesTab()
         {
-            recipes = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
-            RecipesView.ItemsSource = recipes;
+            recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
+            RecipesView.ItemsSource = recipesView;
         }
 
         private void InitShoppingListTab()
@@ -762,56 +762,97 @@ namespace InventoryManagement
         }
         #endregion
 
-        #region Recipes Tab
+        #region Recipies Tab
 
-        private void LoadRecipeView()
+        private void LoadRecipiesView()
         {
-            
+            recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
+            RecipesView.ItemsSource = recipesView;
+        }
+
+        private void LoadInstructions()
+        {
+            if ((RecipesView.SelectedItem) != null)
+            {
+                Recipe a = (Recipe)RecipesView.SelectedItem;
+                if (a == null || a.Instructions == null || a.Instructions == "")
+                {
+                    RecipeInstructions.Text = "";
+                }
+                else
+                    RecipeInstructions.Text = a.Instructions;
+            }
+            else
+                RecipeInstructions.Text = "";
         }
 
         private void LoadContentView()
         {
-            if (!(RecipesView.SelectedItem).Equals(null))
+            if ((RecipesView.SelectedItem) != null && ((Recipe)RecipesView.SelectedItem).Content.Count > 0)
             {
+                LoadRecipiesView();
                 Recipe a = (Recipe)RecipesView.SelectedItem;
-                RecipeInstructions.Text = a.Instructions;
+                if (a == null || a.Instructions == null || a.Instructions == "")
+                {
+                    RecipeInstructions.Text = "";
+                }
+                else
+                    RecipeInstructions.Text = a.Instructions;
                 if (a.Content.Count > 0)
                 {
                     recipesMaterials = new ObservableCollection<Material>(a.Content);
                     RecipesMaterials.ItemsSource = recipesMaterials;
                 }
-                LoadRecipeView();
+            }
+            else
+            {
+                RecipesMaterials.ItemsSource = null;
+                RecipesMaterials.Items.Clear();
             }
         }
+
+
 
         private void RecipesView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             LoadContentView();
+            LoadInstructions();
         }
 
         private void DeleteContent_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedItem != null)
+            if (RecipesMaterials.SelectedItem != null)
             {
                 dbManager.DeleteMaterialFromRecipe(((Recipe)RecipesView.SelectedItem).Name, (((Material)RecipesMaterials.SelectedItem).Name));
                 LoadContentView();
             }
         }
 
-        private void Delete_Click(object sender, RoutedEventArgs e)
+        private void DeleteRecipe_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedItem != null)
+            if (RecipesView.SelectedItem != null)
             {
                 dbManager.DeleteRecipeByName(((Recipe)RecipesView.SelectedItem).Name);
+                LoadRecipiesView();
                 LoadContentView();
+                LoadInstructions();
             }
         }
 
         private void CreateNewRecipeOkButton_Click(object sender, RoutedEventArgs e)
         {
-            dbManager.AddNewRecipe(NewRecipeName.Text, NewRecipeInstructions.Text);
-            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
-            AddNewRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
+            if (dbManager.RetrieveRecipeByName(NewRecipeName.Text).Count < 1)
+            {
+                dbManager.AddNewRecipe(NewRecipeName.Text, NewRecipeInstructions.Text);
+                AddNewRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+                AddNewRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
+                LoadRecipiesView();
+                LoadInstructions();
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Recipe already exists!");
+            }
         }
 
         private void CreateRecipe_Click(object sender, RoutedEventArgs e)
@@ -840,9 +881,25 @@ namespace InventoryManagement
 
         private void AddNewMaterialToRecipeOkButton_Click(object sender, RoutedEventArgs e)
         {
-            dbManager.AddMaterialToRecipe(((Recipe)RecipesView.SelectedItem).Name, AddNewMaterialToRecipeName.Text, Convert.ToDouble(AddNewMaterialToRecipeAmount.Text));
-            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
-            AddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
+            if (dbManager.RetrieveMaterialByName(AddNewMaterialToRecipeName.Text, Material.Connection.INVENTORY) == null)
+            {
+                System.Windows.MessageBox.Show("Material not found!");
+            }
+            else if (AddNewMaterialToRecipeAmount.Text == "")
+            {
+                System.Windows.MessageBox.Show("Amount of material is missing");
+            }
+            else if (Convert.ToDouble(AddNewMaterialToRecipeAmount.Text) <= 0)
+            {
+                System.Windows.MessageBox.Show("Amount of material cannot be zero!");
+            }
+            else
+            {
+                dbManager.AddMaterialToRecipe(((Recipe)RecipesView.SelectedItem).Name, AddNewMaterialToRecipeName.Text, Convert.ToDouble(AddNewMaterialToRecipeAmount.Text));
+                AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+                AddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
+                LoadContentView();
+            }
         }
 
         private void UseRecipeFromInventory_Click(object sender, RoutedEventArgs e)
