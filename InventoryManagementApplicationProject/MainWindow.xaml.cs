@@ -855,7 +855,7 @@ namespace InventoryManagement
             if (dbManager.RetrieveRecipeByName(NewRecipeName.Text).Count < 1)
             {
                 dbManager.AddNewRecipe(NewRecipeName.Text, NewRecipeInstructions.Text);
-                AddNewRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+                WindowBackgroundGrid.Visibility = System.Windows.Visibility.Hidden;
                 AddNewRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
                 LoadRecipiesView();
                 LoadInstructions();
@@ -870,15 +870,14 @@ namespace InventoryManagement
         {
             NewRecipeName.Text = "";
             NewRecipeInstructions.Text = "";
-            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Visible;
+            WindowBackgroundGrid.Visibility = System.Windows.Visibility.Visible;
             AddNewRecipeStackPanel.Visibility = System.Windows.Visibility.Visible;
         }
 
         private void CreateNewRecipeCanselButton_Click(object sender, RoutedEventArgs e)
         {
-            AddNewRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+            WindowBackgroundGrid.Visibility = System.Windows.Visibility.Hidden;
             AddNewRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
-            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
             AddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
         }
 
@@ -886,7 +885,7 @@ namespace InventoryManagement
         {
             AddNewMaterialToRecipeName.Text = "";
             AddNewMaterialToRecipeAmount.Text = "";
-            AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Visible;
+            WindowBackgroundGrid.Visibility = System.Windows.Visibility.Visible;
             AddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Visible;
         }
 
@@ -907,7 +906,7 @@ namespace InventoryManagement
             else
             {
                 dbManager.AddMaterialToRecipe(((Recipe)RecipesView.SelectedItem).Name, AddNewMaterialToRecipeName.Text, Convert.ToDouble(AddNewMaterialToRecipeAmount.Text));
-                AddNewMaterialToRecipeGrid.Visibility = System.Windows.Visibility.Hidden;
+                WindowBackgroundGrid.Visibility = System.Windows.Visibility.Hidden;
                 AddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
                 LoadContentView();
             }

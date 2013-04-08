@@ -236,7 +236,7 @@
                         <Separator Width="5"/>
                         <StackPanel>
                             <Label Content="Included materials:"/>
-                            <ListView Margin="0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" Height="350" Width="352" >
+                            <ListView Margin="0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" Height="350" Width="352" ScrollViewer.HorizontalScrollBarVisibility="Auto" >
                                 <ListView.ContextMenu>
                                     <ContextMenu HasDropShadow="True">
                                         <MenuItem x:Name="DeleteContent" Header="Delete" Click="DeleteContent_Click"/>
@@ -267,14 +267,15 @@
                         <Separator Width="5"/>
                         <StackPanel MinWidth="150">
                             <Label Content="Instructions:" Margin="5,0,0,0"/>
-                            <TextBlock x:Name="RecipeInstructions" Margin="5,0,0,0" Height="350" TextWrapping="Wrap" MaxHeight="0" MaxWidth="250" MinHeight="350"/>
+                            <TextBlock x:Name="RecipeInstructions" Margin="5,0,0,0" Height="350" TextWrapping="WrapWithOverflow" MaxHeight="0" MaxWidth="240" MinHeight="350" Width="240" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
                             <Button Content="Edit Instructions" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                         </StackPanel>
                     </StackPanel>
+                    <!-- Colored background grid for opening windows-->
+                    <Grid x:Name="WindowBackgroundGrid" Grid.ColumnSpan="2" Background="Black" Opacity="0.5" Visibility="Hidden"/>
                     <!-- Add new recipe view-->
-                    <Grid x:Name="AddNewRecipeGrid" Grid.ColumnSpan="2" Background="Black" Opacity="0.5" Visibility="Hidden"/>
                     <StackPanel x:Name="AddNewRecipeStackPanel" Background="White" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Label Content="Add new Recipe"/>
+                        <Label Content="Add new Recipe" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
                         <StackPanel>
                             <Label Content="Name:"/>
                             <TextBox x:Name="NewRecipeName" Width="300"/>
@@ -287,21 +288,25 @@
                             <Button x:Name="CreateNewRecipeCanselButton" Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
                         </StackPanel>
                     </StackPanel>
+                    <!-- Edit Instructions view-->
+                    <StackPanel x:Name="EditInstructionsStackPanel" Background="White" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Label Content="Edit instructions:"/>
+                        <TextBox x:Name="EditedInstructions" Width="300" Height="250" AcceptsReturn="True" AcceptsTab="True" TextWrapping="WrapWithOverflow"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Ok" Click="CreateNewRecipeOkButton_Click"/>
+                            <Separator Width="5"/>
+                            <Button Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
+                        </StackPanel>
+                    </StackPanel>
                     <!-- Add new material to recipe view-->
-                    <Grid x:Name="AddNewMaterialToRecipeGrid" Grid.ColumnSpan="2" Background="Black" Opacity="0.5" Visibility="Hidden"/>
-                    <StackPanel x:Name="AddNewMaterialToRecipeStackPanel" Background="White" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Label Content="Add new Recipe"/>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="Name:"/>
-                            <TextBox x:Name="AddNewMaterialToRecipeName" Width="100"/>
-                        </StackPanel>
-                        <Separator Height="5"/>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="Amount:"/>
-                            <TextBox x:Name="AddNewMaterialToRecipeAmount" Width="100"/>
-                        </StackPanel>
-                        <Separator Height="5"/>
-                        <StackPanel Orientation="Horizontal">
+                    <StackPanel x:Name="AddNewMaterialToRecipeStackPanel" Background="White" Visibility="hidden" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Label Content="Add new Recipe" FontSize="14" FontWeight="Bold"/>
+                        <Label Content="Name:" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                        <TextBox x:Name="AddNewMaterialToRecipeName" Width="100"/>
+                        <Label Content="Amount:" HorizontalAlignment="Center"/>
+                        <TextBox x:Name="AddNewMaterialToRecipeAmount" Width="100"/>
+                        <Separator Height="10"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button x:Name="AddNewMaterialToRecipeOkButton" Content="Ok" Click="AddNewMaterialToRecipeOkButton_Click"/>
                             <Separator Width="5"/>
                             <Button x:Name="AddNewMaterialToRecipeCanselButton" Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
