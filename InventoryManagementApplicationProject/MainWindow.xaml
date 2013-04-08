@@ -207,7 +207,11 @@
                     <StackPanel Orientation="Horizontal">
                         <StackPanel Width="160">
                             <Label Content="Recipe:" Margin="5,0"/>
-                            <TextBox x:Name="SearchRecipeName" Margin="5,0" Height="20"/>
+                            <TextBox x:Name="SearchRecipeName" Margin="5,0" Height="20" TextChanged="SearchRecipeName_TextChanged"/>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="SearchBasedOnInventoryCheckbox" VerticalAlignment="Center" Click="SearchBasedOnInventoryCheckbox_Click"/>
+                                <Label Content="Search based on inventory"/>
+                            </StackPanel>
                             <ListView Margin="5,5,5,0" x:Name="RecipesView" ItemsSource="{Binding recipes}" SelectionChanged="RecipesView_SelectionChanged" Height="325" Width="150">
                                 <ListView.ContextMenu>
                                     <ContextMenu HasDropShadow="True">
@@ -236,7 +240,8 @@
                         <Separator Width="5"/>
                         <StackPanel>
                             <Label Content="Included materials:"/>
-                            <ListView Margin="0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" Height="350" Width="352" ScrollViewer.HorizontalScrollBarVisibility="Auto" >
+                            <TextBox x:Name="SearchRecipeByMaterialName" Margin="0" Height="20" TextChanged="SearchRecipeName_TextChanged"/>
+                            <ListView Margin="0,5,0,0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" Height="325" Width="352" ScrollViewer.HorizontalScrollBarVisibility="Auto" >
                                 <ListView.ContextMenu>
                                     <ContextMenu HasDropShadow="True">
                                         <MenuItem x:Name="DeleteContent" Header="Delete" Click="DeleteContent_Click"/>

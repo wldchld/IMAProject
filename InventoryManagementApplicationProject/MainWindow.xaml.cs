@@ -777,8 +777,26 @@ namespace InventoryManagement
 
         private void LoadRecipiesView()
         {
-            recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
-            RecipesView.ItemsSource = recipesView;
+            if (SearchBasedOnInventoryCheckbox.IsChecked == true)
+            {
+                recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveRecipeByMaterialList(dbManager.RetrieveAllMaterials()));
+                RecipesView.ItemsSource = recipesView;
+            }
+            else if ((SearchRecipeName.Text == null || SearchRecipeName.Text == "") && (SearchRecipeByMaterialName.Text == null || SearchRecipeByMaterialName.Text == ""))
+            {
+                recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
+                RecipesView.ItemsSource = recipesView;
+            }
+            else if (SearchRecipeByMaterialName.Text == null || SearchRecipeByMaterialName.Text == "")
+            {
+                recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveRecipeByNamePart(SearchRecipeName.Text));
+                RecipesView.ItemsSource = recipesView;
+            }
+            else //if (SearchRecipeName.Text == null || SearchRecipeName.Text == "") // Searches recipes by materials which they consist of
+            {
+                recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveRecipeByMaterialNamePart(SearchRecipeByMaterialName.Text));
+                RecipesView.ItemsSource = recipesView;
+            }
         }
 
         private void LoadInstructions()
@@ -873,6 +891,16 @@ namespace InventoryManagement
         {
             LoadContentView();
             LoadInstructions();
+        }
+
+        private void SearchRecipeName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            LoadRecipiesView();
+        }
+
+        private void SearchBasedOnInventoryCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+            LoadRecipiesView();
         }
 
         private void DeleteContent_Click(object sender, RoutedEventArgs e)
