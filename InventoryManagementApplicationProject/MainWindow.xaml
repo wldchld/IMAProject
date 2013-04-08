@@ -37,9 +37,9 @@
                     <StackPanel x:Name="InventoryListPanel" Grid.Column="0" Grid.ColumnSpan="9">
                         <ComboBox x:Name="GroupFilter" DropDownOpened="GroupFilter_DropDownOpened" DropDownClosed="GroupFilter_DropDownClosed"/>
                         <TextBox x:Name="SearchFilter" TextAlignment="Left" Foreground="Black" TextChanged="SearchFilter_TextChanged" Margin="0,0,132,0" />
-                        <Separator Height="5"></Separator>
+                        <Separator Height="5"/>
                         <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="400" SelectionChanged="InventoryItemList_SelectionChanged" Padding="1"
-                        	ContextMenuOpening="InventoryItemList_ContextMenuOpening" Height="414" Margin="0,0,2,0" RenderTransformOrigin="0.5,0.5">
+        					ContextMenuOpening="InventoryItemList_ContextMenuOpening" Height="414" Margin="0,0,2,0" RenderTransformOrigin="0.5,0.5">
                             <ListView.ContextMenu>
                                 <ContextMenu x:Name="LeftClickedMenu">
                                     <MenuItem x:Name="addToShopListMenuItem" Header="Add to existing shopping list" ItemsSource="{Binding ShopLists}" Click="Add_To_Existing_Shopping_List" />
@@ -62,7 +62,7 @@
                     </StackPanel>
 
                     <StackPanel x:Name="InventoryItemPanel" Grid.Column="9">
-                        <Label Content="Info" Height="41" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28"></Label>
+                        <Label Content="Info" Height="41" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28"/>
                         <Separator Height="12" RenderTransformOrigin="0.5,0.5" >
                             <Separator.RenderTransform>
                                 <TransformGroup>
@@ -154,10 +154,10 @@
                                 <StackPanel x:Name="ItemUnitEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemUnitHeaderEditDialog" Content="Unit:" MinWidth="125"/>
                                     <ComboBox x:Name="ItemUnitComboBox" Text="ItemUnitComboBox" Width="100" SelectedItem="{Binding ComboBoxAddEditUnit}">
-                                        <ComboBoxItem x:Name="pcs">pcs</ComboBoxItem>
-                                        <ComboBoxItem x:Name="g">g</ComboBoxItem>
-                                        <ComboBoxItem x:Name="l">l</ComboBoxItem>
-                                        <ComboBoxItem x:Name="m">m</ComboBoxItem>
+                                        <ComboBoxItem x:Name="pcs" Content="pcs"/>
+                                        <ComboBoxItem x:Name="g" Content="g"/>
+                                        <ComboBoxItem x:Name="l" Content="l"/>
+                                        <ComboBoxItem x:Name="m" Content="m"/>
                                     </ComboBox>
                                 </StackPanel>
                                 <!--
@@ -173,8 +173,8 @@
                                 <StackPanel x:Name="ItemIsInfiniteEditDialog" Orientation="Horizontal">
                                     <Label x:Name="ItemIsInfiniteHeaderEditDialog" Content="Infinite:" MinWidth="125"/>
                                     <ComboBox x:Name="ItemIsInfiniteComboBox" Text="ItemIsInfiniteComboBox" Width="100" SelectedItem="{Binding ComboBoxAddEditInfinite}">
-                                        <ComboBoxItem x:Name="yes">yes</ComboBoxItem>
-                                        <ComboBoxItem x:Name="no">no</ComboBoxItem>
+                                        <ComboBoxItem x:Name="yes" Content="yes"/>
+                                        <ComboBoxItem x:Name="no" Content="no"/>
                                     </ComboBox>
                                 </StackPanel>
 
@@ -199,30 +199,23 @@
                         <ListBoxItem Content="≤"/>
                     </ComboBox>
                     <TextBox x:Name="QuantityFilterTextBox" Height="23" Margin="22,22,5,0" TextWrapping="Wrap" VerticalAlignment="Top" 
-                             TextChanged="QuantityFilterTextBox_TextChanged" RenderTransformOrigin="0.667,0.478" Grid.Column="8"/>
+        				TextChanged="QuantityFilterTextBox_TextChanged" RenderTransformOrigin="0.667,0.478" Grid.Column="8"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="MainWindowTabRecipies" Header="Recipies">
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="94*"/>
-                        <ColumnDefinition Width="27*"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
-                        <Label Content="Recipe" Width="206"/>
-                        <Label Content="Content" Width="352" />
-                        <Label Content="Instructions"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" >
-                        <StackPanel>
-                            <ListView Width="200" Margin="0,29,0,0" x:Name="RecipesView" ItemsSource="{Binding recipes}" SelectionChanged="RecipesView_SelectionChanged">
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Width="160">
+                            <Label Content="Recipe:" Margin="5,0"/>
+                            <TextBox x:Name="SearchRecipeName" Margin="5,0" Height="20"/>
+                            <ListView Margin="5,5,5,0" x:Name="RecipesView" ItemsSource="{Binding recipes}" SelectionChanged="RecipesView_SelectionChanged" Height="325" Width="150">
                                 <ListView.ContextMenu>
                                     <ContextMenu HasDropShadow="True">
                                         <MenuItem x:Name="DeleteRecipe" Header="Delete" Click="DeleteRecipe_Click"/>
                                         <MenuItem x:Name="CreateRecipe" Header="Create new recipe" Click="CreateRecipe_Click"/>
                                         <MenuItem x:Name="AddMaterialToRecipe" Header="Add material to recipe" Click="AddMaterialToRecipe_Click"/>
                                         <MenuItem x:Name="UseRecipeFromInventory" Header="Use recipe from inventory" Click="UseRecipeFromInventory_Click"/>
-                                    <MenuItem x:Name="Print" Header="Print" Click="Print_Recipe_Click"/>
+                                        <MenuItem x:Name="Print" Header="Print" Click="Print_Recipe_Click"/>
                                     </ContextMenu>
                                 </ListView.ContextMenu>
                                 <ListView.View>
@@ -236,56 +229,67 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
-                            <Button Name="UseRecipeFromInventoryButton" Content="Use recipe from inventory"/>
+                            <Button Content="Use recipe from inventory" VerticalAlignment="Bottom" Margin="5,5,5,0"/>
+                            <Button Content="Create new recipe" Margin="5,5,5,0"/>
+                            <Button Content="Edit Recipe" Margin="5,5,5,0"/>
                         </StackPanel>
                         <Separator Width="5"/>
-                        <ListView Width="350" Margin="0,29,0,0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" >
-                            <ListView.ContextMenu>
-                                <ContextMenu HasDropShadow="True">
-                                    <MenuItem x:Name="DeleteContent" Header="Delete" Click="DeleteContent_Click"/>
-                                </ContextMenu>
-                            </ListView.ContextMenu>
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Name"  DisplayMemberBinding="{Binding Name, Mode=TwoWay}" Width="250"/>
-                                    <GridViewColumn Header="Amount"  DisplayMemberBinding="{Binding Amount, Mode=TwoWay}" Width="Auto"/>
-                                    <GridViewColumn Header="Unit"  DisplayMemberBinding="{Binding DisplayUnit, Mode=OneWay}" Width="45"/>
-                                </GridView>
-                            </ListView.View>
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock  Text="{Binding Material, Mode=TwoWay}"/>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                        <Separator Width="5"/>
-                        <StackPanel Width="286">
-                            <TextBlock x:Name="RecipeInstructions" Margin="0,29,0,0" Height="216"/>
-                            <StackPanel x:Name="AmountGrid" Orientation="Horizontal">
-                                <Label Content="Amount:"/>
-                                <TextBlock x:Name="RecipeMaterialAmount"/>
+                        <StackPanel>
+                            <Label Content="Included materials:"/>
+                            <ListView Margin="0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" Height="350" Width="352" >
+                                <ListView.ContextMenu>
+                                    <ContextMenu HasDropShadow="True">
+                                        <MenuItem x:Name="DeleteContent" Header="Delete" Click="DeleteContent_Click"/>
+                                    </ContextMenu>
+                                </ListView.ContextMenu>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Name"  DisplayMemberBinding="{Binding Name, Mode=TwoWay}" Width="250"/>
+                                        <GridViewColumn Header="Amount"  DisplayMemberBinding="{Binding Amount, Mode=TwoWay}" Width="Auto"/>
+                                        <GridViewColumn Header="Unit"  DisplayMemberBinding="{Binding DisplayUnit, Mode=OneWay}" Width="45"/>
+                                    </GridView>
+                                </ListView.View>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock  Text="{Binding Material, Mode=TwoWay}"/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                                <Button Content="Add material to recipe" Margin="0,5,0,0" HorizontalAlignment="Center" MinWidth="151"/>
+                                <Button Content="Delete material from Recipe" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                            <Label Content="Amount:" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                            <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Center">
+                                <Button Content="-" Height="22" Width="22"/>
+                                <TextBox x:Name="RecipeMaterialAmount" Margin="5,0" MinWidth="22" Height="22" TextAlignment="Center"/>
+                                <Button Content="+" Width="22" Height="22"/>
                             </StackPanel>
+                        </StackPanel>
+                        <Separator Width="5"/>
+                        <StackPanel MinWidth="150">
+                            <Label Content="Instructions:" Margin="5,0,0,0"/>
+                            <TextBlock x:Name="RecipeInstructions" Margin="5,0,0,0" Height="350" TextWrapping="Wrap" MaxHeight="0" MaxWidth="250" MinHeight="350"/>
+                            <Button Content="Edit Instructions" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                         </StackPanel>
                     </StackPanel>
                     <!-- Add new recipe view-->
-                    <Grid Name="AddNewRecipeGrid" Grid.ColumnSpan="2" Background="Black" Opacity="0.5" Visibility="Hidden"/>
-                    <StackPanel Name="AddNewRecipeStackPanel" Background="White" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Label Content="Add new Recipe"/>
-                            <StackPanel>
-                                <Label Content="Name:"/>
-                                <TextBox x:Name="NewRecipeName" Width="300"/>
-                            </StackPanel>
-                            <Label Content="Instructions:"/>
-                            <TextBox x:Name="NewRecipeInstructions" Width="300" Height="250"/>
-                            <StackPanel Orientation="Horizontal">
-                                <Button x:Name="CreateNewRecipeOkButton" Content="Ok" Click="CreateNewRecipeOkButton_Click"/>
-                                <Separator Width="5"/>
-                                <Button x:Name="CreateNewRecipeCanselButton" Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
-                            </StackPanel>
+                    <Grid x:Name="AddNewRecipeGrid" Grid.ColumnSpan="2" Background="Black" Opacity="0.5" Visibility="Hidden"/>
+                    <StackPanel x:Name="AddNewRecipeStackPanel" Background="White" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Label Content="Add new Recipe"/>
+                        <StackPanel>
+                            <Label Content="Name:"/>
+                            <TextBox x:Name="NewRecipeName" Width="300"/>
                         </StackPanel>
+                        <Label Content="Instructions:"/>
+                        <TextBox x:Name="NewRecipeInstructions" Width="300" Height="250" AcceptsReturn="True" AcceptsTab="True" TextWrapping="WrapWithOverflow"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="CreateNewRecipeOkButton" Content="Ok" Click="CreateNewRecipeOkButton_Click"/>
+                            <Separator Width="5"/>
+                            <Button x:Name="CreateNewRecipeCanselButton" Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
+                        </StackPanel>
+                    </StackPanel>
                     <!-- Add new material to recipe view-->
-                    <Grid Name="AddNewMaterialToRecipeGrid" Grid.ColumnSpan="2" Background="Black" Opacity="0.5" Visibility="Hidden"/>
-                    <StackPanel Name="AddNewMaterialToRecipeStackPanel" Background="White" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid x:Name="AddNewMaterialToRecipeGrid" Grid.ColumnSpan="2" Background="Black" Opacity="0.5" Visibility="Hidden"/>
+                    <StackPanel x:Name="AddNewMaterialToRecipeStackPanel" Background="White" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Label Content="Add new Recipe"/>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Name:"/>
@@ -302,9 +306,9 @@
                             <Separator Width="5"/>
                             <Button x:Name="AddNewMaterialToRecipeCanselButton" Content="Cansel" Click="CreateNewRecipeCanselButton_Click"/>
                         </StackPanel>
-                        </StackPanel>
+                    </StackPanel>
                 </Grid>
-                
+
 
             </TabItem>
             <TabItem x:Name="MainWindowTabShoppingList" Header="Shopping list">
