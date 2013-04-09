@@ -96,7 +96,7 @@ namespace InventoryManagement
         {
             List<Material> matching = new List<Material>();
             Console.WriteLine(SearchFilter.Text);
-            if (SearchFilter.Text.Length < 1 && QuantityFilterTextBox.Text.Length < 1 && GroupFilter.SelectedIndex == 0)
+            if (SearchFilter.Text.Length < 1 && QuantityFilterTextBox.Text.Length < 1 && GroupFilter.SelectedIndex < 0)
             {
                 inventory.Clear();
                 AddAllMaterialToInventoryList();
@@ -126,7 +126,7 @@ namespace InventoryManagement
                             else if (QuantityFilterComboBox.SelectedIndex == 5 && mat.Amount > amount)
                                 add = false;
                         }
-                        if (GroupFilter.SelectedIndex != 0 && (string)GroupFilter.SelectedItem != mat.GroupName)
+                        if (GroupFilter.SelectedIndex > 0 && (string)GroupFilter.SelectedItem != mat.GroupName)
                             add = false;
                         if(add)
                             matching.Add(inventory[i]);
