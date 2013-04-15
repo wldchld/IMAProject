@@ -459,7 +459,9 @@ namespace InventoryManagement
             }
         }
 
-        // Ville, onko kenties kesken? :)
+        /// <summary>
+        /// Opens dialog for Adding material to Recipe in inventory Tab
+        /// </summary>
         private void Add_RecipeMenuOpening(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
@@ -471,6 +473,10 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Accepting adding selected material to Recipe in inventory Tab
+        /// Opens window for recipes name and amount
+        /// </summary>
         private void Add_RecipeMenuOkButton(object sender, RoutedEventArgs e)
         {
             if (dbManager.RetrieveRecipeByName(InventoryAddNewMaterialToRecipeName.Text) == null)
@@ -487,6 +493,9 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Cancelling adding selected material to Recipe in inventory Tab
+        /// </summary>
         private void Add_RecipeMenuCancelButton(object sender, RoutedEventArgs e)
         {
             InventoryAddNewMaterialToRecipeName.Text = "";
@@ -732,13 +741,17 @@ namespace InventoryManagement
 
         #region Recipies Tab - functions
 
-        // Loads View which shows recipes
+        /// <summary>
+        /// Loads View for recipes using given search parameters
+        /// </summary>
         private void LoadRecipiesView()
         {
+            // Finds all recipes or recipes which material are found in inventory
             if (SearchBasedOnInventoryCheckbox.IsChecked == true)
                 recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveRecipeByMaterialList(dbManager.RetrieveAllMaterials()));
             else
                 recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
+            //Decludes recipes which do not suit for recipe name search
             if (!(SearchRecipeName.Text == null || SearchRecipeName.Text == ""))
             {
                 for (int i = 0; i < recipesView.Count; i++)
@@ -748,6 +761,7 @@ namespace InventoryManagement
                         i--;
                     }
             }
+            //Decludes recipes which do not suit for material name search
             if (!(SearchRecipeByMaterialName.Text == null || SearchRecipeByMaterialName.Text == ""))
             {
 
@@ -769,6 +783,9 @@ namespace InventoryManagement
             RecipesView.ItemsSource = recipesView; 
         }
 
+        /// <summary>
+        /// Loads textblock for recipes instructions
+        /// </summary>
         private void LoadInstructions()
         {
             if ((RecipesView.SelectedItem) != null)
@@ -783,6 +800,9 @@ namespace InventoryManagement
                 RecipeInstructions.Text = "";
         }
 
+        /// <summary>
+        /// Loads View for materials used in recipe
+        /// </summary>
         private void LoadContentView()
         {
             if ((RecipesView.SelectedItem) != null && ((Recipe)RecipesView.SelectedItem).Content.Count > 0)
@@ -806,6 +826,9 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Deletes selected material from recipe
+        /// </summary>
         private void DeleteRecipesMaterial()
         {
             if (RecipesMaterials.SelectedItem != null)
@@ -815,6 +838,9 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// ReLoads whole Recipies tab
+        /// </summary>
         private void UpdateRecipiesTab()
         {
             LoadRecipiesView();
@@ -822,6 +848,9 @@ namespace InventoryManagement
             LoadContentView();
         }
 
+        /// <summary>
+        /// Deletes selected recipe from database
+        /// </summary>
         private void DeleteRecipe()
         {
             if (RecipesView.SelectedItem != null)
@@ -833,6 +862,9 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Uses materials for selected receipt from inventory
+        /// </summary>
         private void UseRecipeFromInventory(object sender, RoutedEventArgs e)
         {
             Recipe r = (Recipe)RecipesView.SelectedItem;
@@ -879,6 +911,9 @@ namespace InventoryManagement
             DeleteRecipe();
         }
 
+        /// <summary>
+        /// Approves creating new receipt from given information
+        /// </summary>
         private void CreateNewRecipeOkButton_Click(object sender, RoutedEventArgs e)
         {
             if (dbManager.RetrieveRecipeByName(NewRecipeName.Text).Count < 1)
@@ -893,6 +928,9 @@ namespace InventoryManagement
                 System.Windows.MessageBox.Show("Recipe already exists!");
         }
 
+        /// <summary>
+        /// Starts dialog for creating new Recipe
+        /// </summary>
         private void CreateRecipe_Click(object sender, RoutedEventArgs e)
         {
             NewRecipeName.Text = "";
@@ -901,6 +939,9 @@ namespace InventoryManagement
             AddNewRecipeStackPanel.Visibility = System.Windows.Visibility.Visible;
         }
 
+        /// <summary>
+        /// Cancels creating new recipe
+        /// </summary>
         private void CreateNewRecipeCanselButton_Click(object sender, RoutedEventArgs e)
         {
             WindowBackgroundGrid.Visibility = System.Windows.Visibility.Hidden;
@@ -908,6 +949,9 @@ namespace InventoryManagement
             AddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
         }
 
+        /// <summary>
+        /// Starts dialog for adding new material to selected recipe.
+        /// </summary>
         private void AddMaterialToRecipe_Click(object sender, RoutedEventArgs e)
         {
             AddNewMaterialToRecipeName.Text = "";
@@ -916,6 +960,9 @@ namespace InventoryManagement
             AddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Visible;
         }
 
+        /// <summary>
+        /// Approves adding new material to selected recipe with given information.
+        /// </summary>
         private void AddNewMaterialToRecipeOkButton_Click(object sender, RoutedEventArgs e)
         {
             if (dbManager.RetrieveMaterialByName(AddNewMaterialToRecipeName.Text, Material.Connection.INVENTORY) == null)
@@ -933,6 +980,9 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Starts dialog for editing selected recipes instructions.
+        /// </summary>
         private void OpenEditInstructionsDialog(object sender, RoutedEventArgs e)
         {
             EditedInstructions.Text = RecipeInstructions.Text;
@@ -940,6 +990,9 @@ namespace InventoryManagement
             EditInstructionsStackPanel.Visibility = System.Windows.Visibility.Visible;
         }
 
+        /// <summary>
+        /// Approves editing recipes instructions.
+        /// </summary>
         private void EditInstructionsDialogOkButton(object sender, RoutedEventArgs e)
         {
             Recipe a = (dbManager.RetrieveRecipeByName(((Recipe)RecipesView.SelectedItem).Name)).First();
@@ -950,6 +1003,9 @@ namespace InventoryManagement
             LoadInstructions();
         }
 
+        /// <summary>
+        /// Cancels editing recipes instructions.
+        /// </summary>
         private void EditInstructionsDialogCancelButton(object sender, RoutedEventArgs e)
         {
             WindowBackgroundGrid.Visibility = System.Windows.Visibility.Hidden;
