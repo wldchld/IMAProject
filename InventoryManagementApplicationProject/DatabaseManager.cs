@@ -475,6 +475,28 @@ namespace InventoryManagement
             return recipes;
         }
 
+        public IList<Recipe> SearchRecipies(IList<Material> searchMaterials, string recipeName, string materialName)
+        {
+            IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
+            {
+                int materialsFound = 0;
+                for (int i = 0; i < searchMaterials.Count; i++)
+                {
+                    for (int a = 0; a < recipe.Content.Count; a++)
+                    {
+                        if (recipe.Content[a].Name.ToUpper() == searchMaterials[i].Name.ToUpper() && recipe.Content[a].Amount <= searchMaterials[i].Amount)
+                        {
+                            
+                            materialsFound++;
+                            a = recipe.Content.Count;
+                        }
+                    }
+                }
+                return materialsFound >= recipe.Content.Count;
+            });
+            return recipes;
+        }
+
         // Retrieves recipes which can be crafted from the materials in the list
         public IList<Recipe> RetrieveRecipeByMaterialList(IList<Material> materials)
         {

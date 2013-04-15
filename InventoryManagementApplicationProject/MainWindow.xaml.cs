@@ -534,8 +534,7 @@ namespace InventoryManagement
 
         private void InitRecipiesTab()
         {
-            recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
-            RecipesView.ItemsSource = recipesView;
+            LoadRecipiesView();
         }
 
         private void InitShoppingListTab()
@@ -706,25 +705,37 @@ namespace InventoryManagement
         private void LoadRecipiesView()
         {
             if (SearchBasedOnInventoryCheckbox.IsChecked == true)
-            {
                 recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveRecipeByMaterialList(dbManager.RetrieveAllMaterials()));
-                RecipesView.ItemsSource = recipesView;
-            }
-            else if ((SearchRecipeName.Text == null || SearchRecipeName.Text == "") && (SearchRecipeByMaterialName.Text == null || SearchRecipeByMaterialName.Text == ""))
-            {
+            else
                 recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
-                RecipesView.ItemsSource = recipesView;
-            }
-            else if (SearchRecipeByMaterialName.Text == null || SearchRecipeByMaterialName.Text == "")
+            if (!(SearchRecipeName.Text == null || SearchRecipeName.Text == ""))
             {
-                recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveRecipeByNamePart(SearchRecipeName.Text));
-                RecipesView.ItemsSource = recipesView;
+                for (int i = 0; i < recipesView.Count; i++)
+                    if (!recipesView[i].Name.ToUpper().Contains(SearchRecipeName.Text.ToUpper()))
+                    {
+                        recipesView.RemoveAt(i);
+                        i--;
+                    }
             }
-            else //if (SearchRecipeName.Text == null || SearchRecipeName.Text == "") // Searches recipes by materials which they consist of
+            if (!(SearchRecipeByMaterialName.Text == null || SearchRecipeByMaterialName.Text == ""))
             {
-                recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveRecipeByMaterialNamePart(SearchRecipeByMaterialName.Text));
-                RecipesView.ItemsSource = recipesView;
+
+                for (int a = 0; a < recipesView.Count; a++)
+                {
+                    bool deleteRecipe = true;
+                    for (int i = 0; i < recipesView[a].Content.Count; i++)
+                        if (recipesView[a].Content[i].Name.ToUpper().Contains(SearchRecipeByMaterialName.Text.ToUpper()))
+                        {
+                            deleteRecipe = false;
+                        }
+                    if (deleteRecipe)
+                    {
+                        recipesView.RemoveAt(a);
+                        a--;
+                    }
+                }
             }
+            RecipesView.ItemsSource = recipesView; 
         }
 
         private void LoadInstructions()
@@ -745,16 +756,16 @@ namespace InventoryManagement
         {
             if ((RecipesView.SelectedItem) != null && ((Recipe)RecipesView.SelectedItem).Content.Count > 0)
             {
-                LoadRecipiesView();
                 Recipe a = (Recipe)RecipesView.SelectedItem;
-                if (a == null || a.Instructions == null || a.Instructions == "")
-                    RecipeInstructions.Text = "";
-                else
-                    RecipeInstructions.Text = a.Instructions;
-                if (a.Content.Count > 0)
+                if (a != null && a.Content.Count > 0)
                 {
                     recipesMaterials = new ObservableCollection<Material>(a.Content);
                     RecipesMaterials.ItemsSource = recipesMaterials;
+                }
+                else
+                {
+                    RecipesMaterials.ItemsSource = null;
+                    RecipesMaterials.Items.Clear();
                 }
             }
             else

@@ -241,7 +241,7 @@
                         <StackPanel>
                             <Label Content="Included materials:"/>
                             <TextBox x:Name="SearchRecipeByMaterialName" Margin="0" Height="20" TextChanged="SearchRecipeName_TextChanged"/>
-                            <ListView Margin="0,5,0,0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" Height="325" Width="352" ScrollViewer.HorizontalScrollBarVisibility="Auto" >
+                            <ListView Margin="0,5,0,0" x:Name ="RecipesMaterials" ItemsSource="{Binding recipes}" Height="350" Width="352" ScrollViewer.HorizontalScrollBarVisibility="Auto" >
                                 <ListView.ContextMenu>
                                     <ContextMenu HasDropShadow="True">
                                         <MenuItem x:Name="DeleteContent" Header="Delete" Click="DeleteContent_Click"/>
@@ -262,12 +262,7 @@
                             </ListView>
                                 <Button Content="Add material to recipe" Margin="0,5,0,0" HorizontalAlignment="Center" MinWidth="151" Click="AddMaterialToRecipe_Click"/>
                                 <Button Content="Delete material from Recipe" Margin="0,5,0,0" HorizontalAlignment="Center" Click="DeleteContent_Click"/>
-                            <Label Content="Amount:" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                            <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Center">
-                                <Button Content="-" Height="22" Width="22"/>
-                                <TextBox x:Name="RecipeMaterialAmount" Margin="5,0" MinWidth="22" Height="22" TextAlignment="Center"/>
-                                <Button Content="+" Width="22" Height="22"/>
-                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Center"/>
                         </StackPanel>
                         <Separator Width="5"/>
                         <StackPanel MinWidth="150">
