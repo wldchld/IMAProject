@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing.Printing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.VisualBasic;
 using System.ComponentModel;
 
@@ -55,14 +46,13 @@ namespace InventoryManagement
 
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
         {
-            //Added because of unresolved exception, no material found from database, works when there is data in database
-            //dbManager.ReCreateDB();
-            //dbManager.CreateSampleData();
-
             AddAllMaterialToInventoryList();
             shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
         }
 
+        /// <summary>
+        /// Gets the materials from the database and adds them to the collection used in the Inventory tab.
+        /// </summary>
         private void AddAllMaterialToInventoryList()
         {
             List<Material> allItems = dbManager.RetrieveAllMaterials();
@@ -86,12 +76,40 @@ namespace InventoryManagement
         }
         #endregion
 
-        #region Search functions - Inventory Tab
-        private void SearchFilter_TextChanged(object sender, TextChangedEventArgs e)
+        #region Search functions
+
+        private void GroupFilter_DropDownOpened(object sender, EventArgs e)
+        {
+            GroupFilter_Update_Items();
+        }
+
+        /// <summary>
+        /// Gets all the different groups and populates the group filter drop-down-menu with them.
+        /// </summary>
+        private void GroupFilter_Update_Items()
+        {
+            groups.Clear();
+            groups.Add("");
+            List<Material> all = dbManager.RetrieveAllMaterials();
+
+            foreach (Material mat in all)
+                groups.Add(mat.GroupName);
+
+            GroupFilter.ItemsSource = groups;
+            GroupFilter.Items.Refresh();
+        }
+
+        /// <summary>
+        /// Shared by many different events as the outcome is always the same.
+        /// </summary>
+        private void Search_Conditions_Changed(object sender, EventArgs e)
         {
             UpdateSearchResults();
         }
 
+        /// <summary>
+        /// When the search conditions have changed, the results are updated here.
+        /// </summary>
         private void UpdateSearchResults()
         {
             List<Material> matching = new List<Material>();
@@ -135,7 +153,6 @@ namespace InventoryManagement
                 }
             }
         }
-
         #endregion
 
         #region Edit single material - Inventory Tab
@@ -267,45 +284,25 @@ namespace InventoryManagement
                     {
                         tempAmount = Convert.ToInt32(ItemQuantityContentEditDialog.Text);
                     }
-                    catch
-                    {
-
-                    }
+                    catch {}
                     selectedItem.Amount = tempAmount;
 
                     if (ComboBoxAddEditUnit.Name == "g")
-                    {
                         selectedItem.DisplayUnit = Unit.G;
-                    }
                     else if (ComboBoxAddEditUnit.Name == "l")
-                    {
                         selectedItem.DisplayUnit = Unit.L;
-                    }
                     else if (ComboBoxAddEditUnit.Name == "m")
-                    {
                         selectedItem.DisplayUnit = Unit.M;
-                    }
                     else if (ComboBoxAddEditUnit.Name == "pcs")
-                    {
                         selectedItem.DisplayUnit = Unit.PCS;
-                    }
 
-                    if (ComboBoxAddEditInfinite.Name == "yes")
-                    {
-                        selectedItem.Infinite = true;
-                    }
-                    else if (ComboBoxAddEditInfinite.Name == "no")
-                    {
-                        selectedItem.Infinite = false;
-                    }
+                    selectedItem.Infinite = ComboBoxAddEditInfinite.Name == "yes" ? true : false;
 
                     selectedItem.LastModified = DateTime.Now;
 
                     var picker = ItemBestBefore.FindName("ItemBestBeforePicker") as DatePicker;
                     if (picker.SelectedDate.HasValue)
-                    {
                         selectedItem.BestBefore = picker.SelectedDate.Value;
-                    }
 
                     dbManager.UpdateMaterial(tempItem, selectedItem);
                     UpdateInventoryItemPanel();
@@ -315,9 +312,8 @@ namespace InventoryManagement
                     var newItem = new Material();
 
                     if (ItemNameContentEditDialog.Text == "")
-                    {
                         throw new Exception("Item name cannot be null.");
-                    }
+
                     newItem.Name = ItemNameContentEditDialog.Text;
                     newItem.ExtraInfo = ItemDescriptionContentEditDialog.Text;
                     newItem.GroupName = ItemGroupContentEditDialog.Text;
@@ -327,44 +323,24 @@ namespace InventoryManagement
                     {
                         tempAmount = Convert.ToInt32(ItemQuantityContentEditDialog.Text);
                     }
-                    catch
-                    {
-
-                    }
+                    catch {}
                     newItem.Amount = tempAmount;
 
                     if (ComboBoxAddEditUnit.Name == "g")
-                    {
                         newItem.DisplayUnit = Unit.G;
-                    }
                     else if (ComboBoxAddEditUnit.Name == "l")
-                    {
                         newItem.DisplayUnit = Unit.L;
-                    }
                     else if (ComboBoxAddEditUnit.Name == "m")
-                    {
                         newItem.DisplayUnit = Unit.M;
-                    }
                     else if (ComboBoxAddEditUnit.Name == "pcs")
-                    {
                         newItem.DisplayUnit = Unit.PCS;
-                    }
 
-                    if (ComboBoxAddEditInfinite.Name == "yes")
-                    {
-                        newItem.Infinite = true;
-                    }
-                    else
-                    {
-                        newItem.Infinite = false;
-                    }
+                    newItem.Infinite = ComboBoxAddEditInfinite.Name == "yes" ? true : false;
                     newItem.LastModified = DateTime.Now;
 
                     var picker = ItemBestBefore.FindName("ItemBestBeforePicker") as DatePicker;
                     if (picker.SelectedDate.HasValue)
-                    {
                         newItem.BestBefore = picker.SelectedDate.Value;
-                    }
 
                     inventory.Add(newItem);
                     dbManager.AddNewMaterial(newItem);
@@ -375,7 +351,6 @@ namespace InventoryManagement
                 //TODO: Make exception handling
                 //throw new Exception("Failed to add or edit item.");
             }
-
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
         }
 
@@ -386,10 +361,13 @@ namespace InventoryManagement
         #endregion
 
         #region Selection handling - Inventory Tab
-        //Handle selections. 
-        //If one item is selected, it is placed to "selectedItem" variable and "selectedItems" is null.
-        //If multiple items are selected, those are placed to "selectedItems" variable as List<Material> and "selectedItem" is null.
-        //If all items are deselected both variables are null.
+        
+        /// <summary>
+        /// //Handle selections. 
+        /// If one item is selected, it is placed to "selectedItem" variable and "selectedItems" is null.
+        /// If multiple items are selected, those are placed to "selectedItems" variable as List<Material> and "selectedItem" is null.
+        /// If all items are deselected both variables are null.
+        /// </summary>
         private void InventoryItemList_SelectionChanged(object sender, SelectionChangedEventArgs e = null)
         {
             if ((sender as ListView).SelectedItems.Count > 1)
@@ -431,22 +409,14 @@ namespace InventoryManagement
                     this.ItemDescriptionContent.Content = selectedItem.ExtraInfo;
                     this.ItemLastModifiedContent.Content = selectedItem.GetLastModifiedString();
                     if (selectedItem.BestBefore.HasValue)
-                    {
                         this.ItemBestBeforeContent.Content = selectedItem.BestBefore.Value.ToString("dd.MM.yyyy");
-                    }
                     else
-                    {
                         this.ItemBestBeforeContent.Content = "";
-                    }
 
                     if (selectedItem.Infinite)
-                    {
                         this.ItemIsInfiniteContent.Content = "Yes";
-                    }
                     else
-                    {
                         this.ItemIsInfiniteContent.Content = "No";
-                    }
                 }
                 catch
                 {
@@ -474,7 +444,6 @@ namespace InventoryManagement
         #endregion
 
         #region Context menu functions - Inventory Tab
-
         private void InventoryItemList_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             // If there are no items selected, cancel viewing the context menu
@@ -488,7 +457,7 @@ namespace InventoryManagement
             }
         }
 
-
+        // Ville, onko kenties kesken? :)
         private void Add_Recipe(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
@@ -496,6 +465,10 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Adds material to the shopping list which was selected from the material's context menu.
+        /// The amount is asked then with an InputBox dialog.
+        /// </summary>
         private void Add_To_Existing_Shopping_List(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
@@ -517,17 +490,10 @@ namespace InventoryManagement
             }
         }
 
-        private void Add_Shoplist(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("Fuq yes!");
-        }
-
         private void Edit_Selected_Item(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
-            {
                 this.EditButton_Click(sender, e);
-            }
         }
 
         private void Remove_Selected_Item(object sender, RoutedEventArgs e)
@@ -552,21 +518,18 @@ namespace InventoryManagement
                 InventoryItemList.ItemsSource = inventory;
             }
         }
-
         #endregion
 
         #region Initialize different main window tabs
-        // Method that can be used to initialize a tab when it's selected.
+        /// <summary>
+        /// Method that can be used to initialize a tab when it's selected.
+        /// </summary>
         private void OnTabChanged(Object sender, SelectionChangedEventArgs args)
         {
             if (MainWindowTabRecipies.IsSelected)
-            {
                 InitRecipiesTab();
-            }
             else if (MainWindowTabShoppingList.IsSelected)
-            {
                 InitShoppingListTab();
-            }          
         }
 
         private void InitRecipiesTab()
@@ -580,12 +543,6 @@ namespace InventoryManagement
             shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
             shoppingListsLW.ItemsSource = shopLists;
         }
-
-        private void InitAdvancedSearchTab()
-        {
-            //throw new NotImplementedException();
-        }
-        
         #endregion        
 
         #region Selection handling - Shoppinglist Tab
@@ -646,54 +603,17 @@ namespace InventoryManagement
             ShoppingList sl = (ShoppingList)shoppingListsLW.SelectedItem;
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() == true)
-                dialog.PrintDocument(CreateShoppingListFlowDocument(dialog.PrintableAreaWidth), "Shopping list");        
+            {
+                DocumentPaginator list = DocumentPaginatorCreator.CreatePrintableShoppingList(dialog.PrintableAreaWidth, sl);
+                dialog.PrintDocument(list, "Shopping list");
+            }
         }
 
         /// <summary>
-        /// Creates the DocumentPaginator that can be used with PrintDialog's PrintDocument method.
+        /// Asks for a name for the new Shopping list in a dialog and then the amount to be added.
         /// </summary>
-        /// <param name="printAreaWidth">Makes sure that the page's width is used completely</param>
-        /// <returns>Printable shoppinglist</returns>
-        private DocumentPaginator CreateShoppingListFlowDocument(double printAreaWidth)
-        {
-            FlowDocument flowDoc = new FlowDocument();
-            flowDoc.ColumnWidth = printAreaWidth;
-            Table t = new Table();
-            for (int i = 0; i < 3; i++)
-                t.Columns.Add(new TableColumn());
-            TableRow row = new TableRow();
-            row.Background = Brushes.Silver;
-            row.FontSize = 26;
-            row.FontWeight = System.Windows.FontWeights.Bold;
-            row.Cells.Add(new TableCell(new Paragraph(new Run("Name"))));
-            row.Cells.Add(new TableCell(new Paragraph(new Run("Amount"))));
-            row.Cells.Add(new TableCell(new Paragraph(new Run("Unit"))));
-            row.Cells[0].ColumnSpan = 20;
-            row.Cells[1].ColumnSpan = 5;
-            row.Cells[2].ColumnSpan = 5;
-            var rg = new TableRowGroup();
-            rg.Rows.Add(row);
-            t.RowGroups.Add(rg);
-            flowDoc.Blocks.Add(t);
-            foreach (Material mat in selectedShopListContent)
-            {
-                row = new TableRow();
-                row.FontSize = 24;
-                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.Name))));
-                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.Amount.ToString()))));
-                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.DisplayUnit.ToString()))));
-                row.Cells[0].ColumnSpan = 20;
-                row.Cells[1].ColumnSpan = 5;
-                row.Cells[2].ColumnSpan = 5;
-                rg = new TableRowGroup();
-                rg.Rows.Add(row);
-                t.RowGroups.Add(rg);
-                flowDoc.Blocks.Add(t);
-            }
-            IDocumentPaginatorSource doc = flowDoc;
-            return doc.DocumentPaginator;
-        }
-
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Create_ShoppingList_And_Add(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
@@ -717,19 +637,24 @@ namespace InventoryManagement
             }
         }
 
-
+        /// <summary>
+        /// All the items in the shoplist are added to the inventory.
+        /// </summary>
         private void AddToInventoryFromShoplist(object sender, RoutedEventArgs e)
         {
             if (selectedShopListContent != null)
             {
                 foreach (Material mat in selectedShopListContent)
                     dbManager.AddToInventoryFromShoplist(mat);
-                // HUONO VAIHTOEHTO MUTTA TOIMII :DD
                 inventory.Clear();
                 AddAllMaterialToInventoryList();
             }
         }
 
+        /// <summary>
+        /// Moves a material from one shopping list to another. The amount can be changed while moving, but the 
+        /// default is the original amount.
+        /// </summary>
         private void Move_To_Existing_Shoplist(object sender, RoutedEventArgs e)
         {
             Material selectedShoplistItem = (Material)shoppingListContentLW.SelectedItem;
@@ -750,6 +675,9 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Moves a shopping list item to a new shopping list.
+        /// </summary>
         private void Move_To_New_Shoplist(object sender, RoutedEventArgs e)
         {
             Material selectedShoplistItem = (Material)shoppingListContentLW.SelectedItem;
@@ -805,9 +733,7 @@ namespace InventoryManagement
             {
                 Recipe a = (Recipe)RecipesView.SelectedItem;
                 if (a == null || a.Instructions == null || a.Instructions == "")
-                {
                     RecipeInstructions.Text = "";
-                }
                 else
                     RecipeInstructions.Text = a.Instructions;
             }
@@ -822,9 +748,7 @@ namespace InventoryManagement
                 LoadRecipiesView();
                 Recipe a = (Recipe)RecipesView.SelectedItem;
                 if (a == null || a.Instructions == null || a.Instructions == "")
-                {
                     RecipeInstructions.Text = "";
-                }
                 else
                     RecipeInstructions.Text = a.Instructions;
                 if (a.Content.Count > 0)
@@ -924,9 +848,7 @@ namespace InventoryManagement
                 LoadInstructions();
             }
             else
-            {
                 System.Windows.MessageBox.Show("Recipe already exists!");
-            }
         }
 
         private void CreateRecipe_Click(object sender, RoutedEventArgs e)
@@ -955,17 +877,11 @@ namespace InventoryManagement
         private void AddNewMaterialToRecipeOkButton_Click(object sender, RoutedEventArgs e)
         {
             if (dbManager.RetrieveMaterialByName(AddNewMaterialToRecipeName.Text, Material.Connection.INVENTORY) == null)
-            {
                 System.Windows.MessageBox.Show("Material not found!");
-            }
             else if (AddNewMaterialToRecipeAmount.Text == "")
-            {
                 System.Windows.MessageBox.Show("Amount of material is missing");
-            }
             else if (Convert.ToDouble(AddNewMaterialToRecipeAmount.Text) <= 0)
-            {
                 System.Windows.MessageBox.Show("Amount of material cannot be zero!");
-            }
             else
             {
                 dbManager.AddMaterialToRecipe(((Recipe)RecipesView.SelectedItem).Name, AddNewMaterialToRecipeName.Text, Convert.ToDouble(AddNewMaterialToRecipeAmount.Text));
@@ -984,7 +900,6 @@ namespace InventoryManagement
 
         private void EditInstructionsDialogOkButton(object sender, RoutedEventArgs e)
         {
-
             Recipe a = (dbManager.RetrieveRecipeByName(((Recipe)RecipesView.SelectedItem).Name)).First();
             a.Instructions = EditedInstructions.Text;
             dbManager.UpdateRecipe(a);
@@ -1038,35 +953,25 @@ namespace InventoryManagement
                 }
             } 
         }
-
-        #endregion
-
-        #region main window search
-
-       
-
-        private void GroupFilter_Update_Items()
-        {
-            groups.Clear();
-            groups.Add("");
-            List<Material> all = dbManager.RetrieveAllMaterials();
-
-            foreach(Material mat in all)
-                groups.Add(mat.GroupName);
-
-            GroupFilter.ItemsSource = groups;
-            GroupFilter.Items.Refresh();
-        }
-
         #endregion
 
         #region Menubar Functions
 
+        /// <summary>
+        /// Shows the "about"-dialog.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void About_MenuItem_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Inventory Management Application\n\nVille Hannu\nVille Minkkinen\nLauri Nykänen\nMikko Ollila\nJukka Pelander\n\nGooglaa nimellä Facebookista, jos haluat tietää lisää.");
         }
 
+        /// <summary>
+        /// Closes the application.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MenuExit_Click_1(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -1075,76 +980,23 @@ namespace InventoryManagement
 
         #region Context menu functions - Recipes Tab
         
-        
-
+        /// <summary>
+        /// Opens the print dialog where you can select printer, adjust page orientation, colors etc and upon pressing ok
+        /// the shoplist is printed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Print_Recipe_Click(object sender, RoutedEventArgs e)
         {
             Recipe selectedRecipe = (Recipe)RecipesView.SelectedItem;
             PrintDialog dialog = new PrintDialog();
             if (dialog.ShowDialog() == true)
-                dialog.PrintDocument(CreateRecipeFlowDocument(dialog.PrintableAreaWidth, selectedRecipe), selectedRecipe.Name);  
-        }
-
-        private DocumentPaginator CreateRecipeFlowDocument(double printAreaWidth, Recipe selectedRecipe)
-        {
-            FlowDocument flowDoc = new FlowDocument();
-            flowDoc.ColumnWidth = printAreaWidth;
-            Table t = new Table();
-            for (int i = 0; i < 3; i++)
-                t.Columns.Add(new TableColumn());
-            TableRow row = new TableRow();
-            row.Background = Brushes.Silver;
-            row.FontSize = 26;
-            row.FontWeight = System.Windows.FontWeights.Bold;
-            row.Cells.Add(new TableCell(new Paragraph(new Run("Name"))));
-            row.Cells.Add(new TableCell(new Paragraph(new Run("Amount"))));
-            row.Cells.Add(new TableCell(new Paragraph(new Run("Unit"))));
-            row.Cells[0].ColumnSpan = 20;
-            row.Cells[1].ColumnSpan = 5;
-            row.Cells[2].ColumnSpan = 5;
-            var rg = new TableRowGroup();
-            rg.Rows.Add(row);
-            t.RowGroups.Add(rg);
-            flowDoc.Blocks.Add(t);
-            foreach (Material mat in selectedRecipe.Content)
             {
-                row = new TableRow();
-                row.FontSize = 24;
-                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.Name))));
-                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.Amount.ToString()))));
-                row.Cells.Add(new TableCell(new Paragraph(new Run(mat.DisplayUnit.ToString()))));
-                row.Cells[0].ColumnSpan = 20;
-                row.Cells[1].ColumnSpan = 5;
-                row.Cells[2].ColumnSpan = 5;
-                rg = new TableRowGroup();
-                rg.Rows.Add(row);
-                t.RowGroups.Add(rg);
-                flowDoc.Blocks.Add(t);
+                DocumentPaginator page = DocumentPaginatorCreator.CreatePrintableRecipe(dialog.PrintableAreaWidth, selectedRecipe);
+                dialog.PrintDocument(page, selectedRecipe.Name);
             }
-            flowDoc.Blocks.Add(new Paragraph(new Run(selectedRecipe.Instructions)));
-            IDocumentPaginatorSource doc = flowDoc;
-            return doc.DocumentPaginator;
         }
+
         #endregion
-
-        private void QuantityFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            UpdateSearchResults();
-        }
-
-        private void QuantityFilterComboBox_DropDownClosed(object sender, EventArgs e)
-        {
-            UpdateSearchResults();
-        }
-
-        private void GroupFilter_DropDownOpened(object sender, EventArgs e)
-        {
-            GroupFilter_Update_Items();
-        }
-
-        private void GroupFilter_DropDownClosed(object sender, EventArgs e)
-        {
-            UpdateSearchResults();
-        }
     }
 }

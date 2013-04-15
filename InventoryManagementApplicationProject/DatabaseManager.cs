@@ -12,6 +12,9 @@ using Db4objects.Db4o.Query;
 
 namespace InventoryManagement
 {
+    /// <summary>
+    /// This class handles all the applications database operations.
+    /// </summary>
     public class DatabaseManager
     {
         public enum ROperator { LT, LE, E, GT, GE };
@@ -472,7 +475,7 @@ namespace InventoryManagement
             return recipes;
         }
 
-        // Retrieves recipes which can be crafted from th materials in the list
+        // Retrieves recipes which can be crafted from the materials in the list
         public IList<Recipe> RetrieveRecipeByMaterialList(IList<Material> materials)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)

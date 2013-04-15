@@ -35,8 +35,8 @@
                         <ColumnDefinition Width="375*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel x:Name="InventoryListPanel" Grid.Column="0" Grid.ColumnSpan="9">
-                        <ComboBox x:Name="GroupFilter" DropDownOpened="GroupFilter_DropDownOpened" DropDownClosed="GroupFilter_DropDownClosed"/>
-                        <TextBox x:Name="SearchFilter" TextAlignment="Left" Foreground="Black" TextChanged="SearchFilter_TextChanged" Margin="0,0,132,0" />
+                        <ComboBox x:Name="GroupFilter" DropDownOpened="GroupFilter_DropDownOpened" DropDownClosed="Search_Conditions_Changed"/>
+                        <TextBox x:Name="SearchFilter" TextAlignment="Left" Foreground="Black" TextChanged="Search_Conditions_Changed" Margin="0,0,132,0" />
                         <Separator Height="5"/>
                         <ListView x:Name="InventoryItemList" ItemsSource="{Binding Inventory}" MinHeight="400" SelectionChanged="InventoryItemList_SelectionChanged" Padding="1"
         					ContextMenuOpening="InventoryItemList_ContextMenuOpening" Height="414" Margin="0,0,2,0" RenderTransformOrigin="0.5,0.5">
@@ -190,7 +190,7 @@
                             </StackPanel>
                         </Border>
                     </Grid>
-                    <ComboBox x:Name="QuantityFilterComboBox" HorizontalAlignment="Left" Margin="0,23,0,0" VerticalAlignment="Top" Width="46" DropDownClosed="QuantityFilterComboBox_DropDownClosed" Grid.ColumnSpan="4" Grid.Column="5" RenderTransformOrigin="0.224,0.5">
+                    <ComboBox x:Name="QuantityFilterComboBox" HorizontalAlignment="Left" Margin="0,23,0,0" VerticalAlignment="Top" Width="46" DropDownClosed="Search_Conditions_Changed" Grid.ColumnSpan="4" Grid.Column="5" RenderTransformOrigin="0.224,0.5">
                         <ListBoxItem Content=""/>
                         <ListBoxItem Content="&gt;"/>
                         <ListBoxItem Content="="/>
@@ -199,7 +199,7 @@
                         <ListBoxItem Content="≤"/>
                     </ComboBox>
                     <TextBox x:Name="QuantityFilterTextBox" Height="23" Margin="22,22,5,0" TextWrapping="Wrap" VerticalAlignment="Top" 
-        				TextChanged="QuantityFilterTextBox_TextChanged" RenderTransformOrigin="0.667,0.478" Grid.Column="8"/>
+        				TextChanged="Search_Conditions_Changed" RenderTransformOrigin="0.667,0.478" Grid.Column="8"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="MainWindowTabRecipies" Header="Recipies">

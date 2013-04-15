@@ -59,8 +59,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DocumentPaginatorCreator.cs" />
     <Compile Include="Recipe.cs" />
-    <Compile Include="Search.cs" />
     <Compile Include="ShoppingList.cs" />
     <Compile Include="Unit.cs" />
     <Page Include="MainWindow.xaml">
