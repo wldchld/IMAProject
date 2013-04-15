@@ -48,6 +48,8 @@ namespace InventoryManagement
         {
             AddAllMaterialToInventoryList();
             shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
+            recipesView = new ObservableCollection<Recipe>(dbManager.RetrieveAllRecipes());
+            InventoryAddNewMaterialToRecipeName.ItemsSource = recipesView;
         }
 
         /// <summary>
@@ -458,11 +460,39 @@ namespace InventoryManagement
         }
 
         // Ville, onko kenties kesken? :)
-        private void Add_Recipe(object sender, RoutedEventArgs e)
+        private void Add_RecipeMenuOpening(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
             {
+                InventoryWindowBackgroundGrid.Visibility = System.Windows.Visibility.Visible;
+                InventoryAddNewMaterialToRecipeName.Text = "";
+                InventoryAddNewMaterialToRecipeAmount.Text = "";
+                InventoryAddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Visible;
             }
+        }
+
+        private void Add_RecipeMenuOkButton(object sender, RoutedEventArgs e)
+        {
+            if (dbManager.RetrieveRecipeByName(InventoryAddNewMaterialToRecipeName.Text) == null)
+                System.Windows.MessageBox.Show("Material not found!");
+            else if (InventoryAddNewMaterialToRecipeAmount.Text == "")
+                System.Windows.MessageBox.Show("Amount of material is missing");
+            else if (Convert.ToDouble(InventoryAddNewMaterialToRecipeAmount.Text) <= 0)
+                System.Windows.MessageBox.Show("Amount of material cannot be zero!");
+            else
+            {
+                dbManager.AddMaterialToRecipe(InventoryAddNewMaterialToRecipeName.Text, ((Material)InventoryItemList.SelectedItem).Name, Convert.ToDouble(InventoryAddNewMaterialToRecipeAmount.Text));
+                InventoryWindowBackgroundGrid.Visibility = System.Windows.Visibility.Hidden;
+                InventoryAddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
+            }
+        }
+
+        private void Add_RecipeMenuCancelButton(object sender, RoutedEventArgs e)
+        {
+            InventoryAddNewMaterialToRecipeName.Text = "";
+            InventoryAddNewMaterialToRecipeAmount.Text = "";
+            InventoryWindowBackgroundGrid.Visibility = System.Windows.Visibility.Hidden;
+            InventoryAddNewMaterialToRecipeStackPanel.Visibility = System.Windows.Visibility.Hidden;
         }
 
         /// <summary>
@@ -702,6 +732,7 @@ namespace InventoryManagement
 
         #region Recipies Tab - functions
 
+        // Loads View which shows recipes
         private void LoadRecipiesView()
         {
             if (SearchBasedOnInventoryCheckbox.IsChecked == true)

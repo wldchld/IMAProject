@@ -44,7 +44,7 @@
                                 <ContextMenu x:Name="LeftClickedMenu">
                                     <MenuItem x:Name="addToShopListMenuItem" Header="Add to existing shopping list" ItemsSource="{Binding ShopLists}" Click="Add_To_Existing_Shopping_List" />
                                     <MenuItem Header="Add to a new shoppinglist" Click="Create_ShoppingList_And_Add" />
-                                    <MenuItem Header="Add to recipe" Click="Add_Recipe" />
+                                    <MenuItem Header="Add to recipe" Click="Add_RecipeMenuOpening" />
                                     <MenuItem x:Name="editSelectedItem" Header="Edit" Click="Edit_Selected_Item" />
                                     <MenuItem Header="Remove" Click="Remove_Selected_Item" />
                                     <Separator/>
@@ -200,6 +200,22 @@
                     </ComboBox>
                     <TextBox x:Name="QuantityFilterTextBox" Height="23" Margin="22,22,5,0" TextWrapping="Wrap" VerticalAlignment="Top" 
         				TextChanged="Search_Conditions_Changed" RenderTransformOrigin="0.667,0.478" Grid.Column="8"/>
+                    <!-- Colored background grid for opening windows-->
+                    <Grid x:Name="InventoryWindowBackgroundGrid" Grid.ColumnSpan="10" Background="Black" Opacity="0.5" Visibility="hidden"/>
+                    <!-- Add new material to recipe view-->
+                    <StackPanel x:Name="InventoryAddNewMaterialToRecipeStackPanel" Background="White" Visibility="hidden" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="48,178,306,177" Width="131" Grid.Column="8">
+                        <Label Content="Add new Recipe" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
+                        <Label Content="Name:" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                        <ComboBox x:Name="InventoryAddNewMaterialToRecipeName" DisplayMemberPath="Name" Width="100"/>
+                        <Label Content="Amount:" HorizontalAlignment="Center"/>
+                        <TextBox x:Name="InventoryAddNewMaterialToRecipeAmount" Width="100"/>
+                        <Separator Height="10"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button x:Name="InventoryAddNewMaterialToRecipeOkButton" Content="Ok" Click="Add_RecipeMenuOkButton"/>
+                            <Separator Width="5"/>
+                            <Button x:Name="InventoryAddNewMaterialToRecipeCanselButton" Content="Cancel" Click="Add_RecipeMenuCancelButton"/>
+                        </StackPanel>
+                    </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem x:Name="MainWindowTabRecipies" Header="Recipies">
@@ -260,8 +276,8 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
-                                <Button Content="Add material to recipe" Margin="0,5,0,0" HorizontalAlignment="Center" MinWidth="151" Click="AddMaterialToRecipe_Click"/>
-                                <Button Content="Delete material from Recipe" Margin="0,5,0,0" HorizontalAlignment="Center" Click="DeleteContent_Click"/>
+                            <Button Content="Add material to recipe" Margin="0,5,0,0" HorizontalAlignment="Center" MinWidth="151" Click="AddMaterialToRecipe_Click"/>
+                            <Button Content="Delete material from Recipe" Margin="0,5,0,0" HorizontalAlignment="Center" Click="DeleteContent_Click"/>
                             <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Center"/>
                         </StackPanel>
                         <Separator Width="5"/>
@@ -313,8 +329,6 @@
                         </StackPanel>
                     </StackPanel>
                 </Grid>
-
-
             </TabItem>
             <TabItem x:Name="MainWindowTabShoppingList" Header="Shopping list">
                 <Grid Background="#FFFFFFFF" Margin="0,0,0,-41" Height="411" VerticalAlignment="Top">
