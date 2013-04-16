@@ -492,6 +492,9 @@ namespace InventoryManagement
             {
                 e.Handled = true;
             }
+            ShopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());
+            addToShopListMenuItem.ItemsSource = shopLists;
+            LeftClickedMenu.Items.Refresh();
             //For debug purposes only.
             //else if (InventoryItemList.SelectedItems.Count > 3)
             //{
@@ -724,6 +727,7 @@ namespace InventoryManagement
                         dbManager.AddToShoppingList(slName, temp);
                     }
                 }
+                shopLists = new ObservableCollection<ShoppingList>(dbManager.RetrieveAllShoppingLists());      
             }
         }
 
@@ -1072,7 +1076,7 @@ namespace InventoryManagement
         #endregion
 
         public ObservableCollection<Material> Inventory { get { return this.inventory; } }
-        public ObservableCollection<ShoppingList> ShopLists { get { return this.shopLists; } }
+        public ObservableCollection<ShoppingList> ShopLists { set { this.shopLists = value; } get { return this.shopLists; } }
         public ComboBoxItem ComboBoxAddEditInfinite 
         { 
             get 
