@@ -44,6 +44,11 @@ namespace InventoryManagement
             InitializeComponent();
         }
 
+        /// <summary>
+        /// When inventory management tab is selected these things need to be done.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void InventoryManagement_Loaded(object sender, RoutedEventArgs e)
         {
             AddAllMaterialToInventoryList();
@@ -158,6 +163,11 @@ namespace InventoryManagement
         #endregion
 
         #region Edit single material - Inventory Tab
+        /// <summary>
+        /// Decreases selected item quantity by 1.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DecreaseQuantity_Click(object sender, RoutedEventArgs e)
         {
             //Decrease selected item quantity
@@ -171,6 +181,11 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Increases selected item quantity by 1.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void IncreaseQuantity_Click(object sender, RoutedEventArgs e)
         {
             //Increase selected item quantity
@@ -184,6 +199,11 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Opens add material dialog with empty and or default data.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void AddButton_Click(object sender, RoutedEventArgs e)
         {
             InventoryItemList.ItemsSource = inventory;
@@ -207,6 +227,11 @@ namespace InventoryManagement
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Visible;
         }
 
+        /// <summary>
+        /// Opens edit material dialog with selected items data.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             InventoryItemList.ItemsSource = inventory;
@@ -265,6 +290,11 @@ namespace InventoryManagement
         #endregion
 
         #region Add/edit material
+        /// <summary>
+        /// Saves added or modified item to database.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -350,12 +380,16 @@ namespace InventoryManagement
             }
             catch
             {
-                //TODO: Make exception handling
-                //throw new Exception("Failed to add or edit item.");
+
             }
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Closes add/edit material dialog without adding anything to database.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             AddEditMaterialInputBox.Visibility = System.Windows.Visibility.Collapsed;
@@ -422,8 +456,7 @@ namespace InventoryManagement
                 }
                 catch
                 {
-                    //TODO: Perhaps some kind of error handling?
-                    //throw new Exception("Selected item doesn't have all information avaible.");
+
                 }
                 
             }
@@ -446,6 +479,12 @@ namespace InventoryManagement
         #endregion
 
         #region Context menu functions - Inventory Tab
+
+        /// <summary>
+        /// Inventory item list context menu opening
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void InventoryItemList_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             // If there are no items selected, cancel viewing the context menu
@@ -453,10 +492,11 @@ namespace InventoryManagement
             {
                 e.Handled = true;
             }
-            else if (InventoryItemList.SelectedItems.Count > 3)
-            {
-                Console.WriteLine(LeftClickedMenu.Name);
-            }
+            //For debug purposes only.
+            //else if (InventoryItemList.SelectedItems.Count > 3)
+            //{
+            //    Console.WriteLine(LeftClickedMenu.Name);
+            //}
         }
 
         /// <summary>
@@ -529,17 +569,28 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Routes edit selected click further.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Edit_Selected_Item(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
                 this.EditButton_Click(sender, e);
         }
 
+        /// <summary>
+        /// Removes selected item from inventory.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Remove_Selected_Item(object sender, RoutedEventArgs e)
         {
             if (selectedItem != null)
             {
-                Console.WriteLine("poistetaan paskaa");
+                //Developers personal opinion.
+                //Console.WriteLine("poistetaan paskaa");
                 dbManager.DeleteMaterialByName(selectedItem.Name, Material.Connection.INVENTORY);
                 inventory.Clear();
                 AddAllMaterialToInventoryList();
@@ -547,7 +598,8 @@ namespace InventoryManagement
             }
             else if(selectedItems != null)
             {
-                Console.WriteLine("poistetaan monta paskaa");
+                //Developers personal opinion.
+                //Console.WriteLine("poistetaan monta paskaa");
                 foreach (Material deleteItems in selectedItems)
                 {
                     dbManager.DeleteMaterialByName(deleteItems.Name, Material.Connection.INVENTORY);

@@ -21,6 +21,9 @@ namespace InventoryManagement
         readonly static string dbFileName = "inventory.yap";
         IObjectContainer db;
 
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
         public DatabaseManager()
         {
             IEmbeddedConfiguration config = Db4oEmbedded.NewConfiguration();
@@ -31,6 +34,11 @@ namespace InventoryManagement
         //------------------------------------
         //----- OPERATIONS FOR MATERIALS -----
         //------------------------------------
+
+        /// <summary>
+        /// Retrieves all material from database. Throws exception if database is empty.
+        /// </summary>
+        /// <returns></returns>
         public List<Material> RetrieveAllMaterials()
         {
             IObjectSet result = db.QueryByExample(typeof(Material));
@@ -41,15 +49,22 @@ namespace InventoryManagement
                 if (temp.BelongsTo == Material.Connection.INVENTORY)
                     materials.Add(temp);
             }
-            PrintMaterialList(materials);
+            //Debug method
+            //PrintMaterialList(materials);
             if (materials.Any() == false)
             {
-                //TODO: This exception cannot be thrown because database can be empty!!!
-                //throw new Exception("Nothing found from database!");
+                throw new Exception("Nothing found from database!");
             }
             return materials;
         }
 
+        /// <summary>
+        /// Retrieves material identified by name from database. belongsTo means collection where material is retrieved.
+        /// This function returns null if material is not found.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="belongsTo">Inventory, recipe, shopping list etc.</param>
+        /// <returns></returns>
         public Material RetrieveMaterialByName(String name, Material.Connection belongsTo)
         {
             Material result = null;
@@ -59,10 +74,15 @@ namespace InventoryManagement
             });
             if (mats.Count == 1)
                 result = mats[0];
-            Console.WriteLine(result);
+            //Console.WriteLine(result);
             return result;
         }
 
+        /// <summary>
+        /// Updates material. Needs old and new materials.
+        /// </summary>
+        /// <param name="oldMaterial">The material that is being updated.</param>
+        /// <param name="newMaterial">New material which replace old one.</param>
         public void UpdateMaterial(Material oldMaterial, Material newMaterial)
         {
             IObjectSet result = db.QueryByExample(oldMaterial);
@@ -82,6 +102,10 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Searches given material from shopping list and adds it to inventory.
+        /// </summary>
+        /// <param name="bought"></param>
         public void AddToInventoryFromShoplist(Material bought)
         {
             Material temp = RetrieveMaterialByName(bought.Name, Material.Connection.INVENTORY);
@@ -89,11 +113,29 @@ namespace InventoryManagement
             db.Store(temp);
         }
 
+        /// <summary>
+        /// Deletes given material from given collection.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="belongsTo">Inventory, shopping list, recipe etc.</param>
         public void DeleteMaterialByName(String name, Material.Connection belongsTo)
         {
             db.Delete(RetrieveMaterialByName(name, belongsTo));
         }
 
+        /// <summary>
+        /// Adds new material to database with given information.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="groupName"></param>
+        /// <param name="infinite"></param>
+        /// <param name="amount"></param>
+        /// <param name="typeOfMeasure"></param>
+        /// <param name="dateBought"></param>
+        /// <param name="bestBefore"></param>
+        /// <param name="extraInfo"></param>
+        /// <param name="unit"></param>
+        /// <param name="belongsTo"></param>
         public void AddNewMaterial(String name, String groupName, bool infinite, double amount, Material.MeasureType typeOfMeasure,
             DateTime dateBought, DateTime bestBefore, String extraInfo, Unit unit, Material.Connection belongsTo)
         {
@@ -102,21 +144,37 @@ namespace InventoryManagement
             db.Store(mat);
         }
 
+        /// <summary>
+        /// Adds given material to database.
+        /// </summary>
+        /// <param name="mat"></param>
         public void AddNewMaterial(Material mat)
         {
             db.Store(mat);
         }
 
+        /// <summary>
+        /// Returns list of materials selected by given groupName.
+        /// </summary>
+        /// <param name="groupName"></param>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsInGroup(String groupName)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.GroupName == groupName && mat.BelongsTo == Material.Connection.INVENTORY;
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Returns list of materials. Selects materials using given datetime and search operator and compares it to best before date.
+        /// </summary>
+        /// <param name="ro"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsByBestBeforeDate(ROperator ro, DateTime date)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
@@ -131,20 +189,34 @@ namespace InventoryManagement
                     return mat.BestBefore >= date;
                 return mat.BestBefore == date;
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Returns list of material which best before date is between min and max dates.
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsByBestBeforeDateInRange(DateTime min, DateTime max)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.BestBefore >= min && mat.BestBefore <= max;
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Returns list of materials. Selects materials using given datetime and search operator and compares it to bought date.
+        /// </summary>
+        /// <param name="ro"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsByDateBought(ROperator ro, DateTime date)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
@@ -159,50 +231,81 @@ namespace InventoryManagement
                     return mat.LastModified >= date;
                 return mat.LastModified == date;
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Returns list of material which bought date is between min and max dates.
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsByDateBoughtInRange(DateTime min, DateTime max)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.LastModified >= min && mat.LastModified <= max;
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Returns list of materials which extra info contains given word.
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsWithExtraInfoContainingWord(string word)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.ExtraInfo.Contains(word);
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Returns list of material which best before date is older than current date.
+        /// </summary>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsGoneBad()
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.BestBefore < DateTime.Now;
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Returns list of materials which are infinite or not, depending of given parameter.
+        /// </summary>
+        /// <param name="infinite"></param>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsByInfinity(bool infinite)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.Infinite == infinite;
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Returns list of materials selected by given operator and amount.
+        /// </summary>
+        /// <param name="ro"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsByAmount(ROperator ro, double amount)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
@@ -220,17 +323,25 @@ namespace InventoryManagement
                 else
                     return mat.Amount == amount;
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Retrieves list of materials which amount is between given range.
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public List<Material> RetrieveMaterialsByAmountRange(double min, double max)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
             {
                 return mat.Amount >= min && mat.Amount <= max;
             });
-            PrintMaterialList(mats.ToList());
+            //Debug method.
+            //PrintMaterialList(mats.ToList());
             return mats.ToList();
         }
 
@@ -240,11 +351,20 @@ namespace InventoryManagement
         //----- SHOPPING LIST OPERATIONS -----
         //------------------------------------
 
+        /// <summary>
+        /// Adds new shopping list of given name to database.
+        /// </summary>
+        /// <param name="name"></param>
         public void AddNewShoppingList(string name)
         {
             db.Store(new ShoppingList(name));
         }
 
+        /// <summary>
+        /// Adds new material to shopping list identified by name.
+        /// </summary>
+        /// <param name="listName"></param>
+        /// <param name="mat"></param>
         public void AddToShoppingList(string listName, Material mat)
         {
             IObjectSet sls = db.QueryByExample(new ShoppingList(listName));
@@ -256,6 +376,10 @@ namespace InventoryManagement
             db.Ext().Store(list, Int32.MaxValue);
         }
 
+        /// <summary>
+        /// Updates modifications of given shopping list to database.
+        /// </summary>
+        /// <param name="list"></param>
         public void UpdateShoppingList(ShoppingList list)
         {
             IObjectSet sls = db.QueryByExample(list);
@@ -269,16 +393,26 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Returns list of all shopping lists.
+        /// </summary>
+        /// <returns></returns>
         public List<ShoppingList> RetrieveAllShoppingLists()
         {
             IObjectSet result = db.QueryByExample(typeof(ShoppingList));
             List<ShoppingList> sls = new List<ShoppingList>();
             while (result.HasNext())
                 sls.Add((ShoppingList)result.Next());
+            //Debug method.
             //PrintShoppingListList(sls);
             return sls;
         }
 
+        /// <summary>
+        /// Returns single shopping list from database identified by given name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public ShoppingList RetrieveShoppingListByName(string name)
         {
             ShoppingList ret = null;
@@ -291,6 +425,10 @@ namespace InventoryManagement
             return ret;
         }
 
+        /// <summary>
+        /// Deletes shopping list identified by its name from database.
+        /// </summary>
+        /// <param name="name"></param>
         public void DeleteShoppingListByName(string name)
         {
             db.Delete(RetrieveShoppingListByName(name));
@@ -300,11 +438,20 @@ namespace InventoryManagement
         //----- RECIPE OPERATIONS -----
         //-----------------------------
 
+        /// <summary>
+        /// Adds new recipe to database.
+        /// </summary>
+        /// <param name="recipe"></param>
         public void AddNewRecipe(Recipe recipe)
         {
             db.Store(recipe);
         }
 
+        /// <summary>
+        /// Adds new recipe with given name and instructions to database.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="instructions"></param>
         public void AddNewRecipe(string name, string instructions)
         {
             Recipe recipe = new Recipe();
@@ -314,6 +461,12 @@ namespace InventoryManagement
             db.Ext().Store(recipe, Int32.MaxValue);
         }
 
+        /// <summary>
+        /// Adds new recipe with given name, instructions and list of materials to database.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="content"></param>
+        /// <param name="instructions"></param>
         public void AddNewRecipe(String name, IList<Material> content, String instructions)
         {
             Recipe recipe = new Recipe();
@@ -331,6 +484,11 @@ namespace InventoryManagement
             db.Ext().Store(recipe, Int32.MaxValue);
         }
 
+        /// <summary>
+        /// Adds given material to recipe identified by its name.
+        /// </summary>
+        /// <param name="recipeName"></param>
+        /// <param name="material"></param>
         public void AddMaterialToRecipe(String recipeName, Material material)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
@@ -343,7 +501,11 @@ namespace InventoryManagement
                 db.Ext().Store(recipes[i], Int32.MaxValue);
             }
         }
-
+        
+        /// <summary>
+        /// Deletes recipe identified by its name.
+        /// </summary>
+        /// <param name="recipeName"></param>
         public void DeleteRecipeByName(String recipeName)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
@@ -351,10 +513,16 @@ namespace InventoryManagement
             for (int i = 0; i < recipes.Count; i++)
             {
                 db.Delete(recipes[i]);
-                Console.WriteLine(recipeName + " is deleted from recipes");
+                //Debug method.
+                //Console.WriteLine(recipeName + " is deleted from recipes");
             }
         }
 
+        /// <summary>
+        /// Deletes material identified by its name from recipe identified by its naem.
+        /// </summary>
+        /// <param name="RecipeName"></param>
+        /// <param name="MaterialName"></param>
         public void DeleteMaterialFromRecipe(String RecipeName, String MaterialName)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(RecipeName);
@@ -367,12 +535,19 @@ namespace InventoryManagement
                     {
                         recipes[i].Content.RemoveAt(a);
                         db.Store(recipes[i]);
-                        Console.WriteLine(MaterialName + " removed from recipe " + RecipeName);
+                        //Debug method.
+                        //Console.WriteLine(MaterialName + " removed from recipe " + RecipeName);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Add material with amount identified by name to recipe identified by name.
+        /// </summary>
+        /// <param name="recipeName"></param>
+        /// <param name="materialName"></param>
+        /// <param name="amount"></param>
         public void AddMaterialToRecipe(String recipeName, String materialName, double amount)
         {
             IList<Recipe> recipes = RetrieveRecipeByName(recipeName);
@@ -387,6 +562,10 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Updates made modifications of recipe to database.
+        /// </summary>
+        /// <param name="recipe"></param>
         public void UpdateRecipe(Recipe recipe)
         {
             IList<Recipe> sls = RetrieveRecipeByName(recipe.Name);
@@ -402,34 +581,56 @@ namespace InventoryManagement
             }
         }
 
+        /// <summary>
+        /// Returns list of recipes.
+        /// </summary>
+        /// <returns></returns>
         public IList<Recipe> RetrieveAllRecipes()
         {
             IList<Recipe> recipes = db.Query<Recipe>();
 
-            PrintRecipeList(recipes.ToList());
+            //Debug method.
+            //PrintRecipeList(recipes.ToList());
             return recipes;
         }
 
+        /// <summary>
+        /// Returns list of recipes identified by name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public IList<Recipe> RetrieveRecipeByName(string name)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
             {
                 return recipe.Name.ToUpper() == name.ToUpper();
             });
-            PrintRecipeList(recipes.ToList());
+            //Debug method.
+            //PrintRecipeList(recipes.ToList());
             return recipes;
         }
 
+        /// <summary>
+        /// Returns recipe identified by given name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public IList<Recipe> RetrieveRecipeByNamePart(string name)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
             {
                 return recipe.Name.ToUpper().Contains(name.ToUpper());
             });
-            PrintRecipeList(recipes.ToList());
+            //Debug method.
+            //PrintRecipeList(recipes.ToList());
             return recipes;
         }
 
+        /// <summary>
+        /// Returns list of recipies which contain given material.
+        /// </summary>
+        /// <param name="material"></param>
+        /// <returns></returns>
         public IList<Recipe> RetrieveRecipeByMaterial(Material material)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
@@ -441,10 +642,16 @@ namespace InventoryManagement
                 }
                 return false;
             });
-            PrintRecipeList(recipes.ToList());
+            //Debug method.
+            //PrintRecipeList(recipes.ToList());
             return recipes;
         }
 
+        /// <summary>
+        /// Returns list of recipies containing material identified by name.
+        /// </summary>
+        /// <param name="materialName"></param>
+        /// <returns></returns>
         public IList<Recipe> RetrieveRecipeByMaterialName(string materialName)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
@@ -456,10 +663,16 @@ namespace InventoryManagement
                 }
                 return false;
             });
-            PrintRecipeList(recipes.ToList());
+            //Debug method.
+            //PrintRecipeList(recipes.ToList());
             return recipes;
         }
 
+        /// <summary>
+        /// Returns list of recipies which contains material which name contains given name.
+        /// </summary>
+        /// <param name="materialNamePart"></param>
+        /// <returns></returns>
         public IList<Recipe> RetrieveRecipeByMaterialNamePart(string materialNamePart)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
@@ -471,11 +684,19 @@ namespace InventoryManagement
                 }
                 return false;
             });
-            PrintRecipeList(recipes.ToList());
+            //Debug method.
+            //PrintRecipeList(recipes.ToList());
             return recipes;
         }
 
-        public IList<Recipe> SearchRecipies(IList<Material> searchMaterials, string recipeName, string materialName)
+        /// <summary>
+        /// Deprecated function.
+        /// </summary>
+        /// <param name="searchMaterials"></param>
+        /// <param name="recipeName"></param>
+        /// <param name="materialName"></param>
+        /// <returns></returns>
+        /*public IList<Recipe> SearchRecipies(IList<Material> searchMaterials, string recipeName, string materialName)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
             {
@@ -495,9 +716,13 @@ namespace InventoryManagement
                 return materialsFound >= recipe.Content.Count;
             });
             return recipes;
-        }
+        }*/
 
-        // Retrieves recipes which can be crafted from the materials in the list
+        /// <summary>
+        /// Retrieves recipes which can be crafted from the materials in the list.
+        /// </summary>
+        /// <param name="materials"></param>
+        /// <returns></returns>
         public IList<Recipe> RetrieveRecipeByMaterialList(IList<Material> materials)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe recipe)
@@ -516,15 +741,18 @@ namespace InventoryManagement
                 }
                 return materialsFound >= recipe.Content.Count;
             });
-            PrintRecipeList(recipes.ToList());
+            //Debug method.
+            //PrintRecipeList(recipes.ToList());
             return recipes;
         }
 
         //--------------------------------------------
         //----- WHOLE DATABASE AFFECTING METHODS -----
         //--------------------------------------------
-
-        // Deletes the database and creates a new empty database.
+        
+        /// <summary>
+        /// Deletes the database and creates a new empty database.
+        /// </summary>
         public void ReCreateDB()
         {
             db.Close();
@@ -532,6 +760,9 @@ namespace InventoryManagement
             db = Db4oEmbedded.OpenFile(dbFileName);
         }
 
+        /// <summary>
+        /// Creates sample data. DEPRECATED
+        /// </summary>
         public void CreateSampleData()
         {
             AddNewMaterial("Siskonmakkarakeitto", "Ruoka", false, 1500, Material.MeasureType.WEIGHT, DateTime.Now, DateTime.Now.AddDays(4), "Hyvää keittoa. Olispa edes", Unit.G, Material.Connection.INVENTORY);
@@ -605,7 +836,11 @@ namespace InventoryManagement
         }
 
 
-        /// Search
+        /// <summary>
+        /// Returns list of materials that contains given name from recipe and inventory.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public List<Material> SearchAll(String input)
         {
             IList<Material> mats = db.Query<Material>(delegate(Material mat)
@@ -616,6 +851,17 @@ namespace InventoryManagement
             return mats.ToList();
         }
 
+        /// <summary>
+        /// Returns list of materials from given collection that contains given name. 
+        /// Materials are selected based on their amount with given operation.
+        /// Materials must belong to given group.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="belongsTo"></param>
+        /// <param name="symbol"></param>
+        /// <param name="amount"></param>
+        /// <param name="group"></param>
+        /// <returns></returns>
         public List<Material> SearchMats(String input, Material.Connection belongsTo,
             string symbol, int amount, string group)
         {
@@ -704,6 +950,12 @@ namespace InventoryManagement
                 return mats.ToList();
             }
         }
+
+        /// <summary>
+        /// Returns list of recipies identified by their name.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public IList<Recipe> SearchRecipes(String input)
         {
             IList<Recipe> recipes = db.Query<Recipe>(delegate(Recipe rec)
